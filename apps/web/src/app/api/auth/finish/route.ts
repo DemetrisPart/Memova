@@ -1,4 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
+import { getApiOrigin } from "@/lib/server/api-origin";
 import {
   applyAuthTokensToResponse,
   authSuccessHtmlResponse,
@@ -7,8 +8,6 @@ import { getRequestPathUrl } from "@/lib/server/request-origin";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
-
-const API_BASE = process.env.API_URL ?? "http://localhost:3001";
 
 /** Full-page sign-in finish via poll token — preferred after email approve. */
 export async function GET(request: NextRequest) {
@@ -21,11 +20,14 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(getRequestPathUrl(request, "/auth/login"));
   }
 
-  const upstream = await fetch(`${API_BASE}/v1/auth/magic-link/complete`, {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({ pollToken }),
-  });
+  const upstream = await fetch(
+    new URL("/v1/auth/magic-link/complete", `${getApiOrigin()}/`),
+    {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ pollToken }),
+    },
+  );
 
   if (upstream.status === 202) {
     return NextResponse.redirect(

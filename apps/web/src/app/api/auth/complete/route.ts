@@ -1,10 +1,9 @@
 import { type NextRequest, NextResponse } from "next/server";
+import { getApiOrigin } from "@/lib/server/api-origin";
 import { proxyAuthPost } from "@/lib/server/auth-api-proxy";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
-
-const API_BASE = process.env.API_URL ?? "http://localhost:3001";
 
 export async function GET(request: NextRequest) {
   const pollToken = request.nextUrl.searchParams.get("pollToken")?.trim();
@@ -13,7 +12,10 @@ export async function GET(request: NextRequest) {
   }
 
   const statusRes = await fetch(
-    `${API_BASE}/v1/auth/magic-link/status?pollToken=${encodeURIComponent(pollToken)}`,
+    new URL(
+      `/v1/auth/magic-link/status?pollToken=${encodeURIComponent(pollToken)}`,
+      `${getApiOrigin()}/`,
+    ),
     { cache: "no-store" },
   );
   const statusBody = (await statusRes.json()) as { status?: string };

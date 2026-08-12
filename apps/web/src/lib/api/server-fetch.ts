@@ -2,12 +2,13 @@ import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import type { AuthUser, CoupleEvent } from "./types";
 import { ApiError } from "./types";
+import { getApiOrigin } from "@/lib/server/api-origin";
 
 async function serverApiFetch<T>(
   path: string,
   init?: RequestInit,
 ): Promise<T> {
-  const base = process.env.API_URL ?? "http://localhost:3001";
+  const base = getApiOrigin();
   const cookieStore = await cookies();
   const headerStore = await headers();
   const cookieHeader = cookieStore

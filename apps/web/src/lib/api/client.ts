@@ -17,7 +17,9 @@ import {
 import { ApiError } from "./types";
 
 function getServerApiUrl(): string {
-  return process.env.API_URL ?? "http://localhost:3001";
+  // Prefer origin without trailing /v1 — callers append /v1/...
+  const raw = (process.env.API_URL ?? "http://localhost:3001").trim();
+  return raw.replace(/\/+$/, "").replace(/\/v1$/i, "");
 }
 
 /** Browser calls same-origin proxy so mobile/LAN testing works without cross-port cookies. */

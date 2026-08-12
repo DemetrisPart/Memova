@@ -95,13 +95,10 @@ export class S3StorageService implements StorageService {
     command: PutObjectCommand | GetObjectCommand,
     expiresIn: number,
   ): Promise<PresignedUrlSet> {
-    const fallbackClient =
-      this.publicPresignClient ??
-      this.lanPresignClient ??
-      this.client;
-
+    // Primary URL always uses STORAGE_ENDPOINT (localhost in local, R2 in prod).
+    // LAN/public variants are optional browser-reachable hosts for mobile/dev.
     const [url, lanUrl, publicUrl] = await Promise.all([
-      getSignedUrl(fallbackClient, command, { expiresIn }),
+      getSignedUrl(this.client, command, { expiresIn }),
       this.lanPresignClient
         ? getSignedUrl(this.lanPresignClient, command, { expiresIn })
         : Promise.resolve(undefined),

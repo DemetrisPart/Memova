@@ -1,6 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
-
-const API_BASE = process.env.API_URL ?? "http://localhost:3001";
+import { getApiOrigin } from "@/lib/server/api-origin";
 
 function getClientIp(request: NextRequest): string {
   const forwarded = request.headers.get("x-forwarded-for");
@@ -68,7 +67,7 @@ async function proxyRequest(
   pathSegments: string[],
 ): Promise<NextResponse> {
   const path = pathSegments.join("/");
-  const url = new URL(`/v1/${path}`, API_BASE);
+  const url = new URL(`/v1/${path}`, `${getApiOrigin()}/`);
   request.nextUrl.searchParams.forEach((value, key) => {
     url.searchParams.set(key, value);
   });

@@ -1,11 +1,10 @@
 import { type NextRequest, NextResponse } from "next/server";
+import { getApiOrigin } from "@/lib/server/api-origin";
 import { authSuccessHtmlResponse } from "@/lib/server/set-auth-cookies";
 import { getRequestPathUrl } from "@/lib/server/request-origin";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
-
-const API_BASE = process.env.API_URL ?? "http://localhost:3001";
 
 /** Pre-compile this route in dev so Fast Refresh does not interrupt the first sign-in. */
 export async function HEAD() {
@@ -23,7 +22,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(getRequestPathUrl(request, "/auth/login"));
   }
 
-  const upstream = await fetch(`${API_BASE}/v1/auth/verify`, {
+  const upstream = await fetch(new URL("/v1/auth/verify", `${getApiOrigin()}/`), {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ token }),

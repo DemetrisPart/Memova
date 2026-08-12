@@ -13,7 +13,8 @@ import {
 
 function buildApiUrl(path: string): string {
   if (typeof window === "undefined") {
-    const base = process.env.API_URL ?? "http://localhost:3001";
+    const raw = (process.env.API_URL ?? "http://localhost:3001").trim();
+    const base = raw.replace(/\/+$/, "").replace(/\/v1$/i, "");
     return `${base}/v1${path}`;
   }
   return `/api/v1${path}`;
@@ -114,7 +115,7 @@ export async function pollMagicLinkComplete(
 ): Promise<"pending" | "done"> {
   const url =
     typeof window === "undefined"
-      ? `${process.env.API_URL ?? "http://localhost:3001"}/v1/auth/magic-link/complete`
+      ? `${(process.env.API_URL ?? "http://localhost:3001").trim().replace(/\/+$/, "").replace(/\/v1$/i, "")}/v1/auth/magic-link/complete`
       : "/api/auth/complete";
   let response: Response;
   try {

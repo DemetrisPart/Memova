@@ -88,6 +88,15 @@ export function resolveNetworkUrl(urls: UrlSet): string {
 
   if (mode === "lan" && urls.lanUrl) return urls.lanUrl;
   if (mode === "public" && urls.publicUrl) return urls.publicUrl;
+
+  // Desktop / Mobile Preview on localhost must use the default MinIO host.
+  if (typeof window !== "undefined") {
+    const host = window.location.hostname;
+    if (host === "localhost" || host === "127.0.0.1") {
+      return urls.url;
+    }
+  }
+
   if (urls.lanUrl && !urls.publicUrl) return urls.lanUrl;
   if (urls.publicUrl && !urls.lanUrl) return urls.publicUrl;
   return urls.url;

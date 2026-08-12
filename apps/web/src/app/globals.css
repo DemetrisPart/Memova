@@ -33,11 +33,30 @@
   html {
     font-family: var(--font-sans);
     color: var(--color-charcoal-900);
-    background: var(--color-ivory-50);
+    background-color: var(--color-ivory-50);
+    background-image:
+      radial-gradient(
+        ellipse 90% 60% at 50% -15%,
+        rgb(201 169 98 / 14%),
+        transparent 58%
+      ),
+      radial-gradient(
+        ellipse 70% 50% at 100% 100%,
+        rgb(245 237 216 / 70%),
+        transparent 55%
+      ),
+      linear-gradient(
+        165deg,
+        var(--color-ivory-50) 0%,
+        var(--color-ivory-100) 52%,
+        #f3ebe0 100%
+      );
+    background-attachment: fixed;
   }
 
   body {
     min-height: 100dvh;
+    background: transparent;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }

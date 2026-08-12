@@ -1,6 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
-
-const API_BASE = process.env.API_URL ?? "http://localhost:3001";
+import { getApiOrigin } from "@/lib/server/api-origin";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -66,11 +65,14 @@ export async function proxyAuthPost(
     if (cookie) headers.set("cookie", cookie);
   }
 
-  const upstream = await fetch(`${API_BASE}/v1/${apiPath}`, {
-    method: "POST",
-    headers,
-    body,
-  });
+  const upstream = await fetch(
+    new URL(`/v1/${apiPath.replace(/^\/+/, "")}`, `${getApiOrigin()}/`),
+    {
+      method: "POST",
+      headers,
+      body,
+    },
+  );
 
   const responseHeaders = new Headers();
   const contentType = upstream.headers.get("content-type");

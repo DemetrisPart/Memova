@@ -26,7 +26,7 @@ export default function RootLayout({
   return (
     <html lang="en" data-guest-theme="original" suppressHydrationWarning>
       <body
-        className={`${coupleFallback.variable} bg-ivory-50 text-charcoal-900 antialiased`}
+        className={`${coupleFallback.variable} text-charcoal-900 antialiased`}
       >
         <Script
           id="guest-theme-init"
