@@ -42,6 +42,59 @@ export function formatEventDate(isoDate: string): string {
   });
 }
 
+const SLUG_MONTHS = [
+  "jan",
+  "feb",
+  "mar",
+  "apr",
+  "may",
+  "jun",
+  "jul",
+  "aug",
+  "sep",
+  "oct",
+  "nov",
+  "dec",
+] as const;
+
+/** Normalize free text into a URL slug segment. */
+export function slugify(input: string): string {
+  return input
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 60);
+}
+
+/** Exact calendar date for slugs, e.g. 2026-10-03 → "3-oct-2026". */
+export function eventDateSlugPart(isoDate: string): string | null {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(isoDate.slice(0, 10));
+  if (!match) return null;
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  if (!year || month < 1 || month > 12 || day < 1 || day > 31) return null;
+  return `${day}-${SLUG_MONTHS[month - 1]}-${year}`;
+}
+
+/**
+ * Suggested production event URL from names + exact event date.
+ * Example: demetris-daniella-3-oct-2026
+ */
+export function buildSuggestedEventSlug(
+  groomName: string,
+  brideName: string,
+  eventDate: string,
+): string {
+  const names = slugify(`${groomName}-${brideName}`);
+  const datePart = eventDateSlugPart(eventDate);
+  if (!names && !datePart) return "";
+  if (!names) return datePart ?? "";
+  if (!datePart) return names;
+  return slugify(`${names}-${datePart}`).slice(0, 60);
+}
+
 export function formatCoupleNames(
   groomName: string | null | undefined,
   brideName: string | null | undefined,

@@ -27,13 +27,13 @@ export default async function EventDashboardLayout({
   }
 
   return (
-    <div className="min-h-dvh bg-ivory-50">
+    <div className="min-h-dvh overflow-x-hidden bg-ivory-50">
       <DashboardHeader user={user} />
       <div className="mx-auto flex max-w-6xl">
         <DashboardSidebar event={event} />
-        <div className="min-w-0 flex-1 pb-24 lg:pb-8">
+        <div className="min-w-0 flex-1 overflow-x-hidden pb-24 lg:pb-8">
           <DashboardEventHeader event={event} />
-          <main className="px-3 py-4 lg:px-8 lg:py-6">{children}</main>
+          <main className="min-w-0 px-3 py-4 lg:px-8 lg:py-6">{children}</main>
         </div>
       </div>
       <DashboardBottomNav event={event} />

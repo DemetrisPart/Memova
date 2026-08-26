@@ -18,10 +18,10 @@ export default async function EventQrPage({ params }: QrPageProps) {
 
   return (
     <div>
-      <h2 className="mb-6 text-lg font-semibold text-charcoal-900">
+      <h2 className="mb-3 text-base font-semibold text-charcoal-900 lg:mb-6 lg:text-lg">
         QR & sharing
       </h2>
-      <div className="guest-page-bg rounded-2xl px-4 py-8 print:bg-white print:py-4">
+      <div className="guest-page-bg rounded-xl px-3 py-5 lg:rounded-2xl lg:px-4 lg:py-8 print:bg-white print:py-4">
         <div className="mx-auto max-w-md">
           <OriginalQrPrintCard qr={qr} />
         </div>

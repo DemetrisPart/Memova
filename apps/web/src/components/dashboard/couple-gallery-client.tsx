@@ -119,21 +119,21 @@ export function CoupleGalleryClient({ eventId }: CoupleGalleryClientProps) {
   );
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3 lg:space-y-4">
       <div className="flex items-center justify-between">
-        <p className="text-sm text-stone-400">
+        <p className="text-xs text-stone-400 lg:text-sm">
           {loading ? "Loading…" : `${totalCount} photos`}
         </p>
         <Link
           href={`/dashboard/events/${eventId}`}
-          className="text-sm font-medium text-gold-700 hover:underline lg:hidden"
+          className="text-xs font-medium text-gold-700 hover:underline lg:hidden"
         >
           ← Overview
         </Link>
       </div>
 
       {error ? (
-        <p className="rounded-xl bg-rose-500/10 px-4 py-3 text-sm text-rose-600">
+        <p className="rounded-xl bg-rose-500/10 px-3 py-2.5 text-sm text-rose-600 lg:px-4 lg:py-3">
           {error}
         </p>
       ) : null}
@@ -148,7 +148,7 @@ export function CoupleGalleryClient({ eventId }: CoupleGalleryClientProps) {
           ))}
         </div>
       ) : items.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-stone-200 bg-white p-10 text-center">
+        <div className="rounded-xl border border-dashed border-stone-200 bg-white p-6 text-center lg:rounded-2xl lg:p-10">
           <p className="text-sm text-stone-400">No photos yet</p>
         </div>
       ) : (

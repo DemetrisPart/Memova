@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,15 +9,7 @@ import {
   createEvent,
 } from "@/lib/api/dashboard-client";
 import { ApiError } from "@/lib/api/types";
-
-function slugify(input: string): string {
-  return input
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 60);
-}
+import { buildSuggestedEventSlug, slugify } from "@/lib/utils";
 
 export function CreateEventForm() {
   const router = useRouter();
@@ -35,9 +26,10 @@ export function CreateEventForm() {
 
   useEffect(() => {
     if (slugTouched) return;
-    const auto = slugify(`${groomName}-${brideName}`);
+    const auto = buildSuggestedEventSlug(groomName, brideName, eventDate);
     if (auto.length >= 3) setSlug(auto);
-  }, [groomName, brideName, slugTouched]);
+    else setSlug("");
+  }, [groomName, brideName, eventDate, slugTouched]);
 
   useEffect(() => {
     if (slug.length < 3) {
@@ -114,7 +106,7 @@ export function CreateEventForm() {
             setSlugTouched(true);
             setSlug(slugify(e.target.value));
           }}
-          placeholder="demetris-daniella-2026"
+          placeholder="demetris-daniella-3-oct-2026"
         />
         <p className="mt-1 text-xs text-stone-400">
           momeva.com/{slug || "your-event"}
@@ -122,6 +114,10 @@ export function CreateEventForm() {
           {slugStatus === "available" ? " — available ✓" : null}
           {slugStatus === "taken" ? " — already taken" : null}
           {slugStatus === "invalid" ? " — invalid URL" : null}
+        </p>
+        <p className="mt-1 text-xs text-stone-400">
+          Includes the exact event date so the live link matches the celebration
+          day.
         </p>
       </div>
 

@@ -28,7 +28,7 @@ export function Button({
     <button
       type={type}
       className={cn(
-        "inline-flex min-h-14 items-center justify-center gap-2 rounded-xl px-6 text-base font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+        "inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 lg:min-h-14 lg:px-6 lg:text-base",
         variantClasses[variant],
         fullWidth && "w-full",
         className,

@@ -9,7 +9,9 @@ export default async function EventGalleryPage({ params }: GalleryPageProps) {
 
   return (
     <div className="mx-auto max-w-5xl">
-      <h2 className="mb-4 text-lg font-semibold text-charcoal-900">Gallery</h2>
+      <h2 className="mb-3 text-base font-semibold text-charcoal-900 lg:mb-4 lg:text-lg">
+        Gallery
+      </h2>
       <CoupleGalleryClient eventId={id} />
     </div>
   );

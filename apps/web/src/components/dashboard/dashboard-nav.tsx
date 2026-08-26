@@ -58,10 +58,7 @@ export function DashboardBottomNav({ event }: DashboardBottomNavProps) {
 export function DashboardEventHeader({ event }: { event: CoupleEvent }) {
   return (
     <header className="border-b border-stone-200 bg-white px-3 py-2.5 lg:px-8 lg:py-3">
-      <p className="text-[10px] font-medium uppercase tracking-wider text-stone-400">
-        Event dashboard
-      </p>
-      <h1 className="mt-0.5 text-sm font-semibold text-charcoal-900 lg:text-lg">
+      <h1 className="text-sm font-semibold text-charcoal-900 lg:text-lg">
         {formatCoupleNames(event.groomName, event.brideName, event.title)}
       </h1>
     </header>

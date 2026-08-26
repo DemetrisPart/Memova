@@ -56,9 +56,34 @@
 
   body {
     min-height: 100dvh;
+    overflow-x: hidden;
     background: transparent;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Safari/iOS date inputs have a large intrinsic min-width that overflows.
+     Prefer the facade in Input; keep these as a safety net for raw date inputs. */
+  input[type="date"] {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0 !important;
+    max-width: 100%;
+  }
+
+  input[type="date"]::-webkit-datetime-edit,
+  input[type="date"]::-webkit-datetime-edit-fields-wrapper,
+  input[type="date"]::-webkit-datetime-edit-text,
+  input[type="date"]::-webkit-datetime-edit-month-field,
+  input[type="date"]::-webkit-datetime-edit-day-field,
+  input[type="date"]::-webkit-datetime-edit-year-field {
+    min-width: 0;
+    max-width: 100%;
+    padding: 0;
+  }
+
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    flex-shrink: 0;
   }
 }
 

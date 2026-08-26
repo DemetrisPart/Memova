@@ -118,6 +118,8 @@ export type CoupleEvent = {
   storageLimitBytes: string;
   coverImageMediaId: string | null;
   coverImageUrl: string | null;
+  coverImageUrlLan?: string | null;
+  coverImageUrlPublic?: string | null;
   publicUrl: string;
   qrToken?: string;
   createdAt: string;

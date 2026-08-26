@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { Menu } from "lucide-react";
 import { logout } from "@/lib/api/dashboard-client";
 import { saveRememberedEmail } from "@/lib/auth/remembered-email";
 import type { AuthUser } from "@/lib/api/types";
@@ -9,11 +10,6 @@ import type { AuthUser } from "@/lib/api/types";
 type DashboardHeaderProps = {
   user: AuthUser;
 };
-
-function profileInitial(email: string): string {
-  const local = email.split("@")[0]?.trim() ?? "";
-  return (local[0] ?? email[0] ?? "?").toUpperCase();
-}
 
 export function DashboardHeader({ user }: DashboardHeaderProps) {
   const router = useRouter();
@@ -69,11 +65,12 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
             aria-haspopup="menu"
             aria-expanded={open}
             aria-controls={menuId}
+            aria-label="Account menu"
             onClick={() => setOpen((value) => !value)}
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-gold-600 text-sm font-semibold text-white transition hover:bg-gold-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-600"
+            className="flex items-center justify-center p-1.5 text-gold-600 transition hover:text-gold-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-600"
             title="Account"
           >
-            {profileInitial(user.email)}
+            <Menu className="h-6 w-6" strokeWidth={2} aria-hidden />
           </button>
 
           {open ? (

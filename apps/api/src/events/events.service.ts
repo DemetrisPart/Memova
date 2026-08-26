@@ -428,12 +428,7 @@ export class EventsService {
     event: EventWithCover,
     options: { includeQrToken?: boolean } = {},
   ) {
-    const coverImageUrl = event.coverImage
-      ? await this.storage.getPresignedDownloadUrl({
-          key: event.coverImage.originalKey,
-        })
-      : null;
-
+    const coverUrls = await this.resolveCoverImageUrls(event);
     const publicUrl = this.qrService.getEventPublicUrl(event.slug);
 
     return {
@@ -449,7 +444,7 @@ export class EventsService {
       storageUsedBytes: event.storageUsedBytes.toString(),
       storageLimitBytes: event.storageLimitBytes.toString(),
       coverImageMediaId: event.coverImageMediaId,
-      coverImageUrl,
+      ...coverUrls,
       publicUrl,
       ...(options.includeQrToken ? { qrToken: event.qrToken } : {}),
       createdAt: event.createdAt.toISOString(),

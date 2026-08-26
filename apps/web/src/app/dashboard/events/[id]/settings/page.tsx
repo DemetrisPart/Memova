@@ -12,7 +12,9 @@ export default async function EventSettingsPage({ params }: SettingsPageProps) {
 
   return (
     <div>
-      <h2 className="mb-6 text-lg font-semibold text-charcoal-900">Settings</h2>
+      <h2 className="mb-3 text-base font-semibold text-charcoal-900 lg:mb-6 lg:text-lg">
+        Settings
+      </h2>
       <EventSettingsClient event={event} />
     </div>
   );

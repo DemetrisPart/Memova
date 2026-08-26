@@ -201,13 +201,13 @@ export function DashboardBearerShell() {
 
   if (event && eventId) {
     return (
-      <div className="min-h-dvh bg-ivory-50">
+      <div className="min-h-dvh overflow-x-hidden bg-ivory-50">
         <DashboardHeader user={user} />
         <div className="mx-auto flex max-w-6xl">
           <DashboardSidebar event={event} />
-          <div className="min-w-0 flex-1 pb-24 lg:pb-8">
+          <div className="min-w-0 flex-1 overflow-x-hidden pb-24 lg:pb-8">
             <DashboardEventHeader event={event} />
-            <main className="px-3 py-4 lg:px-8 lg:py-6">
+            <main className="min-w-0 px-3 py-4 lg:px-8 lg:py-6">
               {section === "home" && stats && recentGallery ? (
                 <div className="mx-auto max-w-3xl space-y-4 lg:space-y-6">
                   <div className="flex items-center justify-between gap-3">
@@ -250,7 +250,7 @@ export function DashboardBearerShell() {
 
               {section === "gallery" ? (
                 <div className="mx-auto max-w-5xl">
-                  <h2 className="mb-4 text-lg font-semibold text-charcoal-900">
+                  <h2 className="mb-3 text-base font-semibold text-charcoal-900 lg:mb-4 lg:text-lg">
                     Gallery
                   </h2>
                   <CoupleGalleryClient eventId={eventId} />
@@ -259,10 +259,10 @@ export function DashboardBearerShell() {
 
               {section === "qr" && qr ? (
                 <div>
-                  <h2 className="mb-6 text-lg font-semibold text-charcoal-900">
+                  <h2 className="mb-3 text-base font-semibold text-charcoal-900 lg:mb-6 lg:text-lg">
                     QR & sharing
                   </h2>
-                  <div className="guest-page-bg rounded-2xl px-4 py-8 print:bg-white print:py-4">
+                  <div className="guest-page-bg rounded-xl px-3 py-5 lg:rounded-2xl lg:px-4 lg:py-8 print:bg-white print:py-4">
                     <div className="mx-auto max-w-md">
                       <OriginalQrPrintCard qr={qr} />
                     </div>
@@ -272,7 +272,7 @@ export function DashboardBearerShell() {
 
               {section === "settings" ? (
                 <div>
-                  <h2 className="mb-6 text-lg font-semibold text-charcoal-900">
+                  <h2 className="mb-3 text-base font-semibold text-charcoal-900 lg:mb-6 lg:text-lg">
                     Settings
                   </h2>
                   <EventSettingsClient event={event} />

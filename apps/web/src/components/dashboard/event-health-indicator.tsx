@@ -24,7 +24,7 @@ export function EventHealthIndicator({
       <span
         className={cn(
           "h-2 w-2 rounded-full",
-          nearLimit ? "bg-amber-500" : "bg-emerald-600",
+          nearLimit ? "bg-amber-500" : "guest-access-dot",
         )}
         aria-hidden
       />
