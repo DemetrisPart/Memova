@@ -244,6 +244,8 @@ export function DashboardBearerShell() {
                   <ActivityTimeline
                     items={recentGallery.items}
                     eventId={eventId}
+                    totalCount={recentGallery.totalCount}
+                    nextCursor={recentGallery.nextCursor}
                   />
                 </div>
               ) : null}

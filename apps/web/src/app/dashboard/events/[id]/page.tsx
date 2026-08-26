@@ -19,8 +19,6 @@ export default async function EventOverviewPage({ params }: OverviewPageProps) {
     fetchCoupleGalleryServer(id, 8) as Promise<CoupleGalleryResponse>,
   ]);
 
-  const recentItems = gallery.items;
-
   return (
     <div className="mx-auto max-w-3xl space-y-4 lg:space-y-6">
       <div className="flex items-center justify-between gap-3">
@@ -53,7 +51,12 @@ export default async function EventOverviewPage({ params }: OverviewPageProps) {
 
       <QuickActions eventId={id} />
 
-      <ActivityTimeline items={recentItems} eventId={id} />
+      <ActivityTimeline
+        items={gallery.items}
+        eventId={id}
+        totalCount={gallery.totalCount}
+        nextCursor={gallery.nextCursor}
+      />
     </div>
   );
 }

@@ -1,17 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Link from "next/link";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import { fetchCoupleGallery } from "@/lib/api/dashboard-client";
 import { formatRelativeTime } from "@/lib/utils";
-import type { CoupleGalleryItem } from "@/lib/api/types";
 import { resolveNetworkUrl } from "@/lib/mobile-network";
+import type { CoupleGalleryItem } from "@/lib/api/types";
 
 const PREVIEW_COUNT = 3;
+const SHOW_MORE_STEP = 5;
 
 type ActivityTimelineProps = {
   items: CoupleGalleryItem[];
   eventId: string;
+  totalCount: number;
+  nextCursor: string | null;
 };
 
 function thumbUrl(item: CoupleGalleryItem): string | null {
@@ -23,10 +27,22 @@ function thumbUrl(item: CoupleGalleryItem): string | null {
   });
 }
 
-export function ActivityTimeline({ items, eventId }: ActivityTimelineProps) {
-  const [expanded, setExpanded] = useState(false);
+export function ActivityTimeline({
+  items: initialItems,
+  eventId,
+  totalCount: initialTotal,
+  nextCursor: initialCursor,
+}: ActivityTimelineProps) {
+  const rootRef = useRef<HTMLDivElement>(null);
+  const [items, setItems] = useState(initialItems);
+  const [totalCount, setTotalCount] = useState(initialTotal);
+  const [nextCursor, setNextCursor] = useState(initialCursor);
+  const [visibleCount, setVisibleCount] = useState(
+    Math.min(PREVIEW_COUNT, initialItems.length || PREVIEW_COUNT),
+  );
+  const [loadingMore, setLoadingMore] = useState(false);
 
-  if (items.length === 0) {
+  if (totalCount === 0 && items.length === 0) {
     return (
       <div className="rounded-2xl border border-dashed border-stone-200 bg-white p-6 text-center">
         <p className="text-sm text-stone-400">No uploads yet</p>
@@ -43,11 +59,64 @@ export function ActivityTimeline({ items, eventId }: ActivityTimelineProps) {
     );
   }
 
-  const visible = expanded ? items : items.slice(0, PREVIEW_COUNT);
-  const canToggle = items.length > PREVIEW_COUNT;
+  const handleShowMore = async () => {
+    if (loadingMore) return;
+    const target = Math.min(visibleCount + SHOW_MORE_STEP, totalCount);
+
+    if (items.length >= target) {
+      setVisibleCount(target);
+      return;
+    }
+
+    setLoadingMore(true);
+    try {
+      let loaded = items;
+      let cursor = nextCursor;
+
+      if (!cursor && loaded.length < totalCount) {
+        const first = await fetchCoupleGallery(eventId, {
+          limit: Math.max(loaded.length, 24),
+        });
+        loaded = first.items;
+        cursor = first.nextCursor;
+        setTotalCount(first.totalCount);
+      }
+
+      while (loaded.length < target && cursor) {
+        const page = await fetchCoupleGallery(eventId, {
+          cursor,
+          limit: 24,
+        });
+        loaded = [...loaded, ...page.items];
+        cursor = page.nextCursor;
+        setTotalCount(page.totalCount);
+      }
+
+      setItems(loaded);
+      setNextCursor(cursor);
+      setVisibleCount(Math.min(target, loaded.length, totalCount));
+    } finally {
+      setLoadingMore(false);
+    }
+  };
+
+  const handleShowLess = () => {
+    // Scroll to the card first while it is still tall, then collapse —
+    // avoids a blank viewport sitting below the shortened list.
+    rootRef.current?.scrollIntoView({ behavior: "auto", block: "start" });
+    setVisibleCount(Math.min(PREVIEW_COUNT, items.length));
+  };
+
+  const visible = items.slice(0, visibleCount);
+  const showingAll = visibleCount >= totalCount && totalCount > PREVIEW_COUNT;
+  const canShowMore = visibleCount < totalCount;
+  const canShowLess = visibleCount > PREVIEW_COUNT;
 
   return (
-    <div className="rounded-xl border border-stone-200 bg-white shadow-soft lg:rounded-2xl">
+    <div
+      ref={rootRef}
+      className="scroll-mt-16 rounded-xl border border-stone-200 bg-white shadow-soft lg:scroll-mt-4 lg:rounded-2xl"
+    >
       <div className="border-b border-stone-200 px-4 py-3 lg:px-5 lg:py-4">
         <h2 className="text-sm font-semibold text-charcoal-900">
           Recent uploads
@@ -89,25 +158,28 @@ export function ActivityTimeline({ items, eventId }: ActivityTimelineProps) {
           );
         })}
       </ul>
-      {canToggle ? (
+      {canShowMore || canShowLess ? (
         <div className="border-t border-stone-200 px-4 py-2.5 lg:px-5 lg:py-3">
-          <button
-            type="button"
-            onClick={() => setExpanded((value) => !value)}
-            className="inline-flex w-full items-center justify-center gap-1.5 text-sm font-medium text-gold-700 hover:text-gold-600"
-          >
-            {expanded ? (
-              <>
-                Show less
-                <ChevronUp className="h-4 w-4" />
-              </>
-            ) : (
-              <>
-                Show more
-                <ChevronDown className="h-4 w-4" />
-              </>
-            )}
-          </button>
+          {showingAll ? (
+            <button
+              type="button"
+              onClick={handleShowLess}
+              className="inline-flex w-full items-center justify-center gap-1.5 text-sm font-medium text-gold-700 hover:text-gold-600"
+            >
+              Show less
+              <ChevronUp className="h-4 w-4" />
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => void handleShowMore()}
+              disabled={loadingMore}
+              className="inline-flex w-full items-center justify-center gap-1.5 text-sm font-medium text-gold-700 hover:text-gold-600 disabled:opacity-50"
+            >
+              {loadingMore ? "Loading…" : "Show more"}
+              <ChevronDown className="h-4 w-4" />
+            </button>
+          )}
         </div>
       ) : null}
     </div>

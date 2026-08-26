@@ -120,13 +120,37 @@ export function storageRemainingLabel(
   usedBytes: string,
   limitBytes: string,
 ): string {
-  const remaining = BigInt(limitBytes) - BigInt(usedBytes);
+  const used = BigInt(usedBytes);
+  const remaining = BigInt(limitBytes) - used;
+  if (remaining <= 0n) {
+    return "0 MB remaining";
+  }
+
   const gb = Number(remaining) / (1024 * 1024 * 1024);
   if (gb >= 1) {
-    return `${gb.toFixed(1)} GB remaining`;
+    // Two decimals once anything is used so 46.7 MB → 19.95 GB, not 20.0 GB.
+    return `${gb.toFixed(used > 0n ? 2 : 1)} GB remaining`;
   }
+
   const mb = Number(remaining) / (1024 * 1024);
-  return `${Math.max(0, Math.round(mb))} MB remaining`;
+  if (mb >= 1) {
+    return `${mb.toFixed(1)} MB remaining`;
+  }
+
+  const kb = Number(remaining) / 1024;
+  return `${Math.max(0, Math.round(kb))} KB remaining`;
+}
+
+export function storageUsedPercent(
+  usedBytes: string | bigint | number,
+  limitBytes: string | bigint | number,
+): number {
+  const used = Number(usedBytes);
+  const limit = Number(limitBytes);
+  if (!Number.isFinite(used) || !Number.isFinite(limit) || limit <= 0) {
+    return 0;
+  }
+  return Math.min(100, Math.max(0, (used / limit) * 100));
 }
 
 export function formatBytes(bytes: string | bigint | number): string {
