@@ -205,13 +205,13 @@ export function DashboardBearerShell() {
         <DashboardHeader user={user} />
         <div className="mx-auto flex max-w-6xl">
           <DashboardSidebar event={event} />
-          <div className="min-w-0 flex-1 pb-20 lg:pb-8">
+          <div className="min-w-0 flex-1 pb-24 lg:pb-8">
             <DashboardEventHeader event={event} />
-            <main className="px-4 py-6 lg:px-8">
+            <main className="px-3 py-4 lg:px-8 lg:py-6">
               {section === "home" && stats && recentGallery ? (
-                <div className="mx-auto max-w-3xl space-y-6">
-                  <div className="flex items-center justify-between gap-4">
-                    <h2 className="text-lg font-semibold text-charcoal-900">
+                <div className="mx-auto max-w-3xl space-y-4 lg:space-y-6">
+                  <div className="flex items-center justify-between gap-3">
+                    <h2 className="text-base font-semibold text-charcoal-900 lg:text-lg">
                       Overview
                     </h2>
                     <EventHealthIndicator
@@ -219,16 +219,16 @@ export function DashboardBearerShell() {
                     />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="aspect-square rounded-2xl border border-stone-200 bg-white p-5 shadow-soft">
-                      <p className="text-sm text-stone-400">Photos</p>
-                      <p className="mt-1 text-3xl font-semibold text-charcoal-900">
+                  <div className="grid grid-cols-2 gap-2.5 lg:gap-3">
+                    <div className="rounded-xl border border-stone-200 bg-white px-3 py-2.5 shadow-soft lg:rounded-2xl lg:px-4 lg:py-3">
+                      <p className="text-xs text-stone-400 lg:text-sm">Photos</p>
+                      <p className="mt-0.5 text-xl font-semibold text-charcoal-900 lg:text-2xl">
                         {stats.photoCount}
                       </p>
                     </div>
-                    <div className="aspect-square rounded-2xl border border-stone-200 bg-white p-5 shadow-soft">
-                      <p className="text-sm text-stone-400">Videos</p>
-                      <p className="mt-1 text-3xl font-semibold text-charcoal-900">
+                    <div className="rounded-xl border border-stone-200 bg-white px-3 py-2.5 shadow-soft lg:rounded-2xl lg:px-4 lg:py-3">
+                      <p className="text-xs text-stone-400 lg:text-sm">Videos</p>
+                      <p className="mt-0.5 text-xl font-semibold text-charcoal-900 lg:text-2xl">
                         {stats.videoCount}
                       </p>
                     </div>

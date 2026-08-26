@@ -23,10 +23,10 @@ export function DashboardBottomNav({ event }: DashboardBottomNavProps) {
 
   return (
     <nav
-      className="fixed inset-x-0 bottom-0 z-40 border-t border-stone-200 bg-white/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-md lg:hidden"
+      className="pointer-events-none fixed inset-x-0 bottom-0 z-40 flex justify-center px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] lg:hidden"
       aria-label="Event dashboard"
     >
-      <div className="mx-auto grid max-w-lg grid-cols-4">
+      <div className="pointer-events-auto flex w-full max-w-xs items-center justify-between gap-1 rounded-full bg-charcoal-900 px-1.5 py-1.5 shadow-lift sm:max-w-sm sm:px-2 sm:py-2">
         {tabs.map(({ href, label, icon: Icon, suffix }) => {
           const path = `${base}${href}`;
           const active =
@@ -37,15 +37,16 @@ export function DashboardBottomNav({ event }: DashboardBottomNavProps) {
             <Link
               key={label}
               href={path}
+              aria-label={label}
+              aria-current={active ? "page" : undefined}
               className={cn(
-                "flex min-h-14 flex-col items-center justify-center gap-0.5 px-1 text-[11px] font-medium transition-colors",
+                "flex h-10 flex-1 items-center justify-center rounded-full transition-colors sm:h-12",
                 active
-                  ? "text-gold-700"
-                  : "text-stone-400 hover:text-charcoal-800",
+                  ? "bg-white text-charcoal-900"
+                  : "text-white/75 hover:text-white",
               )}
             >
-              <Icon className="h-5 w-5" strokeWidth={active ? 2.25 : 1.75} />
-              {label}
+              <Icon className="h-4 w-4 sm:h-5 sm:w-5" strokeWidth={active ? 2.25 : 1.75} />
             </Link>
           );
         })}
@@ -56,11 +57,11 @@ export function DashboardBottomNav({ event }: DashboardBottomNavProps) {
 
 export function DashboardEventHeader({ event }: { event: CoupleEvent }) {
   return (
-    <header className="border-b border-stone-200 bg-white px-4 py-4 lg:px-8">
-      <p className="text-xs font-medium uppercase tracking-wider text-stone-400">
+    <header className="border-b border-stone-200 bg-white px-3 py-2.5 lg:px-8 lg:py-3">
+      <p className="text-[10px] font-medium uppercase tracking-wider text-stone-400">
         Event dashboard
       </p>
-      <h1 className="mt-0.5 text-xl font-semibold text-charcoal-900">
+      <h1 className="mt-0.5 text-sm font-semibold text-charcoal-900 lg:text-lg">
         {formatCoupleNames(event.groomName, event.brideName, event.title)}
       </h1>
     </header>

@@ -57,9 +57,11 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
   };
 
   return (
-    <header className="border-b border-stone-200 bg-white px-4 py-3 lg:px-8">
+    <header className="border-b border-stone-200 bg-white px-3 py-2.5 lg:px-8 lg:py-3">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4">
-        <p className="text-sm font-semibold text-charcoal-900">Momeva</p>
+        <p className="text-lg font-semibold tracking-tight text-charcoal-900 lg:text-2xl">
+          Momeva
+        </p>
 
         <div ref={rootRef} className="relative">
           <button

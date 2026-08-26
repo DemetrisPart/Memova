@@ -18,23 +18,30 @@ export function StorageMeter({
   const warn = clamped >= 80;
 
   return (
-    <div className={cn("rounded-2xl border border-stone-200 bg-white p-5 shadow-soft", className)}>
-      <div className="flex items-start justify-between gap-4">
+    <div
+      className={cn(
+        "rounded-xl border border-stone-200 bg-white px-3 py-2.5 shadow-soft lg:rounded-2xl lg:px-4 lg:py-3",
+        className,
+      )}
+    >
+      <div className="flex items-center justify-between gap-3 lg:gap-4">
         <div>
-          <p className="text-sm font-medium text-stone-400">Storage</p>
-          <p className="mt-1 text-2xl font-semibold text-charcoal-900">
+          <p className="text-xs font-medium text-stone-400 lg:text-sm">
+            Storage
+          </p>
+          <p className="mt-0.5 text-lg font-semibold text-charcoal-900 lg:text-xl">
             {clamped}%
           </p>
-          <p className="mt-1 text-sm text-stone-400">
+          <p className="mt-0.5 text-[11px] text-stone-400 lg:text-xs">
             {formatBytes(usedBytes)} of {formatBytes(limitBytes)} used
           </p>
         </div>
-        <p className="text-right text-sm text-stone-400">
+        <p className="text-right text-[11px] text-stone-400 lg:text-xs">
           {storageRemainingLabel(usedBytes, limitBytes)}
         </p>
       </div>
       <div
-        className="mt-4 h-2.5 overflow-hidden rounded-full bg-ivory-100"
+        className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-ivory-100 lg:mt-3 lg:h-2"
         role="progressbar"
         aria-valuenow={clamped}
         aria-valuemin={0}

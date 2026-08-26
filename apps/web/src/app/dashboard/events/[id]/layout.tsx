@@ -31,9 +31,9 @@ export default async function EventDashboardLayout({
       <DashboardHeader user={user} />
       <div className="mx-auto flex max-w-6xl">
         <DashboardSidebar event={event} />
-        <div className="min-w-0 flex-1 pb-20 lg:pb-8">
+        <div className="min-w-0 flex-1 pb-24 lg:pb-8">
           <DashboardEventHeader event={event} />
-          <main className="px-4 py-6 lg:px-8">{children}</main>
+          <main className="px-3 py-4 lg:px-8 lg:py-6">{children}</main>
         </div>
       </div>
       <DashboardBottomNav event={event} />

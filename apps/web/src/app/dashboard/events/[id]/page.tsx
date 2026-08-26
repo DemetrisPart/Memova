@@ -22,22 +22,24 @@ export default async function EventOverviewPage({ params }: OverviewPageProps) {
   const recentItems = gallery.items;
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6">
-      <div className="flex items-center justify-between gap-4">
-        <h2 className="text-lg font-semibold text-charcoal-900">Overview</h2>
+    <div className="mx-auto max-w-3xl space-y-4 lg:space-y-6">
+      <div className="flex items-center justify-between gap-3">
+        <h2 className="text-base font-semibold text-charcoal-900 lg:text-lg">
+          Overview
+        </h2>
         <EventHealthIndicator storageUsedPercent={stats.storageUsedPercent} />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div className="aspect-square rounded-2xl border border-stone-200 bg-white p-5 shadow-soft">
-          <p className="text-sm text-stone-400">Photos</p>
-          <p className="mt-1 text-3xl font-semibold text-charcoal-900">
+      <div className="grid grid-cols-2 gap-2.5 lg:gap-3">
+        <div className="rounded-xl border border-stone-200 bg-white px-3 py-2.5 shadow-soft lg:rounded-2xl lg:px-4 lg:py-3">
+          <p className="text-xs text-stone-400 lg:text-sm">Photos</p>
+          <p className="mt-0.5 text-xl font-semibold text-charcoal-900 lg:text-2xl">
             {stats.photoCount}
           </p>
         </div>
-        <div className="aspect-square rounded-2xl border border-stone-200 bg-white p-5 shadow-soft">
-          <p className="text-sm text-stone-400">Videos</p>
-          <p className="mt-1 text-3xl font-semibold text-charcoal-900">
+        <div className="rounded-xl border border-stone-200 bg-white px-3 py-2.5 shadow-soft lg:rounded-2xl lg:px-4 lg:py-3">
+          <p className="text-xs text-stone-400 lg:text-sm">Videos</p>
+          <p className="mt-0.5 text-xl font-semibold text-charcoal-900 lg:text-2xl">
             {stats.videoCount}
           </p>
         </div>
