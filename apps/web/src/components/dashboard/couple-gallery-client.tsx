@@ -12,10 +12,13 @@ import {
 } from "@/lib/api/dashboard-client";
 import { downloadBlob, downloadFromUrl } from "@/lib/download";
 import { resolveNetworkUrl } from "@/lib/mobile-network";
-import type { CoupleGalleryItem } from "@/lib/api/types";
+import type { CoupleEvent, CoupleGalleryItem } from "@/lib/api/types";
+import { EventSectionKartella } from "@/components/dashboard/event-section-kartella";
 
 type CoupleGalleryClientProps = {
   eventId: string;
+  event: CoupleEvent;
+  storageUsedPercent: number;
 };
 
 function thumbUrl(item: CoupleGalleryItem): string | null {
@@ -50,7 +53,11 @@ async function resolveOriginalDownload(
   };
 }
 
-export function CoupleGalleryClient({ eventId }: CoupleGalleryClientProps) {
+export function CoupleGalleryClient({
+  eventId,
+  event,
+  storageUsedPercent,
+}: CoupleGalleryClientProps) {
   const [items, setItems] = useState<CoupleGalleryItem[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
@@ -198,93 +205,107 @@ export function CoupleGalleryClient({ eventId }: CoupleGalleryClientProps) {
   };
 
   return (
-    <div className="space-y-3 lg:space-y-4">
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0 space-y-1">
-          <p className="text-xs text-stone-400 lg:text-sm">
-            {loading ? "Loading…" : `${totalCount} photos`}
-          </p>
-          {!loading ? (
-            <p className="text-xs text-stone-400 lg:text-sm">0 videos</p>
+    <>
+      <EventSectionKartella
+        event={event}
+        storageUsedPercent={storageUsedPercent}
+        title="View all photos and videos"
+      >
+        <div className="panel-3d flex items-end justify-between gap-3 px-3 py-2.5 pr-5 lg:px-3.5 lg:py-3 lg:pr-6">
+          <div className="min-w-0 space-y-0.5">
+            <p className="text-sm font-semibold text-charcoal-900">
+              {loading ? "Loading…" : `${totalCount} photos`}
+            </p>
+            {!loading ? (
+              <p className="text-sm font-semibold text-charcoal-900">0 videos</p>
+            ) : null}
+            {saveProgress ? (
+              <p className="truncate text-[11px] text-stone-400">{saveProgress}</p>
+            ) : null}
+          </div>
+
+          {!loading && totalCount > 0 ? (
+            <button
+              type="button"
+              disabled={savingAll}
+              onClick={() => void handleSaveAll()}
+              className="mr-1 inline-flex shrink-0 items-center gap-1 text-sm font-semibold text-[#6b5535] transition hover:text-[#1a1714] disabled:opacity-50 sm:mr-2"
+            >
+              <Download
+                className="h-3.5 w-3.5 shrink-0"
+                strokeWidth={2}
+                aria-hidden
+              />
+              {savingAll ? "Saving…" : "Save all"}
+            </button>
           ) : null}
-          {saveProgress ? (
-            <p className="truncate text-[11px] text-stone-400">{saveProgress}</p>
+        </div>
+      </EventSectionKartella>
+
+      <section className="px-3 pb-24 pt-3.5 lg:px-8 lg:pb-8 lg:pt-4">
+        <div className="mx-auto max-w-3xl space-y-3 lg:space-y-4">
+          {error ? (
+            <p className="rounded-xl bg-rose-500/10 px-3 py-2.5 text-sm text-rose-600 lg:px-4 lg:py-3">
+              {error}
+            </p>
           ) : null}
-        </div>
 
-        {!loading && totalCount > 0 ? (
-          <button
-            type="button"
-            disabled={savingAll}
-            onClick={() => void handleSaveAll()}
-            className="inline-flex shrink-0 items-center gap-1 text-xs font-medium text-gold-700 transition hover:text-gold-600 disabled:opacity-50 lg:text-sm"
-          >
-            <Download className="h-3.5 w-3.5 shrink-0" strokeWidth={2} aria-hidden />
-            {savingAll ? "Saving…" : "Save all"}
-          </button>
-        ) : null}
-      </div>
-
-      {error ? (
-        <p className="rounded-xl bg-rose-500/10 px-3 py-2.5 text-sm text-rose-600 lg:px-4 lg:py-3">
-          {error}
-        </p>
-      ) : null}
-
-      {loading ? (
-        <div className="grid grid-cols-3 gap-1 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6">
-          {Array.from({ length: 12 }).map((_, i) => (
-            <div
-              key={i}
-              className="aspect-square animate-pulse rounded-lg bg-stone-200/60"
-            />
-          ))}
-        </div>
-      ) : items.length === 0 ? (
-        <div className="panel-3d rounded-xl border border-dashed border-white/10 p-6 text-center lg:rounded-2xl lg:p-10">
-          <p className="text-sm text-stone-400">No photos yet</p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-3 gap-1 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6">
-          {items.map((item, index) => {
-            const url = thumbUrl(item);
-            return (
-              <SquareThumbFrame
-                key={item.id}
-                className="rounded-lg bg-ivory-100"
-              >
-                {url ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={url}
-                    alt=""
-                    className="size-full object-cover"
-                    loading="lazy"
-                  />
-                ) : (
-                  <div className="flex size-full items-center justify-center text-xs text-stone-400">
-                    …
-                  </div>
-                )}
-                <button
-                  type="button"
-                  onClick={() => setLightboxIndex(index)}
-                  className="absolute inset-0"
-                  aria-label="View photo"
+          {loading ? (
+            <div className="grid grid-cols-3 gap-1 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6">
+              {Array.from({ length: 12 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="aspect-square animate-pulse rounded-lg bg-white/10"
                 />
-                <span className="pointer-events-none absolute inset-x-0 bottom-0 truncate bg-charcoal-900/60 px-1 py-0.5 text-[10px] text-ivory-50">
-                  {item.guestName}
-                </span>
-              </SquareThumbFrame>
-            );
-          })}
-        </div>
-      )}
+              ))}
+            </div>
+          ) : items.length === 0 ? (
+            <div className="panel-3d rounded-xl border border-dashed border-white/10 p-6 text-center lg:rounded-2xl lg:p-10">
+              <p className="text-sm text-stone-400">No photos yet</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-3 gap-1 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6">
+              {items.map((item, index) => {
+                const url = thumbUrl(item);
+                return (
+                  <SquareThumbFrame
+                    key={item.id}
+                    className="rounded-lg bg-ivory-100"
+                  >
+                    {url ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={url}
+                        alt=""
+                        className="size-full object-cover"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div className="flex size-full items-center justify-center text-xs text-stone-400">
+                        …
+                      </div>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => setLightboxIndex(index)}
+                      className="absolute inset-0"
+                      aria-label="View photo"
+                    />
+                    <span className="pointer-events-none absolute inset-x-0 bottom-0 truncate bg-charcoal-900/60 px-1 py-0.5 text-[10px] text-ivory-50">
+                      {item.guestName}
+                    </span>
+                  </SquareThumbFrame>
+                );
+              })}
+            </div>
+          )}
 
-      <div ref={sentinelRef} className="h-4" aria-hidden />
-      {loadingMore ? (
-        <p className="text-center text-sm text-stone-400">Loading more…</p>
-      ) : null}
+          <div ref={sentinelRef} className="h-4" aria-hidden />
+          {loadingMore ? (
+            <p className="text-center text-sm text-stone-400">Loading more…</p>
+          ) : null}
+        </div>
+      </section>
 
       {lightboxIndex !== null ? (
         <Lightbox
@@ -302,6 +323,6 @@ export function CoupleGalleryClient({ eventId }: CoupleGalleryClientProps) {
           showNavArrows
         />
       ) : null}
-    </div>
+    </>
   );
 }

@@ -3,7 +3,6 @@
 import { usePathname } from "next/navigation";
 import {
   DashboardBottomNav,
-  DashboardEventHeader,
   DashboardSidebar,
 } from "@/components/dashboard/dashboard-nav";
 import { DashboardHeader } from "@/components/dashboard/dashboard-header";
@@ -30,23 +29,16 @@ export function EventDashboardShell({
         <>
           <div className="mx-auto flex max-w-6xl">
             <DashboardSidebar event={event} />
-            <div className="min-w-0 flex-1">
-              {children}
-            </div>
+            <div className="min-w-0 flex-1">{children}</div>
           </div>
           <DashboardBottomNav event={event} />
         </>
       ) : (
         <>
-          <DashboardHeader user={user} />
+          <DashboardHeader user={user} onLime />
           <div className="mx-auto flex max-w-6xl">
             <DashboardSidebar event={event} />
-            <div className="min-w-0 flex-1 overflow-x-hidden pb-24 lg:pb-8">
-              <DashboardEventHeader event={event} />
-              <main className="min-w-0 px-3 py-4 lg:px-8 lg:py-6">
-                {children}
-              </main>
-            </div>
+            <div className="min-w-0 flex-1 overflow-x-hidden">{children}</div>
           </div>
           <DashboardBottomNav event={event} />
         </>

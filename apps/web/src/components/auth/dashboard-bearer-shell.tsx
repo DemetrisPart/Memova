@@ -8,10 +8,10 @@ import { CoupleGalleryClient } from "@/components/dashboard/couple-gallery-clien
 import { DashboardHeader } from "@/components/dashboard/dashboard-header";
 import {
   DashboardBottomNav,
-  DashboardEventHeader,
   DashboardSidebar,
 } from "@/components/dashboard/dashboard-nav";
 import { EventHealthIndicator } from "@/components/dashboard/event-health-indicator";
+import { EventSectionKartella } from "@/components/dashboard/event-section-kartella";
 import { EventSettingsClient } from "@/components/dashboard/event-settings-client";
 import { QuickActions } from "@/components/dashboard/quick-actions";
 import { StorageMeter } from "@/components/dashboard/storage-meter";
@@ -144,8 +144,12 @@ export function DashboardBearerShell() {
           setRecentGallery(gallery);
           setQr(null);
         } else if (section === "qr") {
-          const qrPayload = await fetchEventQr(eventId);
+          const [nextStats, qrPayload] = await Promise.all([
+            fetchEventStats(eventId),
+            fetchEventQr(eventId),
+          ]);
           if (cancelled) return;
+          setStats(nextStats);
           setQr({
             slug: current.slug,
             title: current.title,
@@ -155,10 +159,11 @@ export function DashboardBearerShell() {
             eventUrl: qrPayload.eventUrl,
             qrCodePngBase64: qrPayload.qrCodePngBase64,
           });
-          setStats(null);
           setRecentGallery(null);
         } else {
-          setStats(null);
+          const nextStats = await fetchEventStats(eventId);
+          if (cancelled) return;
+          setStats(nextStats);
           setRecentGallery(null);
           setQr(null);
         }
@@ -272,43 +277,49 @@ export function DashboardBearerShell() {
 
     return (
       <div className="min-h-dvh bg-[#343434]">
-        <DashboardHeader user={user} />
+        <DashboardHeader user={user} onLime />
         <div className="mx-auto flex max-w-6xl">
           <DashboardSidebar event={event} />
-          <div className="min-w-0 flex-1 overflow-x-hidden pb-24 lg:pb-8">
-            <DashboardEventHeader event={event} />
-            <main className="min-w-0 px-3 py-4 lg:px-8 lg:py-6">
-              {section === "gallery" ? (
-                <div className="mx-auto max-w-5xl">
-                  <h2 className="mb-3 text-base font-semibold text-charcoal-900 lg:mb-4 lg:text-lg">
-                    View all photos and videos
-                  </h2>
-                  <CoupleGalleryClient eventId={eventId} />
-                </div>
-              ) : null}
+          <div className="min-w-0 flex-1 overflow-x-hidden">
+            {section === "gallery" && stats ? (
+              <CoupleGalleryClient
+                eventId={eventId}
+                event={event}
+                storageUsedPercent={stats.storageUsedPercent}
+              />
+            ) : null}
 
-              {section === "qr" && qr ? (
-                <div>
-                  <h2 className="mb-3 text-base font-semibold text-charcoal-900 lg:mb-6 lg:text-lg">
-                    QR & sharing
-                  </h2>
-                  <div className="guest-page-bg rounded-xl px-3 py-5 lg:rounded-2xl lg:px-4 lg:py-8 print:bg-white print:py-4">
+            {section === "qr" && qr && stats ? (
+              <>
+                <EventSectionKartella
+                  event={event}
+                  storageUsedPercent={stats.storageUsedPercent}
+                  title="QR & sharing"
+                />
+                <section className="px-3 pb-24 pt-3.5 lg:px-8 lg:pb-8 lg:pt-4">
+                  <div className="guest-page-bg mx-auto max-w-3xl rounded-xl px-3 py-5 lg:rounded-2xl lg:px-4 lg:py-8 print:bg-white print:py-4">
                     <div className="mx-auto max-w-md">
                       <OriginalQrPrintCard qr={qr} />
                     </div>
                   </div>
-                </div>
-              ) : null}
+                </section>
+              </>
+            ) : null}
 
-              {section === "settings" ? (
-                <div>
-                  <h2 className="mb-3 text-base font-semibold text-charcoal-900 lg:mb-6 lg:text-lg">
-                    Settings
-                  </h2>
-                  <EventSettingsClient event={event} />
-                </div>
-              ) : null}
-            </main>
+            {section === "settings" && stats ? (
+              <>
+                <EventSectionKartella
+                  event={event}
+                  storageUsedPercent={stats.storageUsedPercent}
+                  title="Settings"
+                />
+                <section className="px-3 pb-24 pt-3.5 lg:px-8 lg:pb-8 lg:pt-4">
+                  <div className="mx-auto max-w-3xl">
+                    <EventSettingsClient event={event} />
+                  </div>
+                </section>
+              </>
+            ) : null}
           </div>
         </div>
         <DashboardBottomNav event={event} />

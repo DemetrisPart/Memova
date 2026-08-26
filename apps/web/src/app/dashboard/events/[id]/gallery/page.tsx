@@ -1,4 +1,9 @@
 import { CoupleGalleryClient } from "@/components/dashboard/couple-gallery-client";
+import {
+  fetchEventServer,
+  fetchEventStatsServer,
+} from "@/lib/api/server-fetch";
+import type { CoupleEvent, EventStats } from "@/lib/api/types";
 
 type GalleryPageProps = {
   params: Promise<{ id: string }>;
@@ -6,13 +11,16 @@ type GalleryPageProps = {
 
 export default async function EventGalleryPage({ params }: GalleryPageProps) {
   const { id } = await params;
+  const [event, stats] = await Promise.all([
+    fetchEventServer(id) as Promise<CoupleEvent>,
+    fetchEventStatsServer(id) as Promise<EventStats>,
+  ]);
 
   return (
-    <div className="mx-auto max-w-5xl">
-      <h2 className="mb-3 text-base font-semibold text-charcoal-900 lg:mb-4 lg:text-lg">
-        View all photos and videos
-      </h2>
-      <CoupleGalleryClient eventId={id} />
-    </div>
+    <CoupleGalleryClient
+      eventId={id}
+      event={event}
+      storageUsedPercent={stats.storageUsedPercent}
+    />
   );
 }
