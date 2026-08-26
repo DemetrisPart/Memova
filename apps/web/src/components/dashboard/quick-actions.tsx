@@ -11,7 +11,7 @@ const actions = [
   {
     href: "gallery",
     label: "Gallery",
-    description: "View all photos",
+    description: "View all photos and videos",
     icon: Images,
   },
   {

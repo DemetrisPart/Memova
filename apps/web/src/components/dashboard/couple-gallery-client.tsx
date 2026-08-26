@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import { Download } from "lucide-react";
 import JSZip from "jszip";
 import { Lightbox } from "@/components/guest/lightbox";
@@ -200,37 +199,30 @@ export function CoupleGalleryClient({ eventId }: CoupleGalleryClientProps) {
 
   return (
     <div className="space-y-3 lg:space-y-4">
-      <div className="flex items-center justify-between gap-3">
-        <div className="min-w-0">
-          <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1">
-            <p className="text-xs text-stone-400 lg:text-sm">
-              {loading ? "Loading…" : `${totalCount} photos`}
-            </p>
-            {!loading && totalCount > 0 ? (
-              <button
-                type="button"
-                disabled={savingAll}
-                onClick={() => void handleSaveAll()}
-                className="inline-flex items-center gap-1 text-xs font-medium text-gold-700 transition hover:text-gold-600 disabled:opacity-50 lg:text-sm"
-              >
-                <Download className="h-3.5 w-3.5 shrink-0" strokeWidth={2} aria-hidden />
-                {savingAll ? "Saving…" : "Save all"}
-              </button>
-            ) : null}
-          </div>
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0 space-y-1">
+          <p className="text-xs text-stone-400 lg:text-sm">
+            {loading ? "Loading…" : `${totalCount} photos`}
+          </p>
+          {!loading ? (
+            <p className="text-xs text-stone-400 lg:text-sm">0 videos</p>
+          ) : null}
           {saveProgress ? (
-            <p className="mt-0.5 truncate text-[11px] text-stone-400">
-              {saveProgress}
-            </p>
+            <p className="truncate text-[11px] text-stone-400">{saveProgress}</p>
           ) : null}
         </div>
 
-        <Link
-          href={`/dashboard/events/${eventId}`}
-          className="shrink-0 text-xs font-medium text-gold-700 hover:underline lg:hidden"
-        >
-          ← Overview
-        </Link>
+        {!loading && totalCount > 0 ? (
+          <button
+            type="button"
+            disabled={savingAll}
+            onClick={() => void handleSaveAll()}
+            className="inline-flex shrink-0 items-center gap-1 text-xs font-medium text-gold-700 transition hover:text-gold-600 disabled:opacity-50 lg:text-sm"
+          >
+            <Download className="h-3.5 w-3.5 shrink-0" strokeWidth={2} aria-hidden />
+            {savingAll ? "Saving…" : "Save all"}
+          </button>
+        ) : null}
       </div>
 
       {error ? (
