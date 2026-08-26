@@ -177,7 +177,6 @@ export function EventSettingsClient({ event }: EventSettingsClientProps) {
               alt=""
               className="absolute inset-0 h-full w-full object-cover object-[center_25%]"
               onError={() => {
-                // Fall back through URL variants if the active src fails.
                 if (localPreviewUrl && previewSrc !== localPreviewUrl) {
                   return;
                 }
@@ -201,7 +200,7 @@ export function EventSettingsClient({ event }: EventSettingsClientProps) {
 
           <div className="absolute inset-x-0 bottom-0 px-4 pb-4 pt-16">
             <div className="mx-auto max-w-sm text-center">
-              <p className="text-[9px] font-medium uppercase tracking-[0.2em] text-gold-600">
+              <p className="text-[9px] font-medium uppercase tracking-[0.2em] text-[#a68b4b]">
                 Celebration
               </p>
               <CoupleNamesHeading
@@ -212,10 +211,10 @@ export function EventSettingsClient({ event }: EventSettingsClientProps) {
                   previewBride,
                   event.title,
                 )}
-                className="font-couple mt-1 text-[1.75rem] leading-[1.05] text-charcoal-900 sm:text-[2rem]"
+                className="font-couple mt-1 text-[1.75rem] leading-[1.05] text-[#1a1714] sm:text-[2rem]"
               />
-              <div className="mx-auto mt-2 flex w-fit items-center gap-1.5 rounded-full border border-white/10 bg-[#222222]/90 px-3 py-1 text-[11px] text-stone-400 backdrop-blur-sm">
-                <CalendarDays className="size-3 text-gold-600" aria-hidden />
+              <div className="mx-auto mt-2 flex w-fit items-center gap-1.5 rounded-full border border-[#e8e2d9]/80 bg-[rgb(255_255_255_/_0.75)] px-3 py-1 text-[11px] text-[#a89f91] backdrop-blur-sm">
+                <CalendarDays className="size-3 text-[#a68b4b]" aria-hidden />
                 <span>{formatEventDate(previewDate)}</span>
               </div>
             </div>
@@ -262,8 +261,8 @@ export function EventSettingsClient({ event }: EventSettingsClientProps) {
           className="text-stone-400"
         />
         <p className="text-[11px] text-stone-400 lg:text-xs">
-          Locked after creation so printed QR codes keep working. New events
-          include the exact date in the URL (e.g. /demetris-daniella-3-oct-2026).
+          <span className="font-medium text-[#1a1714]">Note</span>
+          {" : The URL and QR code is automatically generated based on the event date and cannot be modified (e.g. /demetris-daniella-3-oct-2026)."}
         </p>
 
         {error ? <p className="text-sm text-rose-500">{error}</p> : null}

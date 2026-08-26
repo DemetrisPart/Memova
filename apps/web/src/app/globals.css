@@ -198,8 +198,10 @@
   }
 
   .panel-3d .text-white,
+  .panel-3d .text-charcoal-800,
   .panel-3d .text-charcoal-900,
   .surface-3d .text-white,
+  .surface-3d .text-charcoal-800,
   .surface-3d .text-charcoal-900 {
     color: #1a1714 !important;
   }
@@ -217,6 +219,20 @@
 
   .panel-3d .bg-ivory-100 {
     background-color: #d8cec2 !important;
+  }
+
+  .panel-3d .bg-white,
+  .surface-3d .bg-white {
+    background-color: #efe8dc !important;
+  }
+
+  .panel-3d .hover\:bg-ivory-100:hover,
+  .surface-3d .hover\:bg-ivory-100:hover {
+    background-color: #e4d9cb !important;
+  }
+
+  .panel-3d .border-stone-200 {
+    border-color: #d4cabd !important;
   }
 
   .surface-3d {

@@ -27,7 +27,7 @@ export function Input({
   const labelNode = (
     <label
       htmlFor={inputId}
-      className="flex items-center gap-0.5 text-sm font-medium text-charcoal-800"
+      className="flex items-center gap-0.5 text-sm font-medium text-charcoal-900"
     >
       {label}
       {requiredMark ? (

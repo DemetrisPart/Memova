@@ -246,7 +246,11 @@ export function MagicLinkWaiting({
           </div>
         ) : null}
 
-        <Button className="mt-6" variant="secondary" onClick={onBack}>
+        <Button
+          className="mt-6 border-[#d4cabd] bg-[#efe8dc] text-[#1a1714] hover:bg-[#e4d9cb]"
+          variant="secondary"
+          onClick={onBack}
+        >
           Use a different email
         </Button>
       </div>

@@ -23,7 +23,7 @@ export function DashboardBottomNav({ event }: DashboardBottomNavProps) {
 
   return (
     <nav
-      className="pointer-events-none fixed inset-x-0 bottom-0 z-40 flex justify-center px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] lg:hidden"
+      className="pointer-events-none fixed inset-x-0 bottom-0 z-40 flex justify-center px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] print-hide print:hidden lg:hidden"
       aria-label="Event dashboard"
     >
       <div className="pointer-events-auto flex w-full max-w-xs items-center justify-between gap-1 rounded-full bg-gradient-to-br from-[#d4b896] via-[#c4a574] to-[#9a7a4a] px-1.5 py-1.5 shadow-float ring-1 ring-[#6b5535]/25 sm:max-w-sm sm:px-2 sm:py-2">
@@ -88,7 +88,7 @@ export function DashboardSidebar({ event }: { event: CoupleEvent }) {
   const base = `/dashboard/events/${event.id}`;
 
   return (
-    <aside className="hidden w-60 shrink-0 border-r border-white/5 bg-[#1c1c1c]/70 lg:block">
+    <aside className="hidden w-60 shrink-0 border-r border-white/5 bg-[#1c1c1c]/70 print:hidden lg:block">
       <div className="sticky top-0 px-4 py-6">
         <Link
           href="/dashboard"

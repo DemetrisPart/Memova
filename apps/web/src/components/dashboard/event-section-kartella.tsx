@@ -17,7 +17,7 @@ export function EventSectionKartella({
   children,
 }: EventSectionKartellaProps) {
   return (
-    <div className="px-3 pt-3 lg:px-8 lg:pt-4">
+    <div className="px-3 pt-3 print-hide print:hidden lg:px-8 lg:pt-4">
       <section className="money-lime-zone mx-auto max-w-3xl overflow-hidden px-3.5 py-3.5 lg:px-4">
         <div className="flex items-center justify-between gap-2">
           <h1 className="min-w-0 truncate text-sm font-semibold tracking-tight text-[#181818] lg:text-base">

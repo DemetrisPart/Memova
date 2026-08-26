@@ -296,9 +296,9 @@ export function DashboardBearerShell() {
                   storageUsedPercent={stats.storageUsedPercent}
                   title="QR & sharing"
                 />
-                <section className="px-3 pb-24 pt-3.5 lg:px-8 lg:pb-8 lg:pt-4">
-                  <div className="guest-page-bg mx-auto max-w-3xl rounded-xl px-3 py-5 lg:rounded-2xl lg:px-4 lg:py-8 print:bg-white print:py-4">
-                    <div className="mx-auto max-w-md">
+                <section className="px-3 pb-24 pt-3.5 print:p-0 lg:px-8 lg:pb-8 lg:pt-4">
+                  <div className="guest-page-bg mx-auto max-w-3xl rounded-xl px-3 py-5 print:bg-transparent print:p-0 lg:rounded-2xl lg:px-4 lg:py-8">
+                    <div className="mx-auto max-w-md print:max-w-none">
                       <OriginalQrPrintCard qr={qr} />
                     </div>
                   </div>

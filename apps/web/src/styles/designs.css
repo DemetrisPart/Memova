@@ -130,6 +130,101 @@ html:has(.theme-dev-bar) body {
   }
 }
 
+/* Print: only the QR table card — no chrome, no empty gap above */
+@media print {
+  @page {
+    margin: 0;
+  }
+
+  html,
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #222222 !important;
+    color: #ffffff !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  /* When Print is triggered from QR actions: hide everything except the clone */
+  body.qr-printing > *:not(#qr-print-root) {
+    display: none !important;
+  }
+
+  body.qr-printing #qr-print-root {
+    display: block !important;
+    visibility: visible !important;
+    position: static !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  body.qr-printing #qr-print-root,
+  body.qr-printing #qr-print-root * {
+    visibility: visible !important;
+  }
+
+  /* Fallback path (system print without our handler) */
+  header,
+  nav,
+  aside,
+  footer,
+  .money-lime-zone,
+  .print-hide,
+  .print\:hidden {
+    display: none !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+  }
+
+  body:not(.qr-printing) * {
+    visibility: hidden !important;
+    box-shadow: none !important;
+  }
+
+  body:not(.qr-printing) .design-qr-card,
+  body:not(.qr-printing) .design-qr-card * {
+    visibility: visible !important;
+  }
+
+  .design-qr-card {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 1.5rem !important;
+    transform: none !important;
+    border-radius: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    animation: none !important;
+    background: #222222 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    break-inside: avoid !important;
+  }
+
+  body.qr-printing .design-qr-card {
+    position: static !important;
+    width: 100% !important;
+  }
+
+  .design-qr-original {
+    animation: none !important;
+    box-shadow: none !important;
+  }
+
+  .design-qr-frame {
+    box-shadow: none !important;
+  }
+}
+
 .design-qr-frame {
   display: inline-block;
   padding: 1rem;

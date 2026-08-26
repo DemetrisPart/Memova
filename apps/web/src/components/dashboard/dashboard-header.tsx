@@ -58,8 +58,8 @@ export function DashboardHeader({ user, onLime = false }: DashboardHeaderProps) 
     <header
       className={
         onLime
-          ? "sticky top-0 z-50 w-full bg-[#343434]/95 backdrop-blur-md"
-          : "sticky top-0 z-50 mx-3 mt-3 rounded-b-[1.75rem] rounded-t-2xl border border-[#f7ecd4]/50 bg-gradient-to-br from-[#fff8ec] via-[#e8d5b0] to-[#c4a574] px-3 py-2.5 shadow-float lg:mx-8 lg:px-8 lg:py-3"
+          ? "sticky top-0 z-50 w-full bg-[#343434]/95 backdrop-blur-md print-hide print:hidden"
+          : "sticky top-0 z-50 mx-3 mt-3 rounded-b-[1.75rem] rounded-t-2xl border border-[#f7ecd4]/50 bg-gradient-to-br from-[#fff8ec] via-[#e8d5b0] to-[#c4a574] px-3 py-2.5 shadow-float print-hide print:hidden lg:mx-8 lg:px-8 lg:py-3"
       }
     >
       <div

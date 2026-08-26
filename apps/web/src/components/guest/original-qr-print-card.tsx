@@ -5,24 +5,37 @@ import { Check, Copy } from "lucide-react";
 import { CoupleNamesHeading } from "@/components/guest/couple-names-heading";
 import { EventQrActions } from "@/components/guest/event-qr-actions";
 import type { PublicEventQr } from "@/lib/api/types";
-import { formatEventDate } from "@/lib/utils";
+import { copyTextToClipboard, formatEventDate } from "@/lib/utils";
 
 type OriginalQrPrintCardProps = {
   qr: PublicEventQr;
 };
 
 export function OriginalQrPrintCard({ qr }: OriginalQrPrintCardProps) {
-  const [copied, setCopied] = useState(false);
+  const [copyState, setCopyState] = useState<"idle" | "copied" | "failed">(
+    "idle",
+  );
   const date = formatEventDate(qr.eventDate);
 
   const copyLink = async () => {
-    try {
-      await navigator.clipboard.writeText(qr.eventUrl);
-      setCopied(true);
-      window.setTimeout(() => setCopied(false), 2000);
-    } catch {
-      window.prompt("Copy this link:", qr.eventUrl);
+    const ok = await copyTextToClipboard(qr.eventUrl);
+    if (ok) {
+      setCopyState("copied");
+      window.setTimeout(() => setCopyState("idle"), 2500);
+      return;
     }
+
+    // Last resort: select the visible URL so the user can copy manually.
+    const urlEl = document.getElementById("guest-event-url");
+    if (urlEl && window.getSelection) {
+      const range = document.createRange();
+      range.selectNodeContents(urlEl);
+      const selection = window.getSelection();
+      selection?.removeAllRanges();
+      selection?.addRange(range);
+    }
+    setCopyState("failed");
+    window.setTimeout(() => setCopyState("idle"), 3500);
   };
 
   return (
@@ -47,23 +60,37 @@ export function OriginalQrPrintCard({ qr }: OriginalQrPrintCardProps) {
           className="size-48 lg:size-64 print:size-64"
         />
       </div>
-      <p className="mt-3 break-all text-xs text-stone-400 lg:mt-4 lg:text-sm print:text-xs print:text-charcoal-800">
+      <p
+        id="guest-event-url"
+        className="mt-3 break-all text-xs text-stone-400 lg:mt-4 lg:text-sm print:text-xs print:text-charcoal-800"
+      >
         {qr.eventUrl}
       </p>
       <div className="mt-4 space-y-2.5 print:hidden lg:mt-6 lg:space-y-3">
         <button
           type="button"
           onClick={() => void copyLink()}
-          className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-charcoal-800/15 bg-white px-4 text-sm font-medium text-charcoal-900 hover:bg-ivory-50 lg:min-h-12 lg:px-6 lg:text-base"
+          className={
+            copyState === "copied"
+              ? "inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-[#2f6b4f]/35 bg-[#2f6b4f]/15 px-4 text-sm font-medium text-[#1f5c3d] lg:min-h-12 lg:px-6 lg:text-base"
+              : copyState === "failed"
+                ? "inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-rose-500/30 bg-rose-500/10 px-4 text-sm font-medium text-rose-600 lg:min-h-12 lg:px-6 lg:text-base"
+                : "inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-charcoal-800/15 bg-white px-4 text-sm font-medium text-charcoal-900 hover:bg-ivory-50 lg:min-h-12 lg:px-6 lg:text-base"
+          }
         >
-          {copied ? (
+          {copyState === "copied" ? (
             <>
-              <Check className="h-4 w-4" />
+              <Check className="h-4 w-4" aria-hidden />
               Copied!
+            </>
+          ) : copyState === "failed" ? (
+            <>
+              <Copy className="h-4 w-4" aria-hidden />
+              Select & copy the link above
             </>
           ) : (
             <>
-              <Copy className="h-4 w-4" />
+              <Copy className="h-4 w-4" aria-hidden />
               Copy guest link
             </>
           )}

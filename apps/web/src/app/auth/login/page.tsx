@@ -34,10 +34,12 @@ function loginErrorFromQuery(code: string | null): string | null {
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [mode, setMode] = useState<AuthMode>("login");
+  const initialMode: AuthMode =
+    searchParams.get("mode") === "register" ? "register" : "login";
+  const [mode, setMode] = useState<AuthMode>(initialMode);
   const [email, setEmail] = useState("");
   const [rememberedEmail, setRememberedEmail] = useState<string | null>(null);
-  const [useOtherEmail, setUseOtherEmail] = useState(false);
+  const [useOtherEmail, setUseOtherEmail] = useState(initialMode === "register");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -47,15 +49,28 @@ function LoginForm() {
   }, [searchParams]);
 
   useEffect(() => {
+    const nextMode =
+      searchParams.get("mode") === "register" ? "register" : "login";
+    setMode(nextMode);
+    if (nextMode === "register") {
+      setUseOtherEmail(true);
+      setEmail("");
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
     const saved = readRememberedEmail();
     if (saved) {
       setRememberedEmail(saved);
-      setEmail(saved);
-      setUseOtherEmail(false);
-    } else {
+      // Register flow always asks for a fresh email; login can welcome back.
+      if (searchParams.get("mode") !== "register") {
+        setEmail(saved);
+        setUseOtherEmail(false);
+      }
+    } else if (searchParams.get("mode") !== "register") {
       setUseOtherEmail(true);
     }
-  }, []);
+  }, [searchParams]);
 
   const startAuth = async (address: string) => {
     setLoading(true);
@@ -119,7 +134,7 @@ function LoginForm() {
             ) : null}
 
             <Button
-              className="mt-6"
+              className="mt-6 bg-gradient-to-br from-[#d4b896] via-[#c4a574] to-[#9a7a4a] text-[#1a1714] shadow-float hover:from-[#c4a574] hover:via-[#b08f5c] hover:to-[#8a6a3f] focus-visible:ring-[#c4a574]"
               fullWidth
               disabled={loading}
               onClick={() => void startAuth(rememberedEmail ?? "")}
@@ -127,9 +142,10 @@ function LoginForm() {
               {loading ? "Sending…" : "Send approval email"}
             </Button>
 
-            <button
-              type="button"
-              className="mt-4 w-full text-center text-sm font-medium text-stone-400 hover:text-charcoal-800"
+            <Button
+              className="mt-4 border-[#d4cabd] bg-[#efe8dc] text-[#1a1714] hover:bg-[#e4d9cb]"
+              variant="secondary"
+              fullWidth
               onClick={() => {
                 setUseOtherEmail(true);
                 setEmail("");
@@ -137,7 +153,7 @@ function LoginForm() {
               }}
             >
               Use a different email
-            </button>
+            </Button>
           </>
         ) : (
           <>
@@ -162,7 +178,12 @@ function LoginForm() {
                 placeholder="you@example.com"
               />
               {error ? <p className="text-sm text-rose-500">{error}</p> : null}
-              <Button type="submit" fullWidth disabled={loading}>
+              <Button
+                type="submit"
+                fullWidth
+                disabled={loading}
+                className="bg-gradient-to-br from-[#d4b896] via-[#c4a574] to-[#9a7a4a] text-[#1a1714] shadow-float hover:from-[#c4a574] hover:via-[#b08f5c] hover:to-[#8a6a3f] focus-visible:ring-[#c4a574]"
+              >
                 {loading ? "Sending…" : "Send approval email"}
               </Button>
             </form>
@@ -187,13 +208,17 @@ function LoginForm() {
                 type="button"
                 className="font-medium text-gold-700 hover:underline"
                 onClick={() => {
-                  setMode(mode === "login" ? "register" : "login");
+                  const next = mode === "login" ? "register" : "login";
+                  setMode(next);
                   setError(null);
-                  if (mode === "register" && rememberedEmail) {
+                  if (next === "login" && rememberedEmail) {
                     setUseOtherEmail(false);
                     setEmail(rememberedEmail);
+                    router.replace("/auth/login");
                   } else {
                     setUseOtherEmail(true);
+                    setEmail("");
+                    router.replace("/auth/login?mode=register");
                   }
                 }}
               >

@@ -12,7 +12,7 @@ export default function HomePage() {
         <Link href="/auth/login">
           <Button>Couple sign in</Button>
         </Link>
-        <Link href="/auth/login">
+        <Link href="/auth/login?mode=register">
           <Button variant="secondary">Create account</Button>
         </Link>
       </div>
