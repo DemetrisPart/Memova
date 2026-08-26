@@ -246,6 +246,8 @@ export class EventsService {
     return {
       mediaId: media.id,
       uploadUrl: presigned.url,
+      uploadUrlLan: presigned.lanUrl ?? null,
+      uploadUrlPublic: presigned.publicUrl ?? null,
       expiresAt: presigned.expiresAt.toISOString(),
     };
   }

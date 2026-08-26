@@ -99,9 +99,28 @@ export function EventSettingsClient({ event }: EventSettingsClientProps) {
         contentLength: file.size,
         fileName: file.name,
       });
-      await uploadFileToPresignedUrl(file, init.uploadUrl);
+      const uploadUrl = resolveNetworkUrl({
+        url: init.uploadUrl,
+        lanUrl: init.uploadUrlLan,
+        publicUrl: init.uploadUrlPublic,
+      });
+      await uploadFileToPresignedUrl(file, uploadUrl);
       const updated = await completeCoverUpload(event.id, init.mediaId);
-      setCoverSrc(resolveCoverSrc(updated));
+      const remoteSrc = resolveCoverSrc(updated);
+      if (!remoteSrc) {
+        throw new Error("Cover saved but image URL is missing");
+      }
+
+      // Keep the local blob visible until the remote URL actually loads.
+      await new Promise<void>((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve();
+        img.onerror = () =>
+          reject(new Error("Cover uploaded but could not be loaded from storage"));
+        img.src = remoteSrc;
+      });
+
+      setCoverSrc(remoteSrc);
       setLocalPreviewUrl((prev) => {
         if (prev) URL.revokeObjectURL(prev);
         return null;
@@ -157,6 +176,16 @@ export function EventSettingsClient({ event }: EventSettingsClientProps) {
               src={previewSrc}
               alt=""
               className="absolute inset-0 h-full w-full object-cover object-[center_25%]"
+              onError={() => {
+                // Fall back through URL variants if the active src fails.
+                if (localPreviewUrl && previewSrc !== localPreviewUrl) {
+                  return;
+                }
+                const fallback = resolveCoverSrc(event);
+                if (fallback && fallback !== previewSrc) {
+                  setCoverSrc(fallback);
+                }
+              }}
             />
           ) : (
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_#d4c4a8_0%,_#f9f5ee_55%)]" />

@@ -274,7 +274,13 @@ export async function deleteCoupleMedia(
 export async function initCoverUpload(
   eventId: string,
   data: { contentType: string; contentLength: number; fileName?: string },
-): Promise<{ mediaId: string; uploadUrl: string; expiresAt: string }> {
+): Promise<{
+  mediaId: string;
+  uploadUrl: string;
+  uploadUrlLan?: string | null;
+  uploadUrlPublic?: string | null;
+  expiresAt: string;
+}> {
   return apiFetch(`/events/${encodeURIComponent(eventId)}/cover/init`, {
     method: "POST",
     body: JSON.stringify(data),

@@ -89,17 +89,27 @@ export function resolveNetworkUrl(urls: UrlSet): string {
   if (mode === "lan" && urls.lanUrl) return urls.lanUrl;
   if (mode === "public" && urls.publicUrl) return urls.publicUrl;
 
-  // Desktop / Mobile Preview on localhost must use the default MinIO host.
   if (typeof window !== "undefined") {
     const host = window.location.hostname;
     if (host === "localhost" || host === "127.0.0.1") {
       return urls.url;
     }
+
+    // Phone / Mobile Preview on a LAN IP must not use localhost MinIO.
+    if (isPrivateHostname(host)) {
+      return urls.lanUrl || urls.publicUrl || urls.url;
+    }
   }
 
   if (urls.lanUrl && !urls.publicUrl) return urls.lanUrl;
   if (urls.publicUrl && !urls.lanUrl) return urls.publicUrl;
-  return urls.url;
+  return urls.lanUrl || urls.publicUrl || urls.url;
+}
+
+function isPrivateHostname(host: string): boolean {
+  if (host.startsWith("192.168.") || host.startsWith("10.")) return true;
+  if (/^172\.(1[6-9]|2\d|3[0-1])\./.test(host)) return true;
+  return false;
 }
 
 export function getRedirectTarget(
