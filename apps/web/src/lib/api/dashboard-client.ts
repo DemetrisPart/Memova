@@ -247,13 +247,14 @@ export async function fetchCoupleGallery(
 export async function fetchCoupleMediaUrl(
   eventId: string,
   mediaId: string,
-  variant: "thumb" | "web" = "web",
+  variant: "thumb" | "web" | "original" = "web",
 ): Promise<{
   url: string;
   urlLan?: string | null;
   urlPublic?: string | null;
   variant: string;
   mediaId: string;
+  fileName?: string;
 }> {
   return apiFetch(
     `/events/${encodeURIComponent(eventId)}/media/${encodeURIComponent(mediaId)}/url?variant=${variant}`,

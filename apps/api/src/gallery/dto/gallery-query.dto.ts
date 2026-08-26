@@ -19,3 +19,9 @@ export class MediaUrlQueryDto {
   @IsIn(["thumb", "web"])
   variant?: "thumb" | "web";
 }
+
+export class CoupleMediaUrlQueryDto {
+  @IsOptional()
+  @IsIn(["thumb", "web", "original"])
+  variant?: "thumb" | "web" | "original";
+}

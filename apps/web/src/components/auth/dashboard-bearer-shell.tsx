@@ -201,7 +201,7 @@ export function DashboardBearerShell() {
 
   if (event && eventId) {
     return (
-      <div className="min-h-dvh overflow-x-hidden bg-ivory-50">
+      <div className="min-h-dvh bg-ivory-50">
         <DashboardHeader user={user} />
         <div className="mx-auto flex max-w-6xl">
           <DashboardSidebar event={event} />

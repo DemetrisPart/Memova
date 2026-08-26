@@ -23,6 +23,21 @@ import type { GuestSessionContext } from "../public/guest-session.guard";
 
 const DEFAULT_GALLERY_LIMIT = 24;
 
+function mimeExtension(mimeType: string): string {
+  switch (mimeType) {
+    case "image/png":
+      return "png";
+    case "image/webp":
+      return "webp";
+    case "image/heic":
+      return "heic";
+    case "image/heif":
+      return "heif";
+    default:
+      return "jpg";
+  }
+}
+
 type GalleryCursor = {
   createdAt: string;
   id: string;
@@ -260,7 +275,7 @@ export class GalleryService {
   async getCoupleMediaUrl(
     eventId: string,
     mediaId: string,
-    variant: "thumb" | "web" = "web",
+    variant: "thumb" | "web" | "original" = "web",
   ) {
     const media = await this.prisma.mediaAsset.findFirst({
       where: {
@@ -277,18 +292,29 @@ export class GalleryService {
       throw new NotFoundException("Media not found");
     }
 
-    const variantType =
-      variant === "thumb" ? MediaVariantType.THUMB : MediaVariantType.WEB;
-    const mediaVariant = media.variants.find((v) => v.variant === variantType);
+    let storageKey: string;
 
-    if (!mediaVariant) {
-      throw new NotFoundException("Media variant not available");
+    if (variant === "original") {
+      storageKey = media.originalKey;
+    } else {
+      const variantType =
+        variant === "thumb" ? MediaVariantType.THUMB : MediaVariantType.WEB;
+      const mediaVariant = media.variants.find((v) => v.variant === variantType);
+
+      if (!mediaVariant) {
+        throw new NotFoundException("Media variant not available");
+      }
+
+      storageKey = mediaVariant.storageKey;
     }
 
     const urls = await this.storage.getPresignedDownloadUrls({
-      key: mediaVariant.storageKey,
+      key: storageKey,
       expiresInSeconds: MVP_DEFAULTS.PRESIGNED_DOWNLOAD_TTL_SECONDS,
     });
+
+    const extension = mimeExtension(media.mimeType);
+    const fileName = `photo-${media.id}.${extension}`;
 
     return {
       url: urls.url,
@@ -298,6 +324,7 @@ export class GalleryService {
       mediaId: media.id,
       width: media.width,
       height: media.height,
+      fileName,
     };
   }
 

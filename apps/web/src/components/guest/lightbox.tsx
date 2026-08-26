@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Trash2, X } from "lucide-react";
+import { Download, Trash2, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export type LightboxItem = {
@@ -16,6 +16,7 @@ type LightboxProps = {
   onClose: () => void;
   resolveWebUrl: (item: LightboxItem) => Promise<string | null>;
   onDelete?: (mediaId: string) => Promise<void>;
+  onDownload?: (item: LightboxItem) => Promise<void>;
   onIndexChange?: (index: number) => void;
   getTitle?: (item: LightboxItem) => string;
   floatingClose?: boolean;
@@ -41,6 +42,7 @@ export function Lightbox({
   onClose,
   resolveWebUrl,
   onDelete,
+  onDownload,
   onIndexChange,
   getTitle,
   floatingClose = false,
@@ -50,6 +52,7 @@ export function Lightbox({
   const [urlsById, setUrlsById] = useState<Record<string, string>>({});
   const [initialLoading, setInitialLoading] = useState(true);
   const [deleting, setDeleting] = useState(false);
+  const [downloading, setDownloading] = useState(false);
   const [swipeHint, setSwipeHint] = useState(false);
   const [dragging, setDragging] = useState(false);
   const [settling, setSettling] = useState(false);
@@ -75,6 +78,7 @@ export function Lightbox({
 
   const current = items[index];
   const canDelete = Boolean(current?.canDelete && onDelete);
+  const canDownload = Boolean(onDownload);
   const canSwipe = items.length > 1;
 
   indexRef.current = index;
@@ -392,7 +396,46 @@ export function Lightbox({
     }
   }
 
+  async function handleDownload() {
+    if (!current || !onDownload || downloading) return;
+    setDownloading(true);
+    try {
+      await onDownload(current);
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Download failed");
+    } finally {
+      setDownloading(false);
+    }
+  }
+
   const headerTitle = current && getTitle ? getTitle(current) : null;
+
+  const actionButtons = (
+    <div className="flex items-center gap-1">
+      {canDownload ? (
+        <button
+          type="button"
+          onClick={() => void handleDownload()}
+          disabled={downloading || initialLoading}
+          className="rounded-lg p-2 text-white/80 hover:bg-white/10 disabled:opacity-50"
+          aria-label="Download photo"
+        >
+          <Download className="h-5 w-5" />
+        </button>
+      ) : null}
+      {canDelete ? (
+        <button
+          type="button"
+          onClick={() => void handleDelete()}
+          disabled={deleting}
+          className="rounded-lg p-2 text-white/80 hover:bg-white/10 disabled:opacity-50"
+          aria-label="Delete photo"
+        >
+          <Trash2 className="h-5 w-5" />
+        </button>
+      ) : null}
+    </div>
+  );
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-black/95">
@@ -435,16 +478,8 @@ export function Lightbox({
           >
             <X className="size-6" />
           </button>
-        ) : canDelete ? (
-          <button
-            type="button"
-            onClick={() => void handleDelete()}
-            disabled={deleting}
-            className="rounded-lg p-2 text-white/80 hover:bg-white/10 disabled:opacity-50"
-            aria-label="Delete photo"
-          >
-            <Trash2 className="h-5 w-5" />
-          </button>
+        ) : canDownload || canDelete ? (
+          actionButtons
         ) : (
           <span className="w-9" aria-hidden />
         )}
@@ -521,17 +556,30 @@ export function Lightbox({
         </p>
       ) : null}
 
-      {canDelete && !floatingClose ? (
-        <div className="flex justify-center border-t border-white/10 px-4 py-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
-          <button
-            type="button"
-            onClick={() => void handleDelete()}
-            disabled={deleting}
-            className="inline-flex items-center justify-center gap-2 rounded-lg bg-rose-600 px-5 py-2.5 text-base font-medium text-white hover:bg-rose-700 disabled:opacity-50"
-          >
-            <Trash2 className="size-5 shrink-0" aria-hidden />
-            {deleting ? "Deleting…" : "Delete photo"}
-          </button>
+      {(canDelete || canDownload) && !floatingClose ? (
+        <div className="flex justify-center gap-3 border-t border-white/10 px-4 py-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
+          {canDownload ? (
+            <button
+              type="button"
+              onClick={() => void handleDownload()}
+              disabled={downloading || initialLoading}
+              className="inline-flex items-center justify-center gap-2 rounded-lg bg-white/15 px-5 py-2.5 text-base font-medium text-white hover:bg-white/25 disabled:opacity-50"
+            >
+              <Download className="size-5 shrink-0" aria-hidden />
+              {downloading ? "Downloading…" : "Download"}
+            </button>
+          ) : null}
+          {canDelete ? (
+            <button
+              type="button"
+              onClick={() => void handleDelete()}
+              disabled={deleting}
+              className="inline-flex items-center justify-center gap-2 rounded-lg bg-rose-600 px-5 py-2.5 text-base font-medium text-white hover:bg-rose-700 disabled:opacity-50"
+            >
+              <Trash2 className="size-5 shrink-0" aria-hidden />
+              {deleting ? "Deleting…" : "Delete photo"}
+            </button>
+          ) : null}
         </div>
       ) : null}
     </div>

@@ -53,7 +53,7 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
   };
 
   return (
-    <header className="border-b border-stone-200 bg-white px-3 py-2.5 lg:px-8 lg:py-3">
+    <header className="sticky top-0 z-50 border-b border-stone-200 bg-white/95 px-3 py-2.5 backdrop-blur-sm lg:px-8 lg:py-3">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4">
         <p className="text-lg font-semibold tracking-tight text-charcoal-900 lg:text-2xl">
           Momeva
@@ -77,7 +77,7 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
             <div
               id={menuId}
               role="menu"
-              className="absolute right-0 z-20 mt-2 w-64 rounded-xl border border-stone-200 bg-white p-2 shadow-soft"
+              className="absolute right-0 z-50 mt-2 w-64 rounded-xl border border-stone-200 bg-white p-2 shadow-soft"
             >
               <p className="truncate px-3 py-2 text-left text-sm text-charcoal-800">
                 {user.email}

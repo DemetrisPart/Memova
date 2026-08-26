@@ -7,7 +7,7 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { JwtAuthGuard } from "../auth/auth.guard";
-import { GalleryQueryDto, MediaUrlQueryDto } from "../gallery/dto/gallery-query.dto";
+import { GalleryQueryDto, CoupleMediaUrlQueryDto } from "../gallery/dto/gallery-query.dto";
 import { GalleryService } from "../gallery/gallery.service";
 import { EventOwnerGuard } from "./guards/event-owner.guard";
 
@@ -28,7 +28,7 @@ export class CoupleGalleryController {
   getMediaUrl(
     @Param("id") eventId: string,
     @Param("mediaId") mediaId: string,
-    @Query() query: MediaUrlQueryDto,
+    @Query() query: CoupleMediaUrlQueryDto,
   ) {
     return this.galleryService.getCoupleMediaUrl(
       eventId,
