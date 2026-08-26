@@ -219,14 +219,14 @@ export function DashboardBearerShell() {
                     />
                   </div>
 
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    <div className="rounded-2xl border border-stone-200 bg-white p-5 shadow-soft">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="aspect-square rounded-2xl border border-stone-200 bg-white p-5 shadow-soft">
                       <p className="text-sm text-stone-400">Photos</p>
                       <p className="mt-1 text-3xl font-semibold text-charcoal-900">
                         {stats.photoCount}
                       </p>
                     </div>
-                    <div className="rounded-2xl border border-stone-200 bg-white p-5 shadow-soft">
+                    <div className="aspect-square rounded-2xl border border-stone-200 bg-white p-5 shadow-soft">
                       <p className="text-sm text-stone-400">Videos</p>
                       <p className="mt-1 text-3xl font-semibold text-charcoal-900">
                         {stats.videoCount}

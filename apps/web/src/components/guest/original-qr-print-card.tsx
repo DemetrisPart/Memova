@@ -28,7 +28,7 @@ export function OriginalQrPrintCard({ qr }: OriginalQrPrintCardProps) {
   return (
     <div className="design-qr-card design-qr-original p-8 text-center">
       <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-gold-600">
-        Scan to share photos
+        Share your memories with us
       </p>
       <CoupleNamesHeading
         groomName={qr.groomName}
