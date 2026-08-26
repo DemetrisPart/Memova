@@ -93,11 +93,11 @@ function LoginForm() {
     mode === "login" && Boolean(rememberedEmail) && !useOtherEmail;
 
   return (
-    <main className="flex min-h-dvh flex-col items-center justify-center px-4">
-      <div className="w-full max-w-md rounded-2xl border border-stone-200 bg-white p-8 shadow-soft">
+    <main className="money-lime-zone flex min-h-dvh flex-col items-center justify-center px-4">
+      <div className="panel-3d w-full max-w-md rounded-2xl p-8">
         <Link
           href="/"
-          className="text-xs font-medium text-stone-400 hover:text-charcoal-800"
+          className="text-xs font-medium text-stone-400 hover:text-white"
         >
           ← Momeva
         </Link>
@@ -109,7 +109,7 @@ function LoginForm() {
             </h1>
             <p className="mt-2 text-sm text-stone-400">
               Continue as{" "}
-              <strong className="font-medium text-charcoal-800">
+              <strong className="font-medium text-[#1a1714]">
                 {rememberedEmail}
               </strong>
             </p>

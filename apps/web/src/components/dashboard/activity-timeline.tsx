@@ -44,7 +44,7 @@ export function ActivityTimeline({
 
   if (totalCount === 0 && items.length === 0) {
     return (
-      <div className="rounded-2xl border border-dashed border-stone-200 bg-white p-6 text-center">
+      <div className="panel-3d rounded-2xl border border-dashed border-white/10 p-6 text-center">
         <p className="text-sm text-stone-400">No uploads yet</p>
         <p className="mt-1 text-xs text-stone-400">
           Share your QR code so guests can start uploading.
@@ -115,22 +115,23 @@ export function ActivityTimeline({
   return (
     <div
       ref={rootRef}
-      className="scroll-mt-16 rounded-xl border border-stone-200 bg-white shadow-soft lg:scroll-mt-4 lg:rounded-2xl"
+      className="scroll-mt-16 panel-3d rounded-2xl lg:scroll-mt-4"
     >
       <div className="border-b border-stone-200 px-4 py-3 lg:px-5 lg:py-4">
         <h2 className="text-sm font-semibold text-charcoal-900">
           Recent uploads
         </h2>
       </div>
-      <ul className="divide-y divide-stone-200">
-        {visible.map((item) => {
+      <ul>
+        {visible.map((item, index) => {
           const url = thumbUrl(item);
+          const isLast = index === visible.length - 1;
           return (
             <li
               key={item.id}
-              className="flex items-center gap-2.5 px-4 py-2.5 lg:gap-3 lg:px-5 lg:py-3"
+              className="flex items-stretch gap-2.5 px-4 lg:gap-3 lg:px-5"
             >
-              <div className="h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-ivory-100 lg:h-12 lg:w-12">
+              <div className="my-2.5 h-10 w-10 shrink-0 self-center overflow-hidden rounded-lg bg-ivory-100 lg:my-3 lg:h-12 lg:w-12">
                 {url ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
@@ -140,20 +141,23 @@ export function ActivityTimeline({
                   />
                 ) : null}
               </div>
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-medium text-charcoal-900">
+              <div
+                className={
+                  isLast
+                    ? "flex min-w-0 flex-1 items-center gap-2.5 py-2.5 lg:py-3"
+                    : "flex min-w-0 flex-1 items-center gap-2.5 border-b border-[#cfc4b4] py-2.5 lg:py-3"
+                }
+              >
+                <p className="min-w-0 flex-1 truncate text-sm font-medium text-charcoal-900">
                   {item.guestName}
                 </p>
-                <p className="text-[11px] text-stone-400 lg:text-xs">
-                  Photo uploaded
-                </p>
+                <time
+                  className="shrink-0 text-[11px] text-stone-400 lg:text-xs"
+                  dateTime={item.createdAt}
+                >
+                  {formatRelativeTime(item.createdAt)}
+                </time>
               </div>
-              <time
-                className="shrink-0 text-[11px] text-stone-400 lg:text-xs"
-                dateTime={item.createdAt}
-              >
-                {formatRelativeTime(item.createdAt)}
-              </time>
             </li>
           );
         })}

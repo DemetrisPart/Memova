@@ -35,28 +35,26 @@ export function StorageMeter({
   return (
     <div
       className={cn(
-        "rounded-xl border border-stone-200 bg-white px-3 py-2.5 shadow-soft lg:rounded-2xl lg:px-4 lg:py-3",
+        "panel-3d px-3 py-2.5 lg:px-3.5 lg:py-3",
         className,
       )}
     >
-      <div className="flex items-center justify-between gap-3 lg:gap-4">
-        <div>
-          <p className="text-xs font-medium text-stone-400 lg:text-sm">
+      <div className="flex items-baseline justify-between gap-3">
+        <p className="text-lg font-semibold text-charcoal-900 lg:text-xl">
+          {formatUsedPercent(clamped, usedBytes)}%
+          <span className="ml-1.5 text-sm font-semibold text-charcoal-900">
             Storage
-          </p>
-          <p className="mt-0.5 text-lg font-semibold text-charcoal-900 lg:text-xl">
-            {formatUsedPercent(clamped, usedBytes)}%
-          </p>
-          <p className="mt-0.5 text-[11px] text-stone-400 lg:text-xs">
-            {formatBytes(usedBytes)} of {formatBytes(limitBytes)} used
-          </p>
-        </div>
-        <p className="text-right text-[11px] text-stone-400 lg:text-xs">
+          </span>
+        </p>
+        <p className="text-right text-[11px] text-charcoal-900 lg:text-xs">
           {storageRemainingLabel(usedBytes, limitBytes)}
         </p>
       </div>
+      <p className="mt-0.5 text-[11px] text-stone-400 lg:text-xs">
+        {formatBytes(usedBytes)} of {formatBytes(limitBytes)} used
+      </p>
       <div
-        className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-ivory-100 lg:mt-3 lg:h-2"
+        className="mx-auto mt-2 h-1 w-[90%] overflow-hidden rounded-full bg-[#d8cec2] lg:mt-2.5 lg:h-1.5"
         role="progressbar"
         aria-valuenow={Math.round(clamped)}
         aria-valuemin={0}
@@ -66,7 +64,7 @@ export function StorageMeter({
         <div
           className={cn(
             "h-full rounded-full transition-all",
-            warn ? "bg-amber-500" : "bg-gold-600",
+            warn ? "bg-[#a67c52]" : "bg-[#c4a574]",
           )}
           style={{
             width: `${Math.max(clamped, Number(usedBytes) > 0 ? 0.5 : 0)}%`,

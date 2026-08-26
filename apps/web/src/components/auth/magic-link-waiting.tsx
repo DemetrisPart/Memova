@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { approveMagicLink } from "@/lib/api/dashboard-client";
 import { setCoupleSessionTokens } from "@/lib/auth/couple-session-storage";
@@ -185,8 +186,8 @@ export function MagicLinkWaiting({
   };
 
   return (
-    <main className="flex min-h-dvh flex-col items-center justify-center px-4">
-      <div className="w-full max-w-md rounded-2xl border border-stone-200 bg-white p-8 text-center shadow-soft">
+    <main className="money-lime-zone flex min-h-dvh flex-col items-center justify-center px-4">
+      <div className="panel-3d w-full max-w-md rounded-2xl p-8 text-center shadow-soft">
         <h1 className="text-2xl font-semibold text-charcoal-900">
           Check your email
         </h1>
@@ -194,14 +195,20 @@ export function MagicLinkWaiting({
           We’ve sent a verification request to your email.
           <br />
           Open the email and{" "}
-          <strong className="text-charcoal-800">approve</strong> the sign-in to
-          continue.
+          <strong className="font-medium text-[#1a1714]">approve</strong> the
+          sign-in to continue.
         </p>
 
         {approved ? (
           <div className="mt-8 flex flex-col items-center gap-3">
-            <div className="h-8 w-8 animate-spin rounded-full border-2 border-gold-600/30 border-t-gold-600" />
-            <p className="text-sm font-medium text-emerald-700">Approved</p>
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#2f6b4f]/15">
+              <Check
+                className="h-7 w-7 text-[#1f5c3d]"
+                strokeWidth={2.75}
+                aria-hidden
+              />
+            </div>
+            <p className="text-sm font-medium text-[#1f5c3d]">Approved</p>
           </div>
         ) : (
           <div className="mt-8 flex flex-col items-center gap-3">

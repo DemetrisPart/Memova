@@ -241,7 +241,7 @@ export function CoupleGalleryClient({ eventId }: CoupleGalleryClientProps) {
           ))}
         </div>
       ) : items.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-stone-200 bg-white p-6 text-center lg:rounded-2xl lg:p-10">
+        <div className="panel-3d rounded-xl border border-dashed border-white/10 p-6 text-center lg:rounded-2xl lg:p-10">
           <p className="text-sm text-stone-400">No photos yet</p>
         </div>
       ) : (

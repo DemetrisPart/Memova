@@ -49,7 +49,7 @@ export function Input({
         {labelNode}
         <div
           className={cn(
-            "relative w-full max-w-full overflow-hidden rounded-xl border border-stone-200 bg-white shadow-soft transition-all focus-within:border-gold-600 focus-within:ring-[3px] focus-within:ring-gold-100",
+            "relative w-full max-w-full overflow-hidden rounded-xl border border-white/10 bg-[#ffffff] text-[#181818] shadow-soft transition-all focus-within:border-[#c4a574] focus-within:ring-[3px] focus-within:ring-[#c4a574]/25",
             error &&
               "border-rose-500 focus-within:border-rose-500 focus-within:ring-rose-500/15",
           )}
@@ -57,7 +57,7 @@ export function Input({
           <div
             className={cn(
               "pointer-events-none flex items-center justify-between gap-2 px-3 py-2.5 text-sm lg:px-4 lg:py-3.5 lg:text-base",
-              hasValue ? "text-charcoal-900" : "text-stone-400",
+              hasValue ? "text-[#181818]" : "text-[#9a9a9a]",
             )}
           >
             <span className="min-w-0 truncate">{display}</span>
@@ -87,7 +87,7 @@ export function Input({
         type={type}
         value={value}
         className={cn(
-          "box-border w-full min-w-0 max-w-full rounded-xl border border-stone-200 bg-white px-3 py-2.5 text-sm text-charcoal-900 shadow-soft placeholder:text-stone-400 transition-all focus:border-gold-600 focus:outline-none focus:ring-[3px] focus:ring-gold-100 lg:px-4 lg:py-3.5 lg:text-base",
+          "box-border w-full min-w-0 max-w-full rounded-xl border border-white/10 bg-[#ffffff] px-3 py-2.5 text-sm text-[#181818] shadow-soft placeholder:text-[#9a9a9a] transition-all focus:border-[#c4a574] focus:outline-none focus:ring-[3px] focus:ring-[#c4a574]/25 lg:px-4 lg:py-3.5 lg:text-base",
           error && "border-rose-500 focus:border-rose-500 focus:ring-rose-500/15",
           className,
         )}

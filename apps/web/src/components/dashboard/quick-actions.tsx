@@ -37,10 +37,10 @@ export function QuickActions({ eventId }: QuickActionsProps) {
         <Link
           key={href}
           href={`${base}/${href}`}
-          className="flex items-start gap-2.5 rounded-xl border border-stone-200 bg-white p-3 shadow-soft transition-colors hover:border-gold-400/40 hover:bg-ivory-50 lg:gap-3 lg:rounded-2xl lg:p-4"
+          className="surface-3d flex items-start gap-2.5 p-3.5 lg:gap-3 lg:p-4"
         >
-          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gold-100 text-gold-700 lg:h-10 lg:w-10 lg:rounded-xl">
-            <Icon className="h-4 w-4 lg:h-5 lg:w-5" />
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#d8cec2] text-[#5c4a32] lg:h-11 lg:w-11">
+            <Icon className="h-5 w-5 lg:h-6 lg:w-6" />
           </span>
           <span>
             <span className="block text-sm font-semibold text-charcoal-900">

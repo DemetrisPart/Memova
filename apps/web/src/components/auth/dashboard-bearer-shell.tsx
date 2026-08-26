@@ -200,46 +200,60 @@ export function DashboardBearerShell() {
   }
 
   if (event && eventId) {
-    return (
-      <div className="min-h-dvh bg-ivory-50">
-        <DashboardHeader user={user} />
-        <div className="mx-auto flex max-w-6xl">
-          <DashboardSidebar event={event} />
-          <div className="min-w-0 flex-1 overflow-x-hidden pb-24 lg:pb-8">
-            <DashboardEventHeader event={event} />
-            <main className="min-w-0 px-3 py-4 lg:px-8 lg:py-6">
-              {section === "home" && stats && recentGallery ? (
-                <div className="mx-auto max-w-3xl space-y-4 lg:space-y-6">
-                  <div className="flex items-center justify-between gap-3">
-                    <h2 className="text-base font-semibold text-charcoal-900 lg:text-lg">
-                      Overview
-                    </h2>
+    if (section === "home" && stats && recentGallery) {
+      return (
+        <div className="min-h-dvh bg-[#343434]">
+          <div className="mx-auto flex max-w-6xl">
+            <DashboardSidebar event={event} />
+            <div className="min-w-0 flex-1">
+              <DashboardHeader user={user} onLime />
+              <div className="px-3 pt-3 lg:px-8 lg:pt-4">
+                <section className="money-lime-zone mx-auto max-w-3xl overflow-hidden px-3.5 py-3.5 lg:px-4">
+                  <div className="flex items-center justify-between gap-2">
+                    <h1 className="min-w-0 truncate text-sm font-semibold tracking-tight text-[#181818] lg:text-base">
+                      {formatCoupleNames(
+                        event.groomName,
+                        event.brideName,
+                        event.title,
+                      )}
+                    </h1>
                     <EventHealthIndicator
                       storageUsedPercent={stats.storageUsedPercent}
+                      onLime
                     />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-2.5 lg:gap-3">
-                    <div className="rounded-xl border border-stone-200 bg-white px-3 py-2.5 shadow-soft lg:rounded-2xl lg:px-4 lg:py-3">
-                      <p className="text-xs text-stone-400 lg:text-sm">Photos</p>
-                      <p className="mt-0.5 text-xl font-semibold text-charcoal-900 lg:text-2xl">
-                        {stats.photoCount}
-                      </p>
+                  <div className="mt-3 space-y-3 lg:mt-3.5 lg:space-y-3.5">
+                    <h2 className="text-sm font-semibold text-[#181818] lg:text-base">
+                      Overview
+                    </h2>
+
+                    <div className="grid grid-cols-2 gap-2.5 lg:gap-3">
+                      <div className="panel-3d px-3 py-2.5 lg:px-3.5 lg:py-3">
+                        <p className="text-sm font-semibold text-charcoal-900">Photos</p>
+                        <p className="mt-0.5 text-lg font-semibold text-white lg:text-xl">
+                          {stats.photoCount}
+                        </p>
+                      </div>
+                      <div className="panel-3d px-3 py-2.5 lg:px-3.5 lg:py-3">
+                        <p className="text-sm font-semibold text-charcoal-900">Videos</p>
+                        <p className="mt-0.5 text-lg font-semibold text-white lg:text-xl">
+                          {stats.videoCount}
+                        </p>
+                      </div>
                     </div>
-                    <div className="rounded-xl border border-stone-200 bg-white px-3 py-2.5 shadow-soft lg:rounded-2xl lg:px-4 lg:py-3">
-                      <p className="text-xs text-stone-400 lg:text-sm">Videos</p>
-                      <p className="mt-0.5 text-xl font-semibold text-charcoal-900 lg:text-2xl">
-                        {stats.videoCount}
-                      </p>
-                    </div>
+
+                    <StorageMeter
+                      usedBytes={stats.storageUsedBytes}
+                      limitBytes={stats.storageLimitBytes}
+                      usedPercent={stats.storageUsedPercent}
+                    />
                   </div>
+                </section>
+              </div>
 
-                  <StorageMeter
-                    usedBytes={stats.storageUsedBytes}
-                    limitBytes={stats.storageLimitBytes}
-                    usedPercent={stats.storageUsedPercent}
-                  />
-
+              <section className="px-3 pb-24 pt-3.5 lg:px-8 lg:pb-8 lg:pt-4">
+                <div className="mx-auto max-w-3xl space-y-3.5 lg:space-y-4">
                   <QuickActions eventId={eventId} />
                   <ActivityTimeline
                     items={recentGallery.items}
@@ -248,8 +262,22 @@ export function DashboardBearerShell() {
                     nextCursor={recentGallery.nextCursor}
                   />
                 </div>
-              ) : null}
+              </section>
+            </div>
+          </div>
+          <DashboardBottomNav event={event} />
+        </div>
+      );
+    }
 
+    return (
+      <div className="min-h-dvh bg-[#343434]">
+        <DashboardHeader user={user} />
+        <div className="mx-auto flex max-w-6xl">
+          <DashboardSidebar event={event} />
+          <div className="min-w-0 flex-1 overflow-x-hidden pb-24 lg:pb-8">
+            <DashboardEventHeader event={event} />
+            <main className="min-w-0 px-3 py-4 lg:px-8 lg:py-6">
               {section === "gallery" ? (
                 <div className="mx-auto max-w-5xl">
                   <h2 className="mb-3 text-base font-semibold text-charcoal-900 lg:mb-4 lg:text-lg">
@@ -289,7 +317,7 @@ export function DashboardBearerShell() {
   }
 
   return (
-    <div className="min-h-dvh bg-ivory-50">
+    <div className="min-h-dvh bg-[#343434]">
       <DashboardHeader user={user} />
       <main className="mx-auto max-w-3xl px-4 py-8 lg:px-8">
         <div className="flex items-center justify-between gap-4">
@@ -307,7 +335,7 @@ export function DashboardBearerShell() {
         </div>
 
         {events.length === 0 ? (
-          <div className="mt-10 rounded-2xl border border-dashed border-stone-200 bg-white p-10 text-center">
+          <div className="panel-3d mt-10 rounded-2xl border border-dashed border-white/10 p-10 text-center">
             <p className="text-sm text-stone-400">No events yet</p>
           </div>
         ) : (
@@ -316,7 +344,7 @@ export function DashboardBearerShell() {
               <li key={item.id}>
                 <Link
                   href={`/dashboard/events/${item.id}`}
-                  className="flex items-center gap-4 rounded-2xl border border-stone-200 bg-white p-4 shadow-soft"
+                  className="panel-3d flex items-center gap-4 rounded-2xl p-4"
                 >
                   <div className="min-w-0 flex-1">
                     <p className="truncate font-semibold text-charcoal-900">

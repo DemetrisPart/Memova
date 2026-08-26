@@ -104,16 +104,38 @@ html:has(.theme-dev-bar) body {
 }
 
 .design-qr-original {
-  background: #fff;
-  border: 1px solid rgb(44 40 37 / 10%);
-  box-shadow: 0 2px 8px rgb(26 23 20 / 6%);
+  background: #222222;
+  border: 1px solid rgb(255 255 255 / 6%);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 6%),
+    inset 0 2px 8px rgb(0 0 0 / 45%),
+    0 8px 24px rgb(0 0 0 / 30%);
+  animation: float-soft 5.5s ease-in-out infinite;
+  color: #ffffff;
+}
+
+@keyframes float-soft {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .design-qr-original {
+    animation: none;
+  }
 }
 
 .design-qr-frame {
   display: inline-block;
   padding: 1rem;
   border-radius: 1rem;
-  background: #fafafa;
+  background: #ffffff;
+  box-shadow: 0 4px 14px rgb(0 0 0 / 35%);
 }
 
 /* ─── Dev: all-5 designs preview hub ─── */

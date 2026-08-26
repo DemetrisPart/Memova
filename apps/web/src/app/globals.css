@@ -1,24 +1,32 @@
 @import "tailwindcss";
 
 @theme {
-  --color-ivory-50: #fdfbf7;
-  --color-ivory-100: #f9f5ee;
-  --color-stone-200: #e8e2d9;
-  --color-stone-400: #a89f91;
-  --color-charcoal-800: #2c2825;
-  --color-charcoal-900: #1a1714;
-  --color-gold-100: #f5edd8;
-  --color-gold-400: #c9a962;
-  --color-gold-600: #a68b4b;
-  --color-gold-700: #8a7340;
-  --color-rose-500: #c45c5c;
-  --color-rose-600: #9b4d4d;
-  --color-amber-500: #d4a017;
+  /* Warm pearl top · champagne accent · high-contrast dark cards */
+  --color-ivory-50: #343434;
+  --color-ivory-100: #3f3f3f;
+  --color-stone-200: #454545;
+  --color-stone-400: #9a9a9a;
+  --color-charcoal-800: #e8e8e8;
+  --color-charcoal-900: #ffffff;
+  --color-gold-100: #2e2a24;
+  --color-gold-400: #d4c4a8;
+  --color-gold-600: #c4a574;
+  --color-gold-700: #b08f5c;
+  --color-rose-500: #ef4444;
+  --color-rose-600: #dc2626;
+  --color-amber-500: #f0e68c;
   --font-serif: "Georgia", "Times New Roman", serif;
   --font-sans: system-ui, -apple-system, "Segoe UI", sans-serif;
-  --shadow-soft: 0 2px 8px rgb(26 23 20 / 6%);
-  --shadow-lift: 0 8px 32px rgb(26 23 20 / 12%);
-  --shadow-hero: 0 16px 48px rgb(26 23 20 / 18%);
+  --shadow-soft:
+    inset 0 1px 0 rgb(255 255 255 / 6%),
+    0 2px 4px rgb(0 0 0 / 25%),
+    0 10px 28px rgb(0 0 0 / 35%);
+  --shadow-lift:
+    inset 0 1px 0 rgb(255 255 255 / 8%),
+    0 4px 8px rgb(0 0 0 / 28%),
+    0 14px 32px rgb(0 0 0 / 40%);
+  --shadow-hero:
+    0 16px 40px rgb(0 0 0 / 35%);
 }
 
 @layer base {
@@ -33,25 +41,9 @@
   html {
     font-family: var(--font-sans);
     color: var(--color-charcoal-900);
-    background-color: var(--color-ivory-50);
-    background-image:
-      radial-gradient(
-        ellipse 90% 60% at 50% -15%,
-        rgb(201 169 98 / 14%),
-        transparent 58%
-      ),
-      radial-gradient(
-        ellipse 70% 50% at 100% 100%,
-        rgb(245 237 216 / 70%),
-        transparent 55%
-      ),
-      linear-gradient(
-        165deg,
-        var(--color-ivory-50) 0%,
-        var(--color-ivory-100) 52%,
-        #f3ebe0 100%
-      );
-    background-attachment: fixed;
+    color-scheme: dark;
+    background-color: #343434;
+    background-image: none;
   }
 
   body {
@@ -62,8 +54,6 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Safari/iOS date inputs have a large intrinsic min-width that overflows.
-     Prefer the facade in Input; keep these as a safety net for raw date inputs. */
   input[type="date"] {
     box-sizing: border-box;
     width: 100%;
@@ -88,17 +78,182 @@
 }
 
 @layer utilities {
-  .guest-page-bg {
+  /* Gold hero card — darker at top, opens to lighter at bottom */
+  .money-lime-zone {
     background:
-      radial-gradient(ellipse 80% 50% at 50% -10%, rgb(201 169 98 / 8%), transparent),
-      linear-gradient(180deg, var(--color-ivory-50) 0%, var(--color-ivory-100) 100%);
+      radial-gradient(
+        ellipse 90% 70% at 50% 100%,
+        #f5e6cc 0%,
+        transparent 58%
+      ),
+      radial-gradient(
+        ellipse 70% 55% at 0% 0%,
+        #b08f5c 0%,
+        transparent 55%
+      ),
+      radial-gradient(
+        ellipse 55% 45% at 100% 5%,
+        #c9a87a 0%,
+        transparent 50%
+      ),
+      linear-gradient(
+        180deg,
+        #b89468 0%,
+        #c9a87a 38%,
+        #dcc4a0 72%,
+        #efe0c8 100%
+      );
+    border-radius: 1.75rem;
+    box-shadow:
+      0 4px 6px rgb(0 0 0 / 12%),
+      0 14px 32px rgb(0 0 0 / 22%);
+  }
+
+  .guest-page-bg {
+    background: transparent;
+  }
+
+  /* Guest landing — full original Mediterranean tokens (beats dashboard remaps) */
+  .guest-classic {
+    --color-ivory-50: #fdfbf7;
+    --color-ivory-100: #f9f5ee;
+    --color-stone-200: #e8e2d9;
+    --color-stone-400: #a89f91;
+    --color-charcoal-800: #2c2825;
+    --color-charcoal-900: #1a1714;
+    --color-gold-100: #f5edd8;
+    --color-gold-400: #c9a962;
+    --color-gold-600: #a68b4b;
+    --color-gold-700: #8a7340;
+    --shadow-soft: 0 2px 8px rgb(26 23 20 / 6%);
+    --shadow-lift: 0 8px 32px rgb(26 23 20 / 12%);
+    color: #1a1714;
+    color-scheme: light;
+    background-color: #fdfbf7 !important;
+    background-image: none !important;
+  }
+
+  .guest-classic .glass-card {
+    background: rgb(253 251 247 / 72%) !important;
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgb(232 226 217 / 70%) !important;
+    border-radius: 1.5rem;
+    box-shadow: 0 8px 32px rgb(26 23 20 / 10%) !important;
+  }
+
+  .guest-classic .guest-access-label-light {
+    color: rgb(166 139 75 / 75%) !important;
+  }
+
+  .guest-classic .bg-white {
+    background-color: #ffffff !important;
+  }
+
+  .guest-classic .bg-white\/75 {
+    background-color: rgb(255 255 255 / 75%) !important;
+  }
+
+  .guest-classic .border-stone-200,
+  .guest-classic .border-stone-200\/80 {
+    border-color: #e8e2d9 !important;
+  }
+
+  .guest-classic .shadow-soft {
+    box-shadow: 0 2px 8px rgb(26 23 20 / 6%) !important;
+  }
+
+  .guest-classic .hover\:bg-ivory-100:hover {
+    background-color: #f9f5ee !important;
   }
 
   .glass-card {
-    background: rgb(253 251 247 / 88%);
-    backdrop-filter: blur(16px);
-    border: 1px solid rgb(232 226 217 / 80%);
-    box-shadow: var(--shadow-lift);
+    background-color: #e4d9cb;
+    background-image: none;
+    border-radius: 1.75rem;
+    border: 0 !important;
+    outline: 0 !important;
+    box-shadow:
+      0 0 0 1px #e4d9cb,
+      0 4px 16px rgb(0 0 0 / 16%);
+    color: #1a1714;
+  }
+
+  /* Soft warm boxes — kill white AA fringe on rounded edges */
+  .panel-3d {
+    background-color: #e4d9cb;
+    background-image: none;
+    border-radius: 1.75rem;
+    border: 0 !important;
+    outline: 0 !important;
+    /* Matching fill ring covers browser anti-alias white rim */
+    box-shadow:
+      0 0 0 1px #e4d9cb,
+      0 4px 16px rgb(0 0 0 / 16%) !important;
+    color: #1a1714;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    transform: translateZ(0);
+    isolation: isolate;
+  }
+
+  .panel-3d .text-white,
+  .panel-3d .text-charcoal-900,
+  .surface-3d .text-white,
+  .surface-3d .text-charcoal-900 {
+    color: #1a1714 !important;
+  }
+
+  .panel-3d .text-stone-400,
+  .surface-3d .text-stone-400 {
+    color: #5c564c !important;
+  }
+
+  .panel-3d .border-stone-200,
+  .panel-3d .border-b,
+  .panel-3d .divide-y > :not([hidden]) ~ :not([hidden]) {
+    border-color: #d4cabd !important;
+  }
+
+  .panel-3d .bg-ivory-100 {
+    background-color: #d8cec2 !important;
+  }
+
+  .surface-3d {
+    background-color: #e4d9cb;
+    background-image: none;
+    border-radius: 1.75rem;
+    border: 0 !important;
+    outline: 0 !important;
+    box-shadow:
+      0 0 0 1px #e4d9cb,
+      0 4px 16px rgb(0 0 0 / 16%) !important;
+    color: #1a1714;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    transform: translateZ(0);
+    isolation: isolate;
+    transition:
+      transform 200ms ease,
+      box-shadow 200ms ease;
+  }
+
+  .surface-3d:hover {
+    transform: translateY(-1px) translateZ(0);
+    box-shadow:
+      0 0 0 1px #e4d9cb,
+      0 8px 22px rgb(0 0 0 / 18%) !important;
+  }
+
+  .money-lime-zone .panel-3d,
+  .money-lime-zone .surface-3d {
+    border: 0 !important;
+    outline: 0 !important;
+    background-color: #e8dccb;
+    background-image: none;
+    box-shadow:
+      0 0 0 1px #e8dccb,
+      0 4px 18px rgb(0 0 0 / 18%) !important;
   }
 
   .font-couple {
@@ -157,11 +312,11 @@
   }
 
   .guest-access-label-light {
-    color: rgb(166 139 75 / 75%);
+    color: rgb(212 196 168 / 90%);
   }
 
   .guest-access-label-dark {
-    color: rgb(201 169 98 / 70%);
+    color: rgb(196 165 116 / 85%);
   }
 
   .guest-access-label-cinematic {
@@ -188,5 +343,36 @@
       opacity: 0.35;
       transform: scale(0.85);
     }
+  }
+
+  /* Map common light surfaces to Money Wise dark cards */
+  .bg-white {
+    background-color: #222222 !important;
+  }
+
+  .bg-white\/95 {
+    background-color: rgb(34 34 34 / 95%) !important;
+  }
+
+  .border-stone-200 {
+    border-color: rgb(255 255 255 / 6%) !important;
+  }
+
+  .hover\:bg-ivory-50:hover,
+  .hover\:bg-ivory-100:hover {
+    background-color: rgb(255 255 255 / 5%) !important;
+  }
+
+  .shadow-soft {
+    box-shadow: var(--shadow-soft) !important;
+  }
+
+  .shadow-lift {
+    box-shadow: var(--shadow-lift) !important;
+  }
+
+  /* Raised chrome (header / bottom pill) — outer only, no inset */
+  .shadow-float {
+    box-shadow: 0 8px 28px rgb(0 0 0 / 40%) !important;
   }
 }

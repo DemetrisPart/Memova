@@ -35,9 +35,11 @@ function CheckEmailContent() {
 
   if (!pollToken || !email || !verificationToken) {
     return (
-      <div className="w-full max-w-md rounded-2xl border border-stone-200 bg-white p-8 text-center shadow-soft">
-        <p className="text-sm text-stone-400">Loading…</p>
-      </div>
+      <main className="money-lime-zone flex min-h-dvh flex-col items-center justify-center px-4">
+        <div className="panel-3d w-full max-w-md rounded-2xl p-8 text-center">
+          <p className="text-sm text-stone-400">Loading…</p>
+        </div>
+      </main>
     );
   }
 
@@ -58,8 +60,8 @@ export default function CheckEmailPage() {
   return (
     <Suspense
       fallback={
-        <main className="flex min-h-dvh flex-col items-center justify-center px-4">
-          <div className="w-full max-w-md rounded-2xl border border-stone-200 bg-white p-8 text-center shadow-soft">
+        <main className="money-lime-zone flex min-h-dvh flex-col items-center justify-center px-4">
+          <div className="panel-3d w-full max-w-md rounded-2xl p-8 text-center">
             <p className="text-sm text-stone-400">Loading…</p>
           </div>
         </main>

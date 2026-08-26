@@ -136,7 +136,7 @@ export function EventSettingsClient({ event }: EventSettingsClientProps) {
 
   return (
     <div className="mx-auto w-full min-w-0 max-w-lg space-y-4 lg:space-y-8">
-      <section className="w-full max-w-full overflow-hidden rounded-xl border border-stone-200 bg-white p-3 shadow-soft lg:rounded-2xl lg:p-5">
+      <section className="panel-3d w-full max-w-full overflow-hidden rounded-2xl p-3 lg:p-5">
         <div className="flex items-start justify-between gap-3">
           <div>
             <h2 className="text-sm font-semibold text-charcoal-900">
@@ -214,7 +214,7 @@ export function EventSettingsClient({ event }: EventSettingsClientProps) {
                 )}
                 className="font-couple mt-1 text-[1.75rem] leading-[1.05] text-charcoal-900 sm:text-[2rem]"
               />
-              <div className="mx-auto mt-2 flex w-fit items-center gap-1.5 rounded-full border border-stone-200/80 bg-white/75 px-3 py-1 text-[11px] text-stone-400 backdrop-blur-sm">
+              <div className="mx-auto mt-2 flex w-fit items-center gap-1.5 rounded-full border border-white/10 bg-[#222222]/90 px-3 py-1 text-[11px] text-stone-400 backdrop-blur-sm">
                 <CalendarDays className="size-3 text-gold-600" aria-hidden />
                 <span>{formatEventDate(previewDate)}</span>
               </div>
@@ -231,7 +231,7 @@ export function EventSettingsClient({ event }: EventSettingsClientProps) {
 
       <form
         onSubmit={saveDetails}
-        className="w-full max-w-full space-y-4 overflow-hidden rounded-xl border border-stone-200 bg-white p-3 shadow-soft lg:space-y-5 lg:rounded-2xl lg:p-5"
+        className="panel-3d w-full max-w-full space-y-4 overflow-hidden rounded-2xl p-3 lg:space-y-5 lg:p-5"
       >
         <h2 className="text-sm font-semibold text-charcoal-900">Event details</h2>
 

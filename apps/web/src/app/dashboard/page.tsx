@@ -32,7 +32,7 @@ export default async function DashboardPage() {
         </div>
 
         {events.length === 0 ? (
-          <div className="mt-10 rounded-2xl border border-dashed border-stone-200 bg-white p-10 text-center">
+          <div className="panel-3d mt-10 rounded-2xl border border-dashed border-white/10 p-10 text-center">
             <p className="text-sm text-stone-400">No events yet</p>
             <Link href="/dashboard/events/new" className="mt-4 inline-block">
               <Button>Create your first event</Button>
@@ -44,7 +44,7 @@ export default async function DashboardPage() {
               <li key={event.id}>
                 <Link
                   href={`/dashboard/events/${event.id}`}
-                  className="flex items-center gap-4 rounded-2xl border border-stone-200 bg-white p-4 shadow-soft transition-colors hover:border-gold-400/40"
+                  className="panel-3d flex items-center gap-4 rounded-2xl p-4 transition-colors hover:border-gold-400/40"
                 >
                   <div className="h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-ivory-100">
                     {event.coverImageUrl ? (

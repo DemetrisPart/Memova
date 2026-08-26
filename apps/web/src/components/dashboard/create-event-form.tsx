@@ -76,7 +76,7 @@ export function CreateEventForm() {
   return (
     <form
       onSubmit={submit}
-      className="space-y-5 rounded-2xl border border-stone-200 bg-white p-6 shadow-soft"
+      className="panel-3d space-y-5 rounded-2xl p-6"
     >
       <Input
         label="Groom / partner name"

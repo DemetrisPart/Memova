@@ -26,7 +26,7 @@ export function DashboardBottomNav({ event }: DashboardBottomNavProps) {
       className="pointer-events-none fixed inset-x-0 bottom-0 z-40 flex justify-center px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] lg:hidden"
       aria-label="Event dashboard"
     >
-      <div className="pointer-events-auto flex w-full max-w-xs items-center justify-between gap-1 rounded-full bg-charcoal-900 px-1.5 py-1.5 shadow-lift sm:max-w-sm sm:px-2 sm:py-2">
+      <div className="pointer-events-auto flex w-full max-w-xs items-center justify-between gap-1 rounded-full bg-gradient-to-br from-[#d4b896] via-[#c4a574] to-[#9a7a4a] px-1.5 py-1.5 shadow-float ring-1 ring-[#6b5535]/25 sm:max-w-sm sm:px-2 sm:py-2">
         {tabs.map(({ href, label, icon: Icon, suffix }) => {
           const path = `${base}${href}`;
           const active =
@@ -42,11 +42,11 @@ export function DashboardBottomNav({ event }: DashboardBottomNavProps) {
               className={cn(
                 "flex h-10 flex-1 items-center justify-center rounded-full transition-colors sm:h-12",
                 active
-                  ? "bg-white text-charcoal-900"
-                  : "text-white/75 hover:text-white",
+                  ? "bg-[#2e2a24]/35 text-[#1a1714]"
+                  : "text-[#3d3933] hover:text-[#1a1714]",
               )}
             >
-              <Icon className="h-4 w-4 sm:h-5 sm:w-5" strokeWidth={active ? 2.25 : 1.75} />
+              <Icon className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={active ? 2.25 : 1.75} />
             </Link>
           );
         })}
@@ -55,10 +55,28 @@ export function DashboardBottomNav({ event }: DashboardBottomNavProps) {
   );
 }
 
-export function DashboardEventHeader({ event }: { event: CoupleEvent }) {
+export function DashboardEventHeader({
+  event,
+  onLime = false,
+}: {
+  event: CoupleEvent;
+  onLime?: boolean;
+}) {
   return (
-    <header className="border-b border-stone-200 bg-white px-3 py-2.5 lg:px-8 lg:py-3">
-      <h1 className="text-sm font-semibold text-charcoal-900 lg:text-lg">
+    <header
+      className={
+        onLime
+          ? "px-3 py-2.5 lg:px-8 lg:py-3"
+          : "border-b border-white/5 bg-[#1c1c1c]/80 px-3 py-2.5 backdrop-blur-md lg:px-8 lg:py-3"
+      }
+    >
+      <h1
+        className={
+          onLime
+            ? "text-sm font-semibold text-[#181818] lg:text-lg"
+            : "text-sm font-semibold text-white lg:text-lg"
+        }
+      >
         {formatCoupleNames(event.groomName, event.brideName, event.title)}
       </h1>
     </header>
@@ -70,7 +88,7 @@ export function DashboardSidebar({ event }: { event: CoupleEvent }) {
   const base = `/dashboard/events/${event.id}`;
 
   return (
-    <aside className="hidden w-60 shrink-0 border-r border-stone-200 bg-white lg:block">
+    <aside className="hidden w-60 shrink-0 border-r border-white/5 bg-[#1c1c1c]/70 lg:block">
       <div className="sticky top-0 px-4 py-6">
         <Link
           href="/dashboard"
