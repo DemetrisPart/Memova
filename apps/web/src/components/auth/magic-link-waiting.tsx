@@ -77,6 +77,7 @@ async function completeAndGoToDashboard(pollToken: string): Promise<void> {
 }
 
 export function MagicLinkWaiting({
+  email,
   pollToken,
   verificationToken,
   onBack,
