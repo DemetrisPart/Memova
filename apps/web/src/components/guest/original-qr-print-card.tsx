@@ -62,7 +62,7 @@ export function OriginalQrPrintCard({ qr }: OriginalQrPrintCardProps) {
       </div>
       <p
         id="guest-event-url"
-        className="mt-3 break-all text-xs text-stone-400 lg:mt-4 lg:text-sm print:text-xs print:text-charcoal-800"
+        className="mt-3 break-all text-xs text-white lg:mt-4 lg:text-sm print:text-xs print:text-white"
       >
         {qr.eventUrl}
       </p>
