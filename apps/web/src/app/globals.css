@@ -134,16 +134,40 @@
   }
 
   .guest-classic .glass-card {
-    background: rgb(253 251 247 / 72%) !important;
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-    border: 1px solid rgb(232 226 217 / 70%) !important;
-    border-radius: 1.5rem;
-    box-shadow: 0 8px 32px rgb(26 23 20 / 10%) !important;
+    background:
+      radial-gradient(
+        ellipse 90% 70% at 50% 100%,
+        #f5e6cc 0%,
+        transparent 58%
+      ),
+      radial-gradient(
+        ellipse 70% 55% at 0% 0%,
+        #b08f5c 0%,
+        transparent 55%
+      ),
+      radial-gradient(
+        ellipse 55% 45% at 100% 5%,
+        #c9a87a 0%,
+        transparent 50%
+      ),
+      linear-gradient(
+        180deg,
+        #b89468 0%,
+        #c9a87a 38%,
+        #dcc4a0 72%,
+        #efe0c8 100%
+      ) !important;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border: 0 !important;
+    border-radius: 1.75rem;
+    box-shadow:
+      0 4px 6px rgb(0 0 0 / 12%),
+      0 14px 32px rgb(0 0 0 / 22%) !important;
   }
 
   .guest-classic .guest-access-label-light {
-    color: rgb(166 139 75 / 75%) !important;
+    color: #5c4a32 !important;
   }
 
   .guest-classic .bg-white {

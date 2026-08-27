@@ -1,18 +1,19 @@
 "use client";
 
-import Image from "next/image";
 import { resolveNetworkUrl } from "@/lib/mobile-network";
 
 type EventHeroCoverProps = {
   coverImageUrl: string | null;
   coverImageUrlLan?: string | null;
   coverImageUrlPublic?: string | null;
+  className?: string;
 };
 
 export function EventHeroCover({
   coverImageUrl,
   coverImageUrlLan,
   coverImageUrlPublic,
+  className,
 }: EventHeroCoverProps) {
   if (!coverImageUrl) {
     return (
@@ -27,14 +28,15 @@ export function EventHeroCover({
   });
 
   return (
-    <Image
+    // eslint-disable-next-line @next/next/no-img-element -- LAN/mobile cover URLs need plain img
+    <img
       src={src}
       alt=""
-      fill
-      priority
-      className="object-cover object-[center_25%]"
-      sizes="100vw"
-      unoptimized
+      className={
+        className
+          ? `absolute inset-0 h-full w-full ${className}`
+          : "absolute inset-0 h-full w-full object-cover object-[center_25%]"
+      }
     />
   );
 }

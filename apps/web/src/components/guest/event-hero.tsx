@@ -25,7 +25,7 @@ export function EventHero({ event }: EventHeroProps) {
         }}
       />
 
-      <div className="absolute inset-x-0 bottom-0 px-6 pb-6 pt-28 sm:pb-8">
+      <div className="absolute inset-x-0 bottom-0 px-6 pb-5 pt-28 sm:pb-8">
         <div className="mx-auto max-w-lg text-center">
           <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-gold-600">
             Celebration
