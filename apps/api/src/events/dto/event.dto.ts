@@ -1,5 +1,7 @@
 import {
+  IsBoolean,
   IsDateString,
+  IsEnum,
   IsInt,
   IsOptional,
   IsString,
@@ -7,6 +9,7 @@ import {
   Min,
   MinLength,
 } from "class-validator";
+import { PrivacyMode } from "@momeva/database";
 
 export class CreateEventDto {
   @IsString()
@@ -54,6 +57,14 @@ export class UpdateEventDto {
   @IsOptional()
   @IsDateString()
   eventDate?: string;
+
+  @IsOptional()
+  @IsEnum(PrivacyMode)
+  privacyMode?: PrivacyMode;
+
+  @IsOptional()
+  @IsBoolean()
+  showGuestNamesPublicly?: boolean;
 }
 
 export class CoverUploadInitDto {

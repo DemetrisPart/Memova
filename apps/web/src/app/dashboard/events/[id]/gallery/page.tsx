@@ -21,6 +21,7 @@ export default async function EventGalleryPage({ params }: GalleryPageProps) {
       eventId={id}
       event={event}
       storageUsedPercent={stats.storageUsedPercent}
+      videoCount={stats.videoCount}
     />
   );
 }

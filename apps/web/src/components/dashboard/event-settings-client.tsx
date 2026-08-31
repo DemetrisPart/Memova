@@ -18,7 +18,7 @@ import {
   formatCoupleNames,
   inferPhotoContentType,
 } from "@/lib/utils";
-import type { CoupleEvent } from "@/lib/api/types";
+import type { CoupleEvent, PrivacyMode } from "@/lib/api/types";
 
 type EventSettingsClientProps = {
   event: CoupleEvent;
@@ -39,6 +39,10 @@ export function EventSettingsClient({ event }: EventSettingsClientProps) {
   const [groomName, setGroomName] = useState(event.groomName);
   const [brideName, setBrideName] = useState(event.brideName);
   const [eventDate, setEventDate] = useState(event.eventDate);
+  const [privacyMode, setPrivacyMode] = useState<PrivacyMode>(event.privacyMode);
+  const [showGuestNamesPublicly, setShowGuestNamesPublicly] = useState(
+    event.showGuestNamesPublicly,
+  );
   const [saving, setSaving] = useState(false);
   const [coverUploading, setCoverUploading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -73,7 +77,13 @@ export function EventSettingsClient({ event }: EventSettingsClientProps) {
     setError(null);
     setMessage(null);
     try {
-      await updateEvent(event.id, { groomName, brideName, eventDate });
+      await updateEvent(event.id, {
+        groomName,
+        brideName,
+        eventDate,
+        privacyMode,
+        showGuestNamesPublicly,
+      });
       setMessage("Event details saved");
       router.refresh();
     } catch (err) {
@@ -111,12 +121,23 @@ export function EventSettingsClient({ event }: EventSettingsClientProps) {
         throw new Error("Cover saved but image URL is missing");
       }
 
-      // Keep the local blob visible until the remote URL actually loads.
+      // Keep the local blob visible until the remote URL actually loads (cap wait).
       await new Promise<void>((resolve, reject) => {
         const img = new Image();
-        img.onload = () => resolve();
-        img.onerror = () =>
-          reject(new Error("Cover uploaded but could not be loaded from storage"));
+        const timeoutId = window.setTimeout(() => {
+          // Remote may still warm up; keep blob preview and treat as success.
+          resolve();
+        }, 8_000);
+        img.onload = () => {
+          window.clearTimeout(timeoutId);
+          resolve();
+        };
+        img.onerror = () => {
+          window.clearTimeout(timeoutId);
+          reject(
+            new Error("Cover uploaded but could not be loaded from storage"),
+          );
+        };
         img.src = remoteSrc;
       });
 
@@ -253,6 +274,63 @@ export function EventSettingsClient({ event }: EventSettingsClientProps) {
           onChange={(e) => setEventDate(e.target.value)}
           required
         />
+
+        <fieldset className="space-y-2">
+          <legend className="text-sm font-medium text-charcoal-900">
+            Gallery privacy
+          </legend>
+          <label className="flex cursor-pointer items-start gap-3 rounded-xl bg-[#efe8dc] px-3 py-2.5">
+            <input
+              type="radio"
+              name="privacyMode"
+              className="mt-1"
+              checked={privacyMode === "OWN_UPLOADS_ONLY"}
+              onChange={() => setPrivacyMode("OWN_UPLOADS_ONLY")}
+            />
+            <span>
+              <span className="block text-sm font-medium text-[#1a1714]">
+                Own uploads only
+              </span>
+              <span className="block text-xs text-[#5c4a32]">
+                Guests only see photos they uploaded.
+              </span>
+            </span>
+          </label>
+          <label className="flex cursor-pointer items-start gap-3 rounded-xl bg-[#efe8dc] px-3 py-2.5">
+            <input
+              type="radio"
+              name="privacyMode"
+              className="mt-1"
+              checked={privacyMode === "ALL_GUESTS"}
+              onChange={() => setPrivacyMode("ALL_GUESTS")}
+            />
+            <span>
+              <span className="block text-sm font-medium text-[#1a1714]">
+                Shared gallery
+              </span>
+              <span className="block text-xs text-[#5c4a32]">
+                Guests can see everyone’s uploads.
+              </span>
+            </span>
+          </label>
+        </fieldset>
+
+        <label className="flex cursor-pointer items-start gap-3 rounded-xl bg-[#efe8dc] px-3 py-2.5">
+          <input
+            type="checkbox"
+            className="mt-1"
+            checked={showGuestNamesPublicly}
+            onChange={(e) => setShowGuestNamesPublicly(e.target.checked)}
+          />
+          <span>
+            <span className="block text-sm font-medium text-[#1a1714]">
+              Show guest names on photos
+            </span>
+            <span className="block text-xs text-[#5c4a32]">
+              Display who uploaded each photo in the guest gallery.
+            </span>
+          </span>
+        </label>
 
         <Input
           label="Event URL"

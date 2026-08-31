@@ -38,7 +38,7 @@ import type {
   EventStats,
   PublicEventQr,
 } from "@/lib/api/types";
-import { formatCoupleNames, formatEventDate } from "@/lib/utils";
+import { formatCoupleNames } from "@/lib/utils";
 
 type EventSection = "home" | "gallery" | "qr" | "settings";
 
@@ -69,7 +69,6 @@ export function DashboardBearerShell() {
   );
 
   const [user, setUser] = useState<AuthUser | null>(null);
-  const [events, setEvents] = useState<CoupleEvent[]>([]);
   const [event, setEvent] = useState<CoupleEvent | null>(null);
   const [stats, setStats] = useState<EventStats | null>(null);
   const [recentGallery, setRecentGallery] =
@@ -82,8 +81,12 @@ export function DashboardBearerShell() {
     let cancelled = false;
 
     void (async () => {
-      setReady(false);
-      setError(null);
+      // Keep chrome visible when switching Home/Gallery/QR/Settings.
+      const softNav = Boolean(user);
+      if (!softNav) {
+        setReady(false);
+        setError(null);
+      }
 
       if (!getCoupleAccessToken()) {
         window.location.replace("/auth/login");
@@ -93,7 +96,8 @@ export function DashboardBearerShell() {
       const refresh = getCoupleRefreshToken();
       const access = getCoupleAccessToken();
       if (access && refresh) {
-        await fetch("/api/auth/establish", {
+        // Do not block dashboard open on cookie establish.
+        void fetch("/api/auth/establish", {
           method: "POST",
           credentials: "include",
           headers: { "Content-Type": "application/json" },
@@ -105,18 +109,24 @@ export function DashboardBearerShell() {
       }
 
       try {
-        const me = await fetchMe();
-        const list = await fetchEvents();
+        const [me, list] = await Promise.all([fetchMe(), fetchEvents()]);
         if (cancelled) return;
 
         saveRememberedEmail(me.email);
         setUser(me);
-        setEvents(list);
 
         if (!eventId) {
           if (
+            pathname.startsWith("/dashboard/events/new") &&
+            list.length >= 1 &&
+            list[0]?.id
+          ) {
+            router.replace(`/dashboard/events/${list[0].id}`);
+            return;
+          }
+          if (
             (pathname === "/dashboard" || pathname === "/dashboard/") &&
-            list.length === 1 &&
+            list.length >= 1 &&
             list[0]?.id
           ) {
             router.replace(`/dashboard/events/${list[0].id}`);
@@ -180,6 +190,8 @@ export function DashboardBearerShell() {
     return () => {
       cancelled = true;
     };
+    // user omitted on purpose — softNav reads current user without re-binding loop
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname, router, eventId, section]);
 
   if (!ready || !user) {
@@ -329,51 +341,21 @@ export function DashboardBearerShell() {
 
   return (
     <div className="min-h-dvh bg-[#343434]">
-      <DashboardHeader user={user} />
+      <DashboardHeader user={user} onLime />
       <main className="mx-auto max-w-3xl px-4 py-8 lg:px-8">
-        <div className="flex items-center justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-semibold text-charcoal-900">
-              Your events
-            </h1>
-            <p className="mt-1 text-sm text-stone-400">
-              Manage photos and settings for each celebration.
-            </p>
-          </div>
-          <Link href="/dashboard/events/new">
-            <Button>New event</Button>
+        <div className="money-lime-zone mt-4 overflow-hidden !rounded-2xl p-8 text-center lg:p-10">
+          <h1 className="text-2xl font-semibold text-[#1a1714]">
+            Create your event
+          </h1>
+          <p className="mt-2 text-sm text-[#5c4a32]">
+            One celebration per account. Guests will upload photos to this page.
+          </p>
+          <Link href="/dashboard/events/new" className="mt-6 inline-block">
+            <Button className="border-0 !bg-gradient-to-br !from-[#c4a574] !via-[#a68b4b] !to-[#8a6a3f] !text-white">
+              Get started
+            </Button>
           </Link>
         </div>
-
-        {events.length === 0 ? (
-          <div className="panel-3d mt-10 rounded-2xl border border-dashed border-white/10 p-10 text-center">
-            <p className="text-sm text-stone-400">No events yet</p>
-          </div>
-        ) : (
-          <ul className="mt-8 space-y-3">
-            {events.map((item) => (
-              <li key={item.id}>
-                <Link
-                  href={`/dashboard/events/${item.id}`}
-                  className="panel-3d flex items-center gap-4 rounded-2xl p-4"
-                >
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate font-semibold text-charcoal-900">
-                      {formatCoupleNames(
-                        item.groomName,
-                        item.brideName,
-                        item.title,
-                      )}
-                    </p>
-                    <p className="text-sm text-stone-400">
-                      {formatEventDate(item.eventDate)} · /{item.slug}
-                    </p>
-                  </div>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        )}
       </main>
     </div>
   );

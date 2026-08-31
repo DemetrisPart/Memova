@@ -236,6 +236,8 @@ export async function updateEvent(
     groomName?: string;
     eventDate?: string;
     title?: string;
+    privacyMode?: "OWN_UPLOADS_ONLY" | "ALL_GUESTS";
+    showGuestNamesPublicly?: boolean;
   },
 ): Promise<CoupleEvent> {
   return apiFetch(`/events/${encodeURIComponent(eventId)}`, {

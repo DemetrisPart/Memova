@@ -19,6 +19,7 @@ type CoupleGalleryClientProps = {
   eventId: string;
   event: CoupleEvent;
   storageUsedPercent: number;
+  videoCount: number;
 };
 
 function thumbUrl(item: CoupleGalleryItem): string | null {
@@ -57,6 +58,7 @@ export function CoupleGalleryClient({
   eventId,
   event,
   storageUsedPercent,
+  videoCount,
 }: CoupleGalleryClientProps) {
   const [items, setItems] = useState<CoupleGalleryItem[]>([]);
   const [totalCount, setTotalCount] = useState(0);
@@ -85,6 +87,8 @@ export function CoupleGalleryClient({
         setError(
           err instanceof Error ? err.message : "Could not load gallery",
         );
+        // Stop infinite load-more retries on failure.
+        if (cursor) setNextCursor(null);
       } finally {
         setLoading(false);
         setLoadingMore(false);
@@ -217,7 +221,9 @@ export function CoupleGalleryClient({
               {loading ? "Loading…" : `${totalCount} photos`}
             </p>
             {!loading ? (
-              <p className="text-sm font-semibold text-charcoal-900">0 videos</p>
+              <p className="text-sm font-semibold text-charcoal-900">
+                {videoCount} {videoCount === 1 ? "video" : "videos"}
+              </p>
             ) : null}
             {saveProgress ? (
               <p className="truncate text-[11px] text-stone-400">{saveProgress}</p>

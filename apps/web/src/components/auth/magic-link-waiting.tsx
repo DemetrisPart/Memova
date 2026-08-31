@@ -47,32 +47,34 @@ async function completeAndGoToDashboard(pollToken: string): Promise<void> {
     throw new Error("Waiting for email approval");
   }
 
-  if (res.ok) {
-    // Cookies are set by Set-Cookie from the API (production parity).
-    // Optional Mobile Preview fallback if the BFF still returns tokens.
-    const body = (await res.json().catch(() => ({}))) as {
-      accessToken?: string;
-      refreshToken?: string;
-    };
-    if (body.accessToken && body.refreshToken) {
-      setCoupleSessionTokens({
-        accessToken: body.accessToken,
-        refreshToken: body.refreshToken,
-      });
-      await fetch("/api/auth/establish", {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          accessToken: body.accessToken,
-          refreshToken: body.refreshToken,
-        }),
-      }).catch(() => undefined);
-    }
-  } else if (res.status !== 401) {
+  if (!res.ok) {
     throw new Error("Could not finish sign-in");
   }
 
+  const body = (await res.json().catch(() => ({}))) as {
+    accessToken?: string;
+    refreshToken?: string;
+  };
+
+  // Cookies are set by the BFF. Also stash tokens for Mobile Preview iframes
+  // where HttpOnly cookies are blocked.
+  if (body.accessToken && body.refreshToken) {
+    setCoupleSessionTokens({
+      accessToken: body.accessToken,
+      refreshToken: body.refreshToken,
+    });
+    await fetch("/api/auth/establish", {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        accessToken: body.accessToken,
+        refreshToken: body.refreshToken,
+      }),
+    }).catch(() => undefined);
+  }
+
+  sessionStorage.removeItem("momeva_poll_token");
   // Same-frame navigation always works in Mobile Preview (unlike target=_top).
   window.location.assign("/dashboard");
 }

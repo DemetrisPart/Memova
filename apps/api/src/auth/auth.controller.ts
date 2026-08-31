@@ -55,10 +55,13 @@ export class AuthController {
       accessToken: session.accessToken,
       refreshToken: session.refreshToken,
     });
-    // Cookie-only session — never expose JWTs in JSON (production parity).
+    // Cookies are primary. Tokens in JSON remain for Mobile Preview
+    // (iframe blocks HttpOnly cookies) — never return the email verification token.
     return {
       message: "Authenticated",
       userId: session.userId,
+      accessToken: session.accessToken,
+      refreshToken: session.refreshToken,
     };
   }
 
@@ -88,6 +91,8 @@ export class AuthController {
     return {
       message: "Authenticated",
       userId: session.userId,
+      accessToken: session.accessToken,
+      refreshToken: session.refreshToken,
     };
   }
 

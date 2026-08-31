@@ -19,6 +19,11 @@ export function MobileNetworkBootstrap({
 
   useEffect(() => {
     if (!isMobileNetworkConfigured()) return;
+    // Already probed this tab — skip overlay + work.
+    if (hasCachedNetworkProbe()) {
+      setReady(true);
+      return;
+    }
 
     void (async () => {
       await ensureMobileNetworkRoute();

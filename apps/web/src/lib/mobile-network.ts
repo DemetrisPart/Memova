@@ -33,7 +33,7 @@ export function setNetworkMode(mode: NetworkMode): void {
   sessionStorage.setItem(MODE_KEY, mode);
 }
 
-async function probeOrigin(origin: string, timeoutMs = 2000): Promise<boolean> {
+async function probeOrigin(origin: string, timeoutMs = 800): Promise<boolean> {
   try {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), timeoutMs);
@@ -149,6 +149,13 @@ export async function ensureMobileNetworkRoute(): Promise<NetworkMode | null> {
   const hostname = window.location.hostname;
   const currentPath =
     window.location.pathname + window.location.search + window.location.hash;
+
+  // Mobile Preview / local browser — no LAN probe needed (keeps iframe snappy).
+  if (hostname === "localhost" || hostname === "127.0.0.1") {
+    setNetworkMode("lan");
+    markNetworkProbeDone();
+    return "lan";
+  }
 
   // Already on a private LAN host — stay. Stale NEXT_PUBLIC_MOBILE_LAN_ORIGIN
   // (old Wi‑Fi IP) must not redirect guests mid-session.

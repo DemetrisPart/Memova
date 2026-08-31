@@ -86,7 +86,7 @@ function LoginForm() {
       setRememberedEmail(trimmedEmail.toLowerCase());
 
       sessionStorage.setItem(POLL_STORAGE_KEY, result.pollToken);
-      await warmupAuthRoutes();
+      void warmupAuthRoutes();
       const params = new URLSearchParams({
         email: trimmedEmail,
       });

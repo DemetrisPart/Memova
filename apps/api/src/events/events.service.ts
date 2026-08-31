@@ -45,6 +45,17 @@ export class EventsService {
   ) {}
 
   async createEvent(ownerUserId: string, dto: CreateEventDto) {
+    // Product rule: 1 couple account = 1 event (extra celebrations → new registration).
+    const existing = await this.prisma.event.findFirst({
+      where: { ownerUserId, deletedAt: null },
+      select: { id: true },
+    });
+    if (existing) {
+      throw new ConflictException(
+        "This account already has an event. Sign up with a different email to create another.",
+      );
+    }
+
     const slugResult = validateEventSlug(dto.slug);
     if (!slugResult.valid || !slugResult.normalized) {
       throw new BadRequestException(slugResult.error ?? "Invalid event URL");
@@ -143,6 +154,8 @@ export class EventsService {
         groomName,
         title,
         eventDate: dto.eventDate ? new Date(dto.eventDate) : undefined,
+        privacyMode: dto.privacyMode,
+        showGuestNamesPublicly: dto.showGuestNamesPublicly,
       },
       include: { coverImage: true },
     });

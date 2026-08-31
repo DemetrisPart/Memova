@@ -1,4 +1,5 @@
 import { DashboardBearerShell } from "@/components/auth/dashboard-bearer-shell";
+import { MobileNetworkBootstrap } from "@/components/guest/mobile-network-bootstrap";
 import { getAuthUserOrNull } from "@/lib/api/server-fetch";
 
 type DashboardLayoutProps = {
@@ -16,5 +17,6 @@ export default async function DashboardLayout({
     return <DashboardBearerShell />;
   }
 
-  return children;
+  // Same LAN probe as guest pages — import only; guest layout untouched.
+  return <MobileNetworkBootstrap>{children}</MobileNetworkBootstrap>;
 }
