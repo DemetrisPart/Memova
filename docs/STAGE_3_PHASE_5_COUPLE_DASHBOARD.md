@@ -2,11 +2,11 @@
 
 **Project:** Momeva / Memova  
 **Parent stage:** [Stage 3 — MVP Build](./STAGE_3_MVP_PLAN.md)  
-**Status:** In progress — core deliverables largely shipped; polish + lock remaining  
+**Status:** ✅ Complete — [PHASE_5_COMPLETE.md](./PHASE_5_COMPLETE.md)  
 **Depends on:** Phase 4 (Guest UX)  
 **Blocks:** Phase 6 (Hardening)
 
-> Working list for Phase 5. Update this file as each step lands. Do not change Phase 4 guest flow without explicit approval ([PHASE_4_GUEST_FLOW.md](./PHASE_4_GUEST_FLOW.md)).
+> Working list for Phase 5. Do not change Phase 4 guest flow without explicit approval ([PHASE_4_GUEST_FLOW.md](./PHASE_4_GUEST_FLOW.md)).
 
 ---
 
@@ -30,43 +30,15 @@
 
 ---
 
-## Remaining polish (step-by-step)
-
-Work these in order. Mark ✅ when done and note the date.
+## Polish steps
 
 | Step | Item | Status | Detail |
 |------|------|--------|--------|
-| 5.1 | Sidebar / nav copy for 1:1 | ✅ Done | “← All events” → “← Your event” in `dashboard-nav.tsx` |
-| 5.2 | Shared-gallery confirm | ✅ Done | `window.confirm` before switching to `ALL_GUESTS` in settings |
-| 5.3 | Couple QR print alignment | ✅ Done | Verified OK on UI: eyebrow, `03.10.2026`, helper text (no URL) — 2026-08-31 |
-| 5.4 | Phase 5 verification pass | 🔄 In progress | Checklist below — QR UI already OK; couple tabs need quick walkthrough |
-| 5.5 | `PHASE_5_COMPLETE.md` | ⬜ Pending | Lock when polish verified |
-
-### 5.4 Verification checklist
-
-Test event: `wedding-3-oct-2026`  
-LAN: `http://192.168.0.103:3000` · Preview: `http://localhost:3000`
-
-| Area | Check | Status |
-|------|-------|--------|
-| Code | Bottom nav Home / Gallery / QR / Settings wired | ✅ Code |
-| Code | Overview: stats + storage meter + activity timeline | ✅ Code |
-| Code | Gallery: list + lightbox delete + download | ✅ Code |
-| Code | Settings: names / date / cover / privacy confirm | ✅ Code |
-| Code | 1 account = 1 event (API conflict + dashboard redirect) | ✅ Code |
-| UI | Guest QR: Scan to share / `DD.MM.YYYY` / helper (no URL) | ✅ User 2026-08-31 |
-| UI | Couple Home overview loads | ⬜ You |
-| UI | Couple Gallery opens + lightbox | ⬜ You |
-| UI | Couple QR matches guest QR look | ⬜ You |
-| UI | Couple Settings save + shared-gallery confirm | ⬜ You |
-| UI | Bottom nav works on phone / Mobile Preview | ⬜ You |
-
-**Couple walkthrough URLs (after login):**
-
-- Preview: http://localhost:3000/dashboard  
-- Phone: http://192.168.0.103:3000/dashboard  
-
-Then tap **Home → Gallery → QR → Settings**.
+| 5.1 | Sidebar / nav copy for 1:1 | ✅ Done | “← All events” → “← Your event” |
+| 5.2 | Shared-gallery confirm | ✅ Done | Confirm before `ALL_GUESTS` |
+| 5.3 | Couple QR print alignment | ✅ Done | Phase 4 rules; UI verified |
+| 5.4 | Phase 5 verification pass | ✅ Done | User confirmed 2026-08-31 |
+| 5.5 | `PHASE_5_COMPLETE.md` | ✅ Done | Locked |
 
 ### Explicitly out of scope (later)
 
@@ -83,6 +55,7 @@ Core checklist **25–29 complete**. Optional only:
 - Couple QR UI uses client base64 PNG; `GET /events/:id/qr/download` exists but unused by UI
 - Settings does not edit event `title` (API supports it; names/date/cover are enough for MVP)
 - Overview **activity timeline** is gallery-feed backed (not a separate activity API)
+
 ---
 
 ## Key routes
@@ -111,3 +84,5 @@ Core checklist **25–29 complete**. Optional only:
 | 2026-08-31 | Step 5.3 UI verified OK (eyebrow / date dots / helper text) |
 | 2026-08-31 | Pushed polish + Phase 5 list — commit `7065bff` |
 | 2026-08-31 | Step 5.4 started: code checks ✅; couple UI walkthrough pending |
+| 2026-08-31 | Soft-deleted stray second local event (`yvucuv-…`); sole event = Demetris & Daniella |
+| 2026-08-31 | Steps 5.4 + 5.5 complete — Phase 5 locked |
