@@ -53,7 +53,6 @@ export function Lightbox({
   const [initialLoading, setInitialLoading] = useState(true);
   const [deleting, setDeleting] = useState(false);
   const [downloading, setDownloading] = useState(false);
-  const [swipeHint, setSwipeHint] = useState(false);
   const [dragging, setDragging] = useState(false);
   const [settling, setSettling] = useState(false);
   const [lockedUrl, setLockedUrl] = useState<string | null>(null);
@@ -73,7 +72,6 @@ export function Lightbox({
   const itemsRef = useRef(items);
   const urlsByIdRef = useRef(urlsById);
   const loadGenRef = useRef(0);
-  const hintShownRef = useRef(false);
   const resolveWebUrlRef = useRef(resolveWebUrl);
 
   const current = items[index];
@@ -108,11 +106,10 @@ export function Lightbox({
     const layer = currentRef.current;
     if (!layer) return;
 
-    const rot = dx * 0.012;
     layer.style.transition = animate
       ? `transform ${SNAP_MS}ms ${SNAP_EASE}`
       : "none";
-    layer.style.transform = `translate3d(${dx}px, 0, 0) rotate(${rot}deg)`;
+    layer.style.transform = `translate3d(${dx}px, 0, 0)`;
   }, []);
 
   const cacheUrls = useCallback((entries: Record<string, string | null>) => {
@@ -160,8 +157,6 @@ export function Lightbox({
   }, [cacheUrls]);
 
   useEffect(() => {
-    hintShownRef.current = false;
-    setSwipeHint(false);
     setLockedUrl(null);
     setIndex(initialIndex);
 
@@ -244,24 +239,6 @@ export function Lightbox({
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [goTo, onClose]);
 
-  useEffect(() => {
-    if (
-      !canSwipe ||
-      initialLoading ||
-      !displayUrl ||
-      dragging ||
-      settling ||
-      hintShownRef.current
-    ) {
-      return;
-    }
-
-    hintShownRef.current = true;
-    setSwipeHint(true);
-    const timer = window.setTimeout(() => setSwipeHint(false), 1100);
-    return () => window.clearTimeout(timer);
-  }, [canSwipe, displayUrl, dragging, initialLoading, settling]);
-
   function applyEdgeResistance(delta: number): number {
     const idx = indexRef.current;
     if (idx === 0 && delta > 0) return delta * 0.18;
@@ -274,7 +251,6 @@ export function Lightbox({
   function beginDrag(clientX: number) {
     if (!canSwipe || deleting || !displayUrl || settlingRef.current) return;
 
-    setSwipeHint(false);
     draggingRef.current = true;
     setDragging(true);
     startXRef.current = clientX;
@@ -456,15 +432,15 @@ export function Lightbox({
 
       <div
         className={cn(
-          "flex items-center justify-between px-4 py-3 text-ivory-50",
+          "flex items-center justify-between px-4 py-3 text-white",
           floatingClose &&
             "pb-2 pt-[max(1rem,env(safe-area-inset-top))] pr-16",
         )}
       >
         {headerTitle ? (
-          <p className="truncate text-sm text-white">{headerTitle}</p>
+          <p className="truncate text-sm font-medium text-white">{headerTitle}</p>
         ) : (
-          <span className="text-sm">
+          <span className="text-sm font-medium text-white">
             {index + 1} / {items.length}
           </span>
         )}
@@ -473,10 +449,10 @@ export function Lightbox({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg p-2 text-ivory-50 hover:bg-white/10"
+            className="rounded-lg p-2 text-white hover:bg-white/10"
             aria-label="Close lightbox"
           >
-            <X className="size-6" />
+            <X className="size-6 text-white" strokeWidth={2.5} />
           </button>
         ) : canDownload || canDelete ? (
           actionButtons
@@ -515,10 +491,7 @@ export function Lightbox({
         >
           <div
             ref={currentRef}
-            className={cn(
-              "absolute inset-0 will-change-transform",
-              swipeHint && !dragging && !settling && "lightbox-swipe-hint",
-            )}
+            className="absolute inset-0 will-change-transform"
           >
             {initialLoading && !displayUrl ? (
               <div className="flex h-full min-h-[40vh] items-center justify-center text-ivory-50">
