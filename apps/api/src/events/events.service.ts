@@ -439,7 +439,7 @@ export class EventsService {
     };
   }
 
-  private async serializeEvent(
+  async serializeEvent(
     event: EventWithCover,
     options: { includeQrToken?: boolean } = {},
   ) {

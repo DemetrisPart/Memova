@@ -292,6 +292,34 @@ export async function deleteCoupleMedia(
   );
 }
 
+export async function fetchAdminEvents(params?: {
+  date?: string;
+}): Promise<import("./types").AdminEventSummary[]> {
+  const search = new URLSearchParams();
+  if (params?.date) search.set("date", params.date);
+  const query = search.toString();
+  return apiFetch(`/admin/events${query ? `?${query}` : ""}`);
+}
+
+export async function fetchAdminEvent(
+  eventId: string,
+): Promise<import("./types").AdminEventDetail> {
+  return apiFetch(`/admin/events/${encodeURIComponent(eventId)}`);
+}
+
+export async function fetchAdminGallery(
+  eventId: string,
+  params?: { cursor?: string; limit?: number },
+): Promise<CoupleGalleryResponse> {
+  const search = new URLSearchParams();
+  if (params?.cursor) search.set("cursor", params.cursor);
+  if (params?.limit) search.set("limit", String(params.limit));
+  const query = search.toString();
+  return apiFetch(
+    `/admin/events/${encodeURIComponent(eventId)}/media${query ? `?${query}` : ""}`,
+  );
+}
+
 export async function initCoverUpload(
   eventId: string,
   data: { contentType: string; contentLength: number; fileName?: string },

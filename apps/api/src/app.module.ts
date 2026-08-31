@@ -13,6 +13,7 @@ import { RateLimitModule } from "./rate-limit/rate-limit.module";
 import { StorageModule } from "./storage/storage.module";
 import { GalleryModule } from "./gallery/gallery.module";
 import { UploadsModule } from "./uploads/uploads.module";
+import { AdminModule } from "./admin/admin.module";
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { UploadsModule } from "./uploads/uploads.module";
     PublicModule,
     UploadsModule,
     GalleryModule,
+    AdminModule,
   ],
   controllers: [HealthController],
 })

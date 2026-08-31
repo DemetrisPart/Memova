@@ -124,6 +124,16 @@ export type CoupleEvent = {
   updatedAt: string;
 };
 
+export type AdminEventSummary = CoupleEvent & {
+  ownerEmail: string;
+  ownerId: string;
+  photoCount: number;
+};
+
+export type AdminEventDetail = AdminEventSummary & {
+  videoCount: number;
+};
+
 export type EventStats = {
   photoCount: number;
   videoCount: number;

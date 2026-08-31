@@ -14,6 +14,13 @@ Current LAN host: **`192.168.0.103`**
 | Guest event | http://192.168.0.103:3000/wedding-3-oct-2026 |
 | Guest QR | http://192.168.0.103:3000/wedding-3-oct-2026/qr |
 | Dashboard | http://192.168.0.103:3000/dashboard |
+| Admin (PLATFORM_ADMIN) | http://192.168.0.103:3000/admin |
+
+Promote a user (then sign in again):
+
+```bash
+node scripts/promote-admin.mjs you@example.com
+```
 
 ## PC (localhost)
 
