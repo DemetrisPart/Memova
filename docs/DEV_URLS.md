@@ -2,21 +2,25 @@
 
 Quick links for local + LAN testing. LAN IP may change — check `ipconfig` / `.env` if needed.
 
-Current LAN host: **`192.168.0.103`**
+Current LAN host: **`192.168.0.103`**  
+Default test event: **`wedding-3-oct-2026`**
 
 ## LAN (mobile)
 
 | Page | URL |
 |---|---|
 | Home | http://192.168.0.103:3000 |
-| Couple sign in | http://192.168.0.103:3000/auth/login |
-| Create account | http://192.168.0.103:3000/auth/login?mode=register |
+| Couple sign in | http://192.168.0.103:3000/auth/login?next=/dashboard |
+| Create account | http://192.168.0.103:3000/auth/login?mode=register&next=/dashboard |
+| Couple dashboard | http://192.168.0.103:3000/dashboard |
 | Guest event | http://192.168.0.103:3000/wedding-3-oct-2026 |
 | Guest QR | http://192.168.0.103:3000/wedding-3-oct-2026/qr |
-| Dashboard | http://192.168.0.103:3000/dashboard |
 | Admin (PLATFORM_ADMIN) | http://192.168.0.103:3000/admin |
 
 On a **phone**, use the LAN IP above — `localhost` on the phone is the phone itself, not your PC.
+
+- **Couple** → sign in with `next=/dashboard` → opens **Demetris & Daniella** (`wedding-3-oct-2026`).
+- **Guest** → open `/wedding-3-oct-2026` (Upload Photos / View Gallery). Do **not** use this after couple login.
 
 Promote a user (then **sign out + sign in again**):
 
@@ -33,11 +37,11 @@ Admin home shows **system health** (API / DB / queue). Tap **Enable browser aler
 | Page | URL |
 |---|---|
 | Home | http://localhost:3000 |
-| Couple sign in | http://localhost:3000/auth/login |
-| Create account | http://localhost:3000/auth/login?mode=register |
+| Couple sign in | http://localhost:3000/auth/login?next=/dashboard |
+| Create account | http://localhost:3000/auth/login?mode=register&next=/dashboard |
+| Couple dashboard | http://localhost:3000/dashboard |
 | Guest event | http://localhost:3000/wedding-3-oct-2026 |
 | Guest QR | http://localhost:3000/wedding-3-oct-2026/qr |
-| Dashboard | http://localhost:3000/dashboard |
 
 ## API / infra
 
