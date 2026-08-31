@@ -25,10 +25,24 @@ async function apiFetch<T>(
   init?: RequestInit & { credentials?: RequestCredentials },
 ): Promise<T> {
   const url = buildApiUrl(path);
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 20_000);
+  const outerSignal = init?.signal;
+  if (outerSignal) {
+    if (outerSignal.aborted) controller.abort();
+    else {
+      outerSignal.addEventListener("abort", () => controller.abort(), {
+        once: true,
+      });
+    }
+  }
+
   let response: Response;
   try {
+    const { signal: _signal, ...rest } = init ?? {};
     response = await fetch(url, {
-      ...init,
+      ...rest,
+      signal: controller.signal,
       credentials: init?.credentials ?? "include",
       headers: {
         "Content-Type": "application/json",
@@ -36,11 +50,16 @@ async function apiFetch<T>(
         ...init?.headers,
       },
     });
-  } catch {
+  } catch (err) {
+    if (err instanceof DOMException && err.name === "AbortError") {
+      throw new ApiError("Request timed out. Please try again.", 0);
+    }
     throw new ApiError(
       "Could not reach the server. Check your connection and try again.",
       0,
     );
+  } finally {
+    clearTimeout(timeoutId);
   }
 
   if (!response.ok) {
@@ -61,7 +80,7 @@ async function apiFetch<T>(
 
 export async function register(
   email: string,
-): Promise<{ message: string; pollToken: string; verificationToken: string }> {
+): Promise<{ message: string; pollToken: string }> {
   return apiFetch("/auth/register", {
     method: "POST",
     body: JSON.stringify({ email }),
@@ -70,7 +89,7 @@ export async function register(
 
 export async function requestMagicLink(
   email: string,
-): Promise<{ message: string; pollToken: string; verificationToken: string }> {
+): Promise<{ message: string; pollToken: string }> {
   return apiFetch("/auth/magic-link", {
     method: "POST",
     body: JSON.stringify({ email }),

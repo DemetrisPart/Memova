@@ -55,11 +55,10 @@ export class AuthController {
       accessToken: session.accessToken,
       refreshToken: session.refreshToken,
     });
+    // Cookie-only session — never expose JWTs in JSON (production parity).
     return {
       message: "Authenticated",
       userId: session.userId,
-      accessToken: session.accessToken,
-      refreshToken: session.refreshToken,
     };
   }
 
@@ -89,8 +88,6 @@ export class AuthController {
     return {
       message: "Authenticated",
       userId: session.userId,
-      accessToken: session.accessToken,
-      refreshToken: session.refreshToken,
     };
   }
 

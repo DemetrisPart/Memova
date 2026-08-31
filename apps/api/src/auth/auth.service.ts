@@ -27,7 +27,7 @@ export class AuthService {
 
   async register(
     email: string,
-  ): Promise<{ message: string; pollToken: string; verificationToken: string }> {
+  ): Promise<{ message: string; pollToken: string }> {
     const normalized = email.trim().toLowerCase();
     const existing = await this.prisma.user.findFirst({
       where: { email: normalized, deletedAt: null },
@@ -44,13 +44,12 @@ export class AuthService {
     return {
       message: "Magic link sent to your email",
       pollToken: issued.pollToken,
-      verificationToken: issued.verificationToken,
     };
   }
 
   async requestMagicLink(
     email: string,
-  ): Promise<{ message: string; pollToken: string; verificationToken: string }> {
+  ): Promise<{ message: string; pollToken: string }> {
     const normalized = email.trim().toLowerCase();
     const user = await this.prisma.user.findFirst({
       where: { email: normalized, deletedAt: null },
@@ -63,7 +62,6 @@ export class AuthService {
     return {
       message: "Magic link sent to your email",
       pollToken: issued.pollToken,
-      verificationToken: issued.verificationToken,
     };
   }
 
@@ -243,7 +241,7 @@ export class AuthService {
   private async sendMagicLinkForUser(
     userId: string,
     email: string,
-  ): Promise<{ pollToken: string; verificationToken: string }> {
+  ): Promise<{ pollToken: string }> {
     const rawToken = generateSecureToken();
     const pollToken = generateSecureToken();
     const ttlMinutes = this.config.get<number>("MAGIC_LINK_TTL_MINUTES", 15);
@@ -270,7 +268,8 @@ export class AuthService {
     const webUrl = this.config.getOrThrow<string>("WEB_APP_URL");
     const approveUrl = `${webUrl}/auth/approve?token=${encodeURIComponent(rawToken)}`;
     await this.emailService.sendMagicLink(email, approveUrl, { ttlMinutes });
-    return { pollToken, verificationToken: rawToken };
+    // Email-only approval token — never returned in API JSON.
+    return { pollToken };
   }
 
   private async findActiveMagicLink(

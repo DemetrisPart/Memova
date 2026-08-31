@@ -11,7 +11,6 @@ import { warmupAuthRoutes } from "@/lib/auth/warmup-verify-route";
 type MagicLinkWaitingProps = {
   email: string;
   pollToken: string;
-  verificationToken: string;
   onBack: () => void;
 };
 
@@ -49,7 +48,9 @@ async function completeAndGoToDashboard(pollToken: string): Promise<void> {
   }
 
   if (res.ok) {
-    const body = (await res.json()) as {
+    // Cookies are set by Set-Cookie from the API (production parity).
+    // Optional Mobile Preview fallback if the BFF still returns tokens.
+    const body = (await res.json().catch(() => ({}))) as {
       accessToken?: string;
       refreshToken?: string;
     };
@@ -58,7 +59,6 @@ async function completeAndGoToDashboard(pollToken: string): Promise<void> {
         accessToken: body.accessToken,
         refreshToken: body.refreshToken,
       });
-      // Best-effort cookies for normal browsers; ignored if iframe blocks them.
       await fetch("/api/auth/establish", {
         method: "POST",
         credentials: "include",
@@ -80,7 +80,6 @@ async function completeAndGoToDashboard(pollToken: string): Promise<void> {
 export function MagicLinkWaiting({
   email,
   pollToken,
-  verificationToken,
   onBack,
 }: MagicLinkWaitingProps) {
   const [error, setError] = useState<string | null>(null);
@@ -149,7 +148,7 @@ export function MagicLinkWaiting({
       cancelled = true;
       if (timeoutId) clearTimeout(timeoutId);
     };
-  }, [pollToken, verificationToken]);
+  }, [pollToken]);
 
   const devApprove = async () => {
     setDevLoading(true);
@@ -167,7 +166,7 @@ export function MagicLinkWaiting({
 
       for (let attempt = 0; attempt < 15; attempt += 1) {
         const status = await fetchPollStatus(pollToken);
-        if (status === "completed" || status === "approved") {
+        if (status === "approved" || status === "completed") {
           setApproved(true);
           finishSignIn(true);
           return;

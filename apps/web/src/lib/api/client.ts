@@ -10,11 +10,11 @@ import type {
 } from "./types";
 import { inferPhotoContentType } from "@/lib/utils";
 import { resolveNetworkUrl } from "@/lib/mobile-network";
-import {
-  getGuestSessionToken,
-  setGuestSessionToken,
-} from "@/lib/guest-session-storage";
 import { ApiError } from "./types";
+
+/** Default request timeout — prevents eternal Loading… / Uploading… on hung TCP. */
+const DEFAULT_FETCH_TIMEOUT_MS = 20_000;
+const UPLOAD_XHR_TIMEOUT_MS = 120_000;
 
 function getServerApiUrl(): string {
   // Prefer origin without trailing /v1 — callers append /v1/...
@@ -42,36 +42,49 @@ function buildApiUrl(path: string): string {
   return `/api/v1${path}`;
 }
 
-function guestSessionHeaders(path: string): Record<string, string> {
-  if (typeof window === "undefined") return {};
-  const match = path.match(/\/public\/events\/([^/]+)/);
-  if (!match?.[1]) return {};
-  const slug = decodeURIComponent(match[1]);
-  const token = getGuestSessionToken(slug);
-  return token ? { "X-Guest-Session-Token": token } : {};
-}
-
 async function apiFetch<T>(
   path: string,
-  init?: RequestInit & { credentials?: RequestCredentials },
+  init?: RequestInit & { credentials?: RequestCredentials; timeoutMs?: number },
 ): Promise<T> {
   const url = buildApiUrl(path);
+  const timeoutMs = init?.timeoutMs ?? DEFAULT_FETCH_TIMEOUT_MS;
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+  // Merge caller abort with our timeout.
+  const outerSignal = init?.signal;
+  if (outerSignal) {
+    if (outerSignal.aborted) {
+      controller.abort();
+    } else {
+      outerSignal.addEventListener("abort", () => controller.abort(), {
+        once: true,
+      });
+    }
+  }
+
   let response: Response;
   try {
+    const { timeoutMs: _timeoutMs, signal: _signal, ...rest } = init ?? {};
     response = await fetch(url, {
-      ...init,
+      ...rest,
+      signal: controller.signal,
       credentials: init?.credentials ?? "include",
       headers: {
         "Content-Type": "application/json",
-        ...guestSessionHeaders(path),
         ...init?.headers,
       },
     });
-  } catch {
+  } catch (err) {
+    if (err instanceof DOMException && err.name === "AbortError") {
+      throw new ApiError("Request timed out. Please try again.", 0);
+    }
     throw new ApiError(
       "Could not reach the server. Check your connection and try again.",
       0,
     );
+  } finally {
+    clearTimeout(timeoutId);
   }
 
   if (!response.ok) {
@@ -117,17 +130,14 @@ export async function createGuestSession(
   slug: string,
   data: { firstName: string; lastName?: string },
 ): Promise<GuestSessionResponse> {
-  const result = await apiFetch<GuestSessionResponse>(
+  // Session is HttpOnly cookie only (production parity) — no client token storage.
+  return apiFetch<GuestSessionResponse>(
     `/public/events/${encodeURIComponent(slug)}/guest-session`,
     {
       method: "POST",
       body: JSON.stringify(data),
     },
   );
-  if (result.sessionToken) {
-    setGuestSessionToken(slug, result.sessionToken);
-  }
-  return result;
 }
 
 export async function initUpload(
@@ -238,6 +248,7 @@ export async function uploadFileToPresignedUrl(
   await new Promise<void>((resolve, reject) => {
     const xhr = new XMLHttpRequest();
     xhr.open("PUT", uploadUrl);
+    xhr.timeout = UPLOAD_XHR_TIMEOUT_MS;
     xhr.setRequestHeader("Content-Type", file.type || inferPhotoContentType(file));
 
     xhr.upload.onprogress = (event) => {
@@ -256,6 +267,7 @@ export async function uploadFileToPresignedUrl(
 
     xhr.onerror = () => reject(new Error("Network error during upload"));
     xhr.onabort = () => reject(new Error("Upload aborted"));
+    xhr.ontimeout = () => reject(new Error("Upload timed out. Please try again."));
     xhr.send(file);
   });
 }

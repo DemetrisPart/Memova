@@ -1,6 +1,9 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { getApiOrigin } from "@/lib/server/api-origin";
-import { authSuccessHtmlResponse } from "@/lib/server/set-auth-cookies";
+import {
+  authSuccessHtmlResponse,
+  tokensFromSetCookieHeaders,
+} from "@/lib/server/set-auth-cookies";
 import { getRequestPathUrl } from "@/lib/server/request-origin";
 
 export const dynamic = "force-dynamic";
@@ -34,19 +37,14 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const body = (await upstream.json()) as {
-    accessToken?: string;
-    refreshToken?: string;
-  };
-
-  if (!body.accessToken || !body.refreshToken) {
+  const tokens = tokensFromSetCookieHeaders(
+    upstream.headers.getSetCookie?.() ?? [],
+  );
+  if (!tokens) {
     return NextResponse.redirect(
       getRequestPathUrl(request, "/auth/login?error=session"),
     );
   }
 
-  return authSuccessHtmlResponse({
-    accessToken: body.accessToken,
-    refreshToken: body.refreshToken,
-  });
+  return authSuccessHtmlResponse(tokens);
 }

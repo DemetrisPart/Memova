@@ -29,6 +29,7 @@ export function NameEntryModal({
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
+    if (loading) return;
     setError(null);
 
     const trimmedFirst = firstName.trim();
@@ -58,10 +59,15 @@ export function NameEntryModal({
     }
   }
 
+  function handleClose() {
+    if (loading) return;
+    onClose();
+  }
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-start justify-center bg-[#1a1714]/55 p-4 pt-10 backdrop-blur-sm sm:items-start sm:pt-16"
-      onClick={onClose}
+      onClick={handleClose}
       role="presentation"
     >
       <div
@@ -73,8 +79,9 @@ export function NameEntryModal({
       >
         <button
           type="button"
-          onClick={onClose}
-          className="absolute right-4 top-4 z-10 rounded-full p-2 text-[#5c4a32] transition-colors hover:bg-[#efe8dc]/70 hover:text-[#1a1714]"
+          onClick={handleClose}
+          disabled={loading}
+          className="absolute right-4 top-4 z-10 rounded-full p-2 text-[#5c4a32] transition-colors hover:bg-[#efe8dc]/70 hover:text-[#1a1714] disabled:opacity-50"
           aria-label="Close"
         >
           <X className="size-5" />
@@ -139,7 +146,7 @@ export function NameEntryModal({
                 type="button"
                 variant="secondary"
                 className="min-h-12 flex-1 !border-0 bg-white text-charcoal-900 shadow-[0_4px_16px_rgb(0_0_0_/_14%)] hover:bg-ivory-100"
-                onClick={onClose}
+                onClick={handleClose}
                 disabled={loading}
               >
                 Cancel

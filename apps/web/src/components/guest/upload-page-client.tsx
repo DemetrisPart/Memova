@@ -77,19 +77,28 @@ export function UploadPageClient({ slug, event }: UploadPageClientProps) {
   useEffect(() => {
     async function verifySession() {
       setCheckingSession(true);
-      const hasSession = await checkGuestSession(slug);
-      if (!hasSession) {
-        setNeedsName(true);
-        setCheckingSession(false);
-        return;
-      }
-      setNeedsName(false);
-      setSessionReady(true);
-      setCheckingSession(false);
+      try {
+        const hasSession = await checkGuestSession(slug);
+        if (!hasSession) {
+          setNeedsName(true);
+          setSessionReady(false);
+          return;
+        }
+        setNeedsName(false);
+        setSessionReady(true);
 
-      const persisted = loadUploadSession(slug);
-      if (persisted) {
-        setUploadSessionId(persisted.uploadSessionId);
+        const persisted = loadUploadSession(slug);
+        if (persisted) {
+          setUploadSessionId(persisted.uploadSessionId);
+        }
+      } catch {
+        setNeedsName(true);
+        setSessionReady(false);
+        setError(
+          "Could not verify your session. Check your connection and try again.",
+        );
+      } finally {
+        setCheckingSession(false);
       }
     }
     void verifySession();
@@ -325,15 +334,36 @@ export function UploadPageClient({ slug, event }: UploadPageClientProps) {
 
   if (needsName) {
     return (
-      <NameEntryModal
-        slug={slug}
-        open
-        onClose={() => router.replace(`/${slug}`)}
-        onSuccess={() => {
-          setNeedsName(false);
-          setSessionReady(true);
-        }}
-      />
+      <>
+        {error ? (
+          <p className="px-4 pt-6 text-center text-sm text-rose-600" role="alert">
+            {error}
+          </p>
+        ) : null}
+        <NameEntryModal
+          slug={slug}
+          open
+          onClose={() => router.replace(`/${slug}`)}
+          onSuccess={async () => {
+            try {
+              const active = await checkGuestSession(slug);
+              if (!active) {
+                setError(
+                  "Could not start your session. Refresh and try again, or open in Chrome/Safari.",
+                );
+                return;
+              }
+              setNeedsName(false);
+              setSessionReady(true);
+              setError(null);
+            } catch {
+              setError(
+                "Could not start your session. Check your connection and try again.",
+              );
+            }
+          }}
+        />
+      </>
     );
   }
 

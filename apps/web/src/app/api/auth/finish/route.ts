@@ -3,6 +3,7 @@ import { getApiOrigin } from "@/lib/server/api-origin";
 import {
   applyAuthTokensToResponse,
   authSuccessHtmlResponse,
+  tokensFromSetCookieHeaders,
 } from "@/lib/server/set-auth-cookies";
 import { getRequestPathUrl } from "@/lib/server/request-origin";
 
@@ -41,21 +42,14 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const body = (await upstream.json()) as {
-    accessToken?: string;
-    refreshToken?: string;
-  };
-
-  if (!body.accessToken || !body.refreshToken) {
+  const tokens = tokensFromSetCookieHeaders(
+    upstream.headers.getSetCookie?.() ?? [],
+  );
+  if (!tokens) {
     return NextResponse.redirect(
       getRequestPathUrl(request, "/auth/login?error=session"),
     );
   }
-
-  const tokens = {
-    accessToken: body.accessToken,
-    refreshToken: body.refreshToken,
-  };
 
   // Explicit HTML handoff (iframe fallback). Default: 303 + Set-Cookie so a
   // top-level form navigation lands on /dashboard already authenticated.

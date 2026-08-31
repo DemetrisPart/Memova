@@ -70,9 +70,11 @@ export function GalleryPageClient({ slug, event }: GalleryPageClientProps) {
         setNextCursor(data.nextCursor);
         setError(null);
       } catch (err) {
-        setError(
-          err instanceof Error ? err.message : "Could not load gallery",
-        );
+        const message =
+          err instanceof Error ? err.message : "Could not load gallery";
+        setError(message);
+        // Stop infinite load-more retries on failure.
+        if (cursor) setNextCursor(null);
       } finally {
         setLoading(false);
         setLoadingMore(false);
@@ -127,16 +129,27 @@ export function GalleryPageClient({ slug, event }: GalleryPageClientProps) {
   useEffect(() => {
     async function verifySession() {
       setCheckingSession(true);
-      const hasSession = await checkGuestSession(slug);
-      if (!hasSession) {
-        setNeedsName(true);
+      try {
+        const hasSession = await checkGuestSession(slug);
+        if (!hasSession) {
+          setNeedsName(true);
+          setSessionReady(false);
+          return;
+        }
+        setNeedsName(false);
+        setSessionReady(true);
         setCheckingSession(false);
+        await loadGallery();
         return;
+      } catch {
+        setNeedsName(true);
+        setSessionReady(false);
+        setError(
+          "Could not verify your session. Check your connection and try again.",
+        );
+      } finally {
+        setCheckingSession(false);
       }
-      setNeedsName(false);
-      setSessionReady(true);
-      setCheckingSession(false);
-      await loadGallery();
     }
     void verifySession();
   }, [loadGallery, slug]);
@@ -167,24 +180,37 @@ export function GalleryPageClient({ slug, event }: GalleryPageClientProps) {
 
   if (needsName) {
     return (
-      <NameEntryModal
-        slug={slug}
-        open
-        onClose={() => router.replace(`/${slug}`)}
-        onSuccess={async () => {
-          const active = await checkGuestSession(slug);
-          if (!active) {
-            setError(
-              "Could not start your session. Refresh and try again, or open in Chrome/Safari.",
-            );
-            return;
-          }
-          setNeedsName(false);
-          setSessionReady(true);
-          setError(null);
-          await loadGallery();
-        }}
-      />
+      <>
+        {error ? (
+          <p className="px-4 pt-6 text-center text-sm text-rose-600" role="alert">
+            {error}
+          </p>
+        ) : null}
+        <NameEntryModal
+          slug={slug}
+          open
+          onClose={() => router.replace(`/${slug}`)}
+          onSuccess={async () => {
+            try {
+              const active = await checkGuestSession(slug);
+              if (!active) {
+                setError(
+                  "Could not start your session. Refresh and try again, or open in Chrome/Safari.",
+                );
+                return;
+              }
+              setNeedsName(false);
+              setSessionReady(true);
+              setError(null);
+              await loadGallery();
+            } catch {
+              setError(
+                "Could not start your session. Check your connection and try again.",
+              );
+            }
+          }}
+        />
+      </>
     );
   }
 
@@ -218,7 +244,7 @@ export function GalleryPageClient({ slug, event }: GalleryPageClientProps) {
             <div className="flex min-h-[36vh] items-center justify-center text-[#5c4a32]">
               Loading photos…
             </div>
-          ) : error ? (
+          ) : items.length === 0 && error ? (
             <p className="text-center text-sm text-rose-600" role="alert">
               {error}
             </p>
@@ -234,6 +260,11 @@ export function GalleryPageClient({ slug, event }: GalleryPageClientProps) {
             </div>
           ) : (
             <>
+              {error ? (
+                <p className="mb-3 text-center text-sm text-rose-600" role="alert">
+                  {error}
+                </p>
+              ) : null}
               <div className="grid grid-cols-3 gap-2 rounded-2xl bg-[#efe8dc] p-2.5 shadow-[0_4px_16px_rgb(0_0_0_/_12%)]">
                 {items.map((item, index) => {
                   const thumbUrl = galleryThumbUrl(item);

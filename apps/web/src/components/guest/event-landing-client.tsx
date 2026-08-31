@@ -31,6 +31,7 @@ export function EventLandingClient({ slug, event }: EventLandingClientProps) {
   const { theme } = useGuestTheme();
   const [nameModalOpen, setNameModalOpen] = useState(false);
   const [pendingAction, setPendingAction] = useState<"upload" | "gallery" | null>(null);
+  const [navigating, setNavigating] = useState(false);
 
   const refreshSession = useCallback(async () => {
     try {
@@ -59,13 +60,19 @@ export function EventLandingClient({ slug, event }: EventLandingClientProps) {
   }, [refreshSession, router, searchParams, slug]);
 
   async function navigateWithSession(action: "upload" | "gallery") {
-    const active = await refreshSession();
-    if (active) {
-      router.push(`/${slug}/${action}`);
-      return;
+    if (navigating || nameModalOpen) return;
+    setNavigating(true);
+    try {
+      const active = await refreshSession();
+      if (active) {
+        router.push(`/${slug}/${action}`);
+        return;
+      }
+      setPendingAction(action);
+      setNameModalOpen(true);
+    } finally {
+      setNavigating(false);
     }
-    setPendingAction(action);
-    setNameModalOpen(true);
   }
 
   function handleNameSuccess() {

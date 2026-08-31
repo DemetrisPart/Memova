@@ -13,7 +13,7 @@ import {
 import { warmupAuthRoutes } from "@/lib/auth/warmup-verify-route";
 import { ApiError } from "@/lib/api/types";
 
-const VERIFY_STORAGE_KEY = "momeva_verification_token";
+const POLL_STORAGE_KEY = "momeva_poll_token";
 
 type AuthMode = "login" | "register";
 
@@ -85,10 +85,9 @@ function LoginForm() {
       saveRememberedEmail(trimmedEmail);
       setRememberedEmail(trimmedEmail.toLowerCase());
 
-      sessionStorage.setItem(VERIFY_STORAGE_KEY, result.verificationToken);
+      sessionStorage.setItem(POLL_STORAGE_KEY, result.pollToken);
       await warmupAuthRoutes();
       const params = new URLSearchParams({
-        pollToken: result.pollToken,
         email: trimmedEmail,
       });
       router.push(`/auth/check-email?${params.toString()}`);

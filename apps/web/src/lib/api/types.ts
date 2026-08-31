@@ -24,8 +24,6 @@ export type GuestSessionResponse = {
   firstName: string;
   lastName: string | null;
   expiresInHours: number;
-  /** Dev only — when iframe preview blocks HttpOnly cookies (e.g. Mobile Preview). */
-  sessionToken?: string;
 };
 
 export type GalleryItem = {

@@ -79,9 +79,6 @@ async function proxyRequest(
   const cookie = request.headers.get("cookie");
   if (cookie) headers.set("cookie", cookie);
 
-  const guestToken = request.headers.get("x-guest-session-token");
-  if (guestToken) headers.set("x-guest-session-token", guestToken);
-
   // Mobile Preview: couple JWT from sessionStorage (cookies blocked in iframe).
   const authorization = request.headers.get("authorization");
   if (authorization) headers.set("authorization", authorization);

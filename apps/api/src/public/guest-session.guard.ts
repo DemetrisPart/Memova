@@ -66,11 +66,7 @@ export function getGuestSessionTokenFromRequest(
   const fromCookie = req.cookies?.[cookieName] as string | undefined;
   if (fromCookie) return fromCookie;
 
-  if (config.get("NODE_ENV") !== "production") {
-    const header = req.headers["x-guest-session-token"];
-    if (typeof header === "string" && header.length > 0) return header;
-  }
-
+  // Header tokens are not accepted — matches production (HttpOnly cookie only).
   return undefined;
 }
 

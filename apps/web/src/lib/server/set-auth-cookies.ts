@@ -3,6 +3,27 @@ import { NextResponse } from "next/server";
 const ACCESS_COOKIE = process.env.ACCESS_TOKEN_COOKIE ?? "momeva_access";
 const REFRESH_COOKIE = process.env.REFRESH_TOKEN_COOKIE ?? "momeva_refresh";
 
+/** Read auth JWTs from upstream Set-Cookie (API no longer returns them in JSON). */
+export function tokensFromSetCookieHeaders(
+  setCookies: string[],
+): { accessToken: string; refreshToken: string } | null {
+  let accessToken = "";
+  let refreshToken = "";
+
+  for (const raw of setCookies) {
+    const nameValue = raw.split(";")[0] ?? "";
+    const eqIdx = nameValue.indexOf("=");
+    if (eqIdx === -1) continue;
+    const name = nameValue.slice(0, eqIdx).trim();
+    const value = nameValue.slice(eqIdx + 1).trim();
+    if (name === ACCESS_COOKIE) accessToken = value;
+    if (name === REFRESH_COOKIE) refreshToken = value;
+  }
+
+  if (!accessToken || !refreshToken) return null;
+  return { accessToken, refreshToken };
+}
+
 export function applyAuthTokensToResponse(
   response: NextResponse,
   tokens: { accessToken: string; refreshToken: string },
