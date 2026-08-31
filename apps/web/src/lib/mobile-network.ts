@@ -146,8 +146,17 @@ export async function ensureMobileNetworkRoute(): Promise<NetworkMode | null> {
 
   const { lan, publicOrigin } = getMobileOrigins();
   const currentOrigin = window.location.origin;
+  const hostname = window.location.hostname;
   const currentPath =
     window.location.pathname + window.location.search + window.location.hash;
+
+  // Already on a private LAN host — stay. Stale NEXT_PUBLIC_MOBILE_LAN_ORIGIN
+  // (old Wi‑Fi IP) must not redirect guests mid-session.
+  if (isPrivateHostname(hostname)) {
+    setNetworkMode("lan");
+    markNetworkProbeDone();
+    return "lan";
+  }
 
   if (await probeOrigin(currentOrigin)) {
     const mode = modeForOrigin(currentOrigin, lan, publicOrigin);
@@ -160,11 +169,21 @@ export async function ensureMobileNetworkRoute(): Promise<NetworkMode | null> {
   setNetworkMode(mode);
 
   const target = getRedirectTarget(mode, currentPath);
-  if (target) {
+  if (target && isUsableRedirectTarget(target)) {
     window.location.replace(target);
     return mode;
   }
 
   markNetworkProbeDone();
   return mode;
+}
+
+function isUsableRedirectTarget(target: string): boolean {
+  try {
+    const host = new URL(target).hostname;
+    if (host.includes("x.x.x") || host === "example.com") return false;
+    return true;
+  } catch {
+    return false;
+  }
 }

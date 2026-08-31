@@ -60,7 +60,7 @@ export function NameEntryModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-charcoal-900/60 p-4 backdrop-blur-sm sm:items-center"
+      className="fixed inset-0 z-50 flex items-start justify-center bg-[#1a1714]/55 p-4 pt-10 backdrop-blur-sm sm:items-start sm:pt-16"
       onClick={onClose}
       role="presentation"
     >
@@ -68,38 +68,38 @@ export function NameEntryModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby="name-entry-title"
-        className="relative w-full max-w-md overflow-hidden rounded-3xl bg-ivory-50 shadow-hero"
+        className="money-lime-zone relative w-full max-w-md overflow-hidden !rounded-3xl"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="gold-accent-line" />
-
         <button
           type="button"
           onClick={onClose}
-          className="absolute right-4 top-4 rounded-full p-2 text-stone-400 transition-colors hover:bg-ivory-100 hover:text-charcoal-800"
+          className="absolute right-4 top-4 z-10 rounded-full p-2 text-[#5c4a32] transition-colors hover:bg-[#efe8dc]/70 hover:text-[#1a1714]"
           aria-label="Close"
         >
           <X className="size-5" />
         </button>
 
-        <div className="px-6 pb-6 pt-8">
-          <div className="mb-5 flex size-12 items-center justify-center rounded-2xl bg-gold-100">
-            <Sparkles className="size-5 text-gold-600" aria-hidden />
+        <div className="relative px-6 pb-6 pt-8">
+          <div className="mb-5 flex size-12 items-center justify-center rounded-2xl bg-[#efe8dc] shadow-[0_4px_16px_rgb(0_0_0_/_12%)]">
+            <Sparkles className="size-5 text-[#8a6a3f]" aria-hidden />
           </div>
 
           <h2
             id="name-entry-title"
-            className="font-serif text-2xl leading-tight text-charcoal-900"
+            className="font-serif text-2xl leading-tight text-[#1a1714]"
           >
             Welcome! What&apos;s your name?
           </h2>
-          <p className="mt-2 text-sm leading-relaxed text-stone-400">
+          <p className="mt-2 text-sm leading-relaxed text-[#5c4a32]">
             So the couple knows who shared these memories.
           </p>
 
           <form onSubmit={handleSubmit} className="mt-6 space-y-4">
             <Input
-              label="First name"
+              label={
+                <span className="text-[#1a1714]">First name</span>
+              }
               requiredMark
               value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
@@ -107,26 +107,30 @@ export function NameEntryModal({
               autoFocus
               disabled={loading}
               placeholder="Maria"
+              className="!border-0 !bg-[#efe8dc] !text-[#1a1714] shadow-[0_4px_16px_rgb(0_0_0_/_12%)] placeholder:!text-[#8a7a68]"
             />
             <Input
-              label="Last name (optional)"
+              label={
+                <span className="text-[#1a1714]">Last name (optional)</span>
+              }
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
               autoComplete="family-name"
               disabled={loading}
               placeholder="Papadopoulou"
+              className="!border-0 !bg-[#efe8dc] !text-[#1a1714] shadow-[0_4px_16px_rgb(0_0_0_/_12%)] placeholder:!text-[#8a7a68]"
             />
 
             {error ? (
               <div
-                className="rounded-xl border border-rose-500/20 bg-rose-500/8 px-4 py-3 text-sm text-rose-600"
+                className="rounded-xl border border-rose-500/25 bg-[#efe8dc]/90 px-4 py-3 text-sm text-rose-600"
                 role="alert"
               >
                 {error}
               </div>
             ) : null}
 
-            <p className="text-xs leading-relaxed text-stone-400">
+            <p className="text-xs leading-relaxed text-[#5c4a32]">
               Your name is stored for this event only.
             </p>
 
@@ -134,13 +138,17 @@ export function NameEntryModal({
               <Button
                 type="button"
                 variant="secondary"
-                className="min-h-12 flex-1"
+                className="min-h-12 flex-1 !border-0 bg-white text-charcoal-900 shadow-[0_4px_16px_rgb(0_0_0_/_14%)] hover:bg-ivory-100"
                 onClick={onClose}
                 disabled={loading}
               >
                 Cancel
               </Button>
-              <Button type="submit" className="min-h-12 flex-1" disabled={loading}>
+              <Button
+                type="submit"
+                className="min-h-12 flex-1 border-0 !bg-gradient-to-br !from-[#c4a574] !via-[#a68b4b] !to-[#8a6a3f] !text-white shadow-[inset_1px_1px_0_rgb(255_255_255_/_28%),0_10px_22px_rgb(0_0_0_/_20%)] hover:!from-[#b08f5c] hover:!via-[#8a7340] hover:!to-[#7a5f38]"
+                disabled={loading}
+              >
                 {loading ? "Saving…" : "Continue"}
               </Button>
             </div>

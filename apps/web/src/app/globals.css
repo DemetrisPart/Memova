@@ -167,7 +167,7 @@
   }
 
   .guest-classic .guest-access-label-light {
-    color: #5c4a32 !important;
+    color: #1a1714 !important;
   }
 
   .guest-classic .bg-white {
@@ -294,6 +294,20 @@
     box-shadow:
       0 0 0 1px #e8dccb,
       0 4px 18px rgb(0 0 0 / 18%) !important;
+  }
+
+  /* Keep cream controls on gold kartella (beats global .bg-white → #222) */
+  .money-lime-zone .bg-white {
+    background-color: #efe8dc !important;
+  }
+
+  .money-lime-zone .hover\:bg-ivory-100:hover {
+    background-color: #e4d9cb !important;
+  }
+
+  .money-lime-zone .text-charcoal-900,
+  .money-lime-zone .text-charcoal-800 {
+    color: #1a1714 !important;
   }
 
   .font-couple {
