@@ -14,6 +14,7 @@ import { warmupAuthRoutes } from "@/lib/auth/warmup-verify-route";
 import { ApiError } from "@/lib/api/types";
 
 const POLL_STORAGE_KEY = "momeva_poll_token";
+const AUTH_NEXT_KEY = "momeva_auth_next";
 
 type AuthMode = "login" | "register";
 
@@ -26,9 +27,17 @@ function loginErrorFromQuery(code: string | null): string | null {
       return "Sign-in session was incomplete. Please try again.";
     case "pending":
       return "Approve the email first, then return here to continue.";
+    case "admin":
+      return "Sign in with an admin account to open /admin.";
     default:
       return null;
   }
+}
+
+function safeAuthNext(raw: string | null): string | null {
+  if (!raw) return null;
+  if (!raw.startsWith("/") || raw.startsWith("//")) return null;
+  return raw;
 }
 
 function LoginForm() {
@@ -46,6 +55,8 @@ function LoginForm() {
   useEffect(() => {
     const fromQuery = loginErrorFromQuery(searchParams.get("error"));
     if (fromQuery) setError(fromQuery);
+    const next = safeAuthNext(searchParams.get("next"));
+    if (next) sessionStorage.setItem(AUTH_NEXT_KEY, next);
   }, [searchParams]);
 
   useEffect(() => {

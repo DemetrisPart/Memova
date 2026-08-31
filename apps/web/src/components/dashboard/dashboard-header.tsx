@@ -102,6 +102,19 @@ export function DashboardHeader({ user, onLime = false }: DashboardHeaderProps) 
               <p className="truncate px-3 py-2 text-left text-sm text-white/80">
                 {user.email}
               </p>
+              {user.role === "PLATFORM_ADMIN" ? (
+                <button
+                  type="button"
+                  role="menuitem"
+                  onClick={() => {
+                    setOpen(false);
+                    router.push("/admin");
+                  }}
+                  className="w-full rounded-lg px-3 py-2 text-left text-sm font-medium text-sky-300 hover:bg-white/5 hover:text-sky-200"
+                >
+                  Platform admin
+                </button>
+              ) : null}
               <button
                 type="button"
                 role="menuitem"

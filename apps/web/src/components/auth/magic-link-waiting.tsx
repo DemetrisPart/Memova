@@ -75,8 +75,14 @@ async function completeAndGoToDashboard(pollToken: string): Promise<void> {
   }
 
   sessionStorage.removeItem("momeva_poll_token");
+  const nextRaw = sessionStorage.getItem("momeva_auth_next");
+  sessionStorage.removeItem("momeva_auth_next");
+  const next =
+    nextRaw && nextRaw.startsWith("/") && !nextRaw.startsWith("//")
+      ? nextRaw
+      : "/dashboard";
   // Same-frame navigation always works in Mobile Preview (unlike target=_top).
-  window.location.assign("/dashboard");
+  window.location.assign(next);
 }
 
 export function MagicLinkWaiting({

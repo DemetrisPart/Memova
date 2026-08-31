@@ -16,11 +16,17 @@ Current LAN host: **`192.168.0.103`**
 | Dashboard | http://192.168.0.103:3000/dashboard |
 | Admin (PLATFORM_ADMIN) | http://192.168.0.103:3000/admin |
 
-Promote a user (then sign in again):
+On a **phone**, use the LAN IP above — `localhost` on the phone is the phone itself, not your PC.
+
+Promote a user (then **sign out + sign in again**):
 
 ```bash
 node scripts/promote-admin.mjs you@example.com
 ```
+
+After sign-in, open Admin from the ☰ menu (**Platform admin**) or go to `/admin`.
+
+Admin home shows **system health** (API / DB / queue). Tap **Enable browser alerts** to get a notification if something goes unhealthy while the admin tab is open.
 
 ## PC (localhost)
 
