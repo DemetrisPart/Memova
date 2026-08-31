@@ -94,7 +94,7 @@ export function DashboardSidebar({ event }: { event: CoupleEvent }) {
           href="/dashboard"
           className="text-xs font-medium text-stone-400 hover:text-charcoal-800"
         >
-          ← All events
+          ← Your event
         </Link>
         <p className="mt-4 text-xs font-medium uppercase tracking-wider text-stone-400">
           Event

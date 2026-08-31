@@ -302,7 +302,13 @@ export function EventSettingsClient({ event }: EventSettingsClientProps) {
               name="privacyMode"
               className="mt-1"
               checked={privacyMode === "ALL_GUESTS"}
-              onChange={() => setPrivacyMode("ALL_GUESTS")}
+              onChange={() => {
+                if (privacyMode === "ALL_GUESTS") return;
+                const ok = window.confirm(
+                  "Shared gallery lets every guest see everyone’s uploads. Continue?",
+                );
+                if (ok) setPrivacyMode("ALL_GUESTS");
+              }}
             />
             <span>
               <span className="block text-sm font-medium text-[#1a1714]">

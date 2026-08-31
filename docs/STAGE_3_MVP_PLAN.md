@@ -99,6 +99,9 @@ Payments · Stripe · Plans UI · AI · Video upload/processing/HLS · CDN tunin
 24. Guest gallery (own uploads, lazy load, pagination)
 
 ### Phase 5 — Couple Dashboard (Day 9–11)
+
+Working list: [STAGE_3_PHASE_5_COUPLE_DASHBOARD.md](./STAGE_3_PHASE_5_COUPLE_DASHBOARD.md)
+
 25. Dashboard layout (mobile-first, bottom nav)
 26. Event overview (stats, storage meter, activity timeline)
 27. Full gallery manager (view all, delete)

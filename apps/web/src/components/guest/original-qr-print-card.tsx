@@ -5,7 +5,7 @@ import { Check, Copy } from "lucide-react";
 import { CoupleNamesHeading } from "@/components/guest/couple-names-heading";
 import { EventQrActions } from "@/components/guest/event-qr-actions";
 import type { PublicEventQr } from "@/lib/api/types";
-import { copyTextToClipboard, formatEventDate } from "@/lib/utils";
+import { copyTextToClipboard, formatEventDateDots } from "@/lib/utils";
 
 type OriginalQrPrintCardProps = {
   qr: PublicEventQr;
@@ -15,7 +15,7 @@ export function OriginalQrPrintCard({ qr }: OriginalQrPrintCardProps) {
   const [copyState, setCopyState] = useState<"idle" | "copied" | "failed">(
     "idle",
   );
-  const date = formatEventDate(qr.eventDate);
+  const date = formatEventDateDots(qr.eventDate);
 
   const copyLink = async () => {
     const ok = await copyTextToClipboard(qr.eventUrl);
@@ -25,7 +25,7 @@ export function OriginalQrPrintCard({ qr }: OriginalQrPrintCardProps) {
       return;
     }
 
-    // Last resort: select the visible URL so the user can copy manually.
+    // No visible URL on the card (Phase 4) — select hidden text as last resort.
     const urlEl = document.getElementById("guest-event-url");
     if (urlEl && window.getSelection) {
       const range = document.createRange();
@@ -41,7 +41,7 @@ export function OriginalQrPrintCard({ qr }: OriginalQrPrintCardProps) {
   return (
     <div className="design-qr-card design-qr-original p-5 text-center lg:p-8 print:p-8">
       <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-gold-600 lg:text-[11px]">
-        Share your memories with us
+        Scan to share photos
       </p>
       <CoupleNamesHeading
         groomName={qr.groomName}
@@ -60,13 +60,14 @@ export function OriginalQrPrintCard({ qr }: OriginalQrPrintCardProps) {
           className="size-48 lg:size-64 print:size-64"
         />
       </div>
-      <p
-        id="guest-event-url"
-        className="mt-3 break-all text-xs text-white lg:mt-4 lg:text-sm print:text-xs print:text-white"
-      >
-        {qr.eventUrl}
+      <p className="mt-3 text-xs text-stone-500 lg:mt-4 lg:text-sm">
+        Guests scan this code with their phone camera — no app install needed.
       </p>
-      <div className="mt-4 space-y-2.5 print:hidden lg:mt-6 lg:space-y-3">
+      {/* Clipboard fallback only — never shown on screen or print. */}
+      <span id="guest-event-url" className="sr-only print:hidden print-hide">
+        {qr.eventUrl}
+      </span>
+      <div className="mt-4 space-y-2.5 print:hidden print-hide lg:mt-6 lg:space-y-3">
         <button
           type="button"
           onClick={() => void copyLink()}
@@ -86,7 +87,7 @@ export function OriginalQrPrintCard({ qr }: OriginalQrPrintCardProps) {
           ) : copyState === "failed" ? (
             <>
               <Copy className="h-4 w-4" aria-hidden />
-              Select & copy the link above
+              Could not copy — try again
             </>
           ) : (
             <>

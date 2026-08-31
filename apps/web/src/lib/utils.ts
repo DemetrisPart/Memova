@@ -42,6 +42,15 @@ export function formatEventDate(isoDate: string): string {
   });
 }
 
+/** QR print cards — locked Phase 4 format `DD.MM.YYYY`. */
+export function formatEventDateDots(isoDate: string): string {
+  const dateOnly = isoDate.slice(0, 10);
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateOnly);
+  if (!match) return isoDate;
+  const [, year, month, day] = match;
+  return `${day}.${month}.${year}`;
+}
+
 const SLUG_MONTHS = [
   "jan",
   "feb",
