@@ -317,7 +317,7 @@ export function UploadPageClient({ slug, event }: UploadPageClientProps) {
 
   if (checkingSession) {
     return (
-      <div className="flex min-h-[50vh] items-center justify-center text-stone-400">
+      <div className="flex min-h-[50vh] items-center justify-center text-[#c4a574]">
         Loading…
       </div>
     );
@@ -339,7 +339,7 @@ export function UploadPageClient({ slug, event }: UploadPageClientProps) {
 
   if (!sessionReady) {
     return (
-      <div className="flex min-h-[50vh] items-center justify-center text-stone-400">
+      <div className="flex min-h-[50vh] items-center justify-center text-[#c4a574]">
         Loading…
       </div>
     );
@@ -359,14 +359,16 @@ export function UploadPageClient({ slug, event }: UploadPageClientProps) {
 
   return (
     <div className="mx-auto max-w-lg px-4 py-6 pb-28">
-      <header className="mb-6">
+      <header className="mb-4">
         <Link
           href={`/${slug}`}
-          className="text-sm text-stone-400 hover:text-charcoal-800"
+          className="text-sm font-medium text-[#c4a574] hover:text-[#d4bb8d]"
         >
           ← Back to event
         </Link>
+      </header>
 
+      <section className="money-lime-zone overflow-hidden px-4 py-4 lg:px-5 lg:py-5">
         <PrivacyNoticeBanner
           slug={slug}
           dismissed={privacyDismissed}
@@ -374,238 +376,251 @@ export function UploadPageClient({ slug, event }: UploadPageClientProps) {
             dismissPrivacyNotice(slug);
             setPrivacyDismissed(true);
           }}
-          className="mt-4"
         />
 
-        <h1 className="mt-4 text-2xl font-medium text-charcoal-900">
+        <h1 className="mt-1 text-2xl font-medium text-[#1a1714]">
           Upload Photos
         </h1>
-        <p className="mt-1 text-sm font-medium text-charcoal-900">
+        <p className="mt-1 text-sm font-medium text-[#5c4a32]">
           {batchPhotoCount}/{MAX_PHOTOS_PER_BATCH} photos in this batch
         </p>
-      </header>
 
-      <div className="space-y-4">
-        <StorageBanner
-          storageUsedPercent={event.storageUsedPercent}
-          storageUsedBytes={event.storageUsedBytes}
-          storageLimitBytes={event.storageLimitBytes}
-        />
+        <div className="mt-4 space-y-4">
+          <StorageBanner
+            storageUsedPercent={event.storageUsedPercent}
+            storageUsedBytes={event.storageUsedBytes}
+            storageLimitBytes={event.storageLimitBytes}
+          />
 
-        {!complete && !uploading && !pendingPreview ? (
-          <>
-            <button
-              type="button"
-              onClick={() => galleryInputRef.current?.click()}
-              disabled={atPhotoLimit}
-              className="flex w-full flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-charcoal-800/15 bg-ivory-100 px-6 py-10 text-charcoal-800 transition-colors hover:border-gold-600 hover:bg-gold-100/30 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              <ImagePlus className="size-10 text-gold-600" aria-hidden />
-              <span className="font-medium">Tap to select photos</span>
-              <span className="text-sm text-stone-400">
-                Choose from your gallery
-              </span>
-            </button>
-
-            <Button
-              variant="secondary"
-              fullWidth
-              className="min-h-12"
-              disabled={atPhotoLimit}
-              onClick={() => cameraInputRef.current?.click()}
-            >
-              <Camera className="size-5" aria-hidden />
-              Take a picture
-            </Button>
-          </>
-        ) : null}
-
-        <input
-          ref={galleryInputRef}
-          type="file"
-          accept="image/jpeg,image/png,image/webp,image/heic,image/heif"
-          multiple
-          className="hidden"
-          onChange={(e) => {
-            handleIncomingFiles(e.target.files);
-            e.target.value = "";
-          }}
-        />
-
-        <input
-          ref={cameraInputRef}
-          type="file"
-          accept="image/jpeg,image/png,image/webp,image/heic,image/heif"
-          capture="environment"
-          className="hidden"
-          onChange={(e) => {
-            handleIncomingFiles(e.target.files);
-            e.target.value = "";
-          }}
-        />
-
-        {pendingPreview ? (
-          <div className="rounded-2xl border border-stone-200 bg-white p-4 shadow-soft">
-            <p className="text-sm font-medium text-charcoal-900">
-              {pendingPreview.items.length === 1
-                ? "Upload this photo?"
-                : `Upload ${pendingPreview.items.length} photos?`}
-            </p>
-            <p className="mt-1 text-xs text-stone-400">
-              Tap × on any photo to remove it before uploading.
-            </p>
-            <div className="mt-3 max-h-72 overflow-y-auto overscroll-contain [-webkit-overflow-scrolling:touch]">
-              <div className="grid grid-cols-3 gap-2">
-                {pendingPreview.items.map((item) => (
-                  <SquareThumbFrame
-                    key={item.id}
-                    className="rounded-lg bg-ivory-100"
-                  >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={item.url}
-                      alt=""
-                      className="size-full object-cover"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => removePendingItem(item.id)}
-                      disabled={uploading}
-                      className="absolute right-1 top-1 flex size-7 items-center justify-center rounded-full bg-charcoal-900/75 text-white disabled:opacity-50"
-                      aria-label={`Remove ${item.file.name}`}
-                    >
-                      <X className="size-3.5" aria-hidden />
-                    </button>
-                  </SquareThumbFrame>
-                ))}
-              </div>
-            </div>
-            <div className="mt-4 flex gap-3">
-              <Button
-                variant="secondary"
-                fullWidth
-                className="min-h-12"
-                onClick={cancelPreview}
-                disabled={uploading}
+          {!complete && !uploading && !pendingPreview ? (
+            <>
+              <button
+                type="button"
+                onClick={() => galleryInputRef.current?.click()}
+                disabled={atPhotoLimit}
+                className="flex w-full flex-col items-center justify-center gap-3 rounded-2xl border-0 bg-[#efe8dc] px-6 py-10 text-[#1a1714] shadow-[0_4px_16px_rgb(0_0_0_/_14%)] transition-colors hover:bg-[#e4d9cb] disabled:cursor-not-allowed disabled:opacity-50"
               >
-                <X className="size-4" aria-hidden />
-                Cancel
-              </Button>
-              <Button
-                fullWidth
-                className="min-h-12"
-                disabled={uploading}
-                onClick={() => void confirmAndUpload()}
-              >
-                Upload
-              </Button>
-            </div>
-          </div>
-        ) : null}
-
-        {uploading ? (
-          <div className="rounded-2xl border border-gold-100 bg-gold-100/40 p-4">
-            <div className="flex items-center gap-3">
-              <Loader2 className="size-5 animate-spin text-gold-600" aria-hidden />
-              <div className="flex-1">
-                <p className="text-sm font-medium text-charcoal-900">
-                  Uploading…
-                </p>
-                <div className="mt-2 h-2 overflow-hidden rounded-full bg-ivory-50">
-                  <div
-                    className="h-full bg-gold-600 transition-all"
-                    style={{ width: `${overallProgress}%` }}
-                  />
-                </div>
-              </div>
-              <span className="text-sm text-stone-400">{overallProgress}%</span>
-            </div>
-          </div>
-        ) : null}
-
-        {files.length > 0 ? (
-          <ul className="space-y-2">
-            {files.map((fileState) => (
-              <li
-                key={fileState.clientFileId}
-                className="flex items-center gap-3 rounded-xl bg-ivory-100 px-4 py-3"
-              >
-                <Camera className="size-5 shrink-0 text-gold-600" aria-hidden />
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium text-charcoal-900">
-                    {fileState.file.name}
-                  </p>
-                  <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-ivory-50">
-                    <div
-                      className={`h-full transition-all ${
-                        fileState.status === "failed"
-                          ? "bg-rose-500"
-                          : "bg-gold-400"
-                      }`}
-                      style={{ width: `${fileState.progress}%` }}
-                    />
-                  </div>
-                </div>
-                <span className="text-xs text-stone-400">
-                  {fileState.status === "uploading" ? (
-                    <Loader2 className="size-4 animate-spin" aria-hidden />
-                  ) : fileState.status === "done" ? (
-                    "Done"
-                  ) : fileState.status === "failed" ? (
-                    "Failed"
-                  ) : (
-                    `${fileState.progress}%`
-                  )}
+                <ImagePlus className="size-10 text-[#8a6a3f]" aria-hidden />
+                <span className="font-medium">Tap to select photos</span>
+                <span className="text-sm text-[#5c4a32]">
+                  Choose from your gallery
                 </span>
-              </li>
-            ))}
-          </ul>
-        ) : null}
+              </button>
 
-        {error ? (
-          <p className="text-sm text-rose-500" role="alert">
-            {error}
-          </p>
-        ) : null}
+              <Button
+                fullWidth
+                className="min-h-12 border-0 !bg-gradient-to-br !from-[#c4a574] !via-[#a68b4b] !to-[#8a6a3f] !text-white shadow-[inset_1px_1px_0_rgb(255_255_255_/_28%),0_10px_22px_rgb(0_0_0_/_20%)] hover:!from-[#b08f5c] hover:!via-[#8a7340] hover:!to-[#7a5f38]"
+                disabled={atPhotoLimit}
+                onClick={() => cameraInputRef.current?.click()}
+              >
+                <Camera className="size-5 text-white" aria-hidden />
+                Take a picture
+              </Button>
+            </>
+          ) : null}
 
-        {complete ? (
-          <div className="rounded-xl bg-gold-100/60 p-4 text-center">
-            <p className="font-medium text-charcoal-900">
-              {doneCount} photo{doneCount === 1 ? "" : "s"} uploaded successfully!
-            </p>
-            <div className="mt-4 space-y-3">
-              {!atPhotoLimit ? (
+          <input
+            ref={galleryInputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/heic,image/heif"
+            multiple
+            className="hidden"
+            onChange={(e) => {
+              handleIncomingFiles(e.target.files);
+              e.target.value = "";
+            }}
+          />
+
+          <input
+            ref={cameraInputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/heic,image/heif"
+            capture="environment"
+            className="hidden"
+            onChange={(e) => {
+              handleIncomingFiles(e.target.files);
+              e.target.value = "";
+            }}
+          />
+
+          {pendingPreview ? (
+            <div className="rounded-2xl bg-[#efe8dc] p-4 shadow-[0_4px_16px_rgb(0_0_0_/_14%)]">
+              <p className="text-sm font-medium text-[#1a1714]">
+                {pendingPreview.items.length === 1
+                  ? "Upload this photo?"
+                  : `Upload ${pendingPreview.items.length} photos?`}
+              </p>
+              <p className="mt-1 text-xs text-[#5c4a32]">
+                Tap × on any photo to remove it before uploading.
+              </p>
+              <div className="mt-3 max-h-72 overflow-y-auto overscroll-contain [-webkit-overflow-scrolling:touch]">
+                <div className="grid grid-cols-3 gap-2">
+                  {pendingPreview.items.map((item) => (
+                    <SquareThumbFrame
+                      key={item.id}
+                      className="rounded-lg bg-[#e4d9cb]"
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={item.url}
+                        alt=""
+                        className="size-full object-cover"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removePendingItem(item.id)}
+                        disabled={uploading}
+                        className="absolute right-1 top-1 flex size-7 items-center justify-center rounded-full bg-[#1a1714]/75 text-white disabled:opacity-50"
+                        aria-label={`Remove ${item.file.name}`}
+                      >
+                        <X className="size-3.5" aria-hidden />
+                      </button>
+                    </SquareThumbFrame>
+                  ))}
+                </div>
+              </div>
+              <div className="mt-4 flex gap-3">
                 <Button
                   variant="secondary"
                   fullWidth
-                  onClick={() => {
-                    setComplete(false);
-                    setFiles([]);
-                    setError(null);
-                  }}
+                  className="min-h-12 !border-0 bg-white text-charcoal-900 shadow-[0_4px_16px_rgb(0_0_0_/_14%)] hover:bg-ivory-100"
+                  onClick={cancelPreview}
+                  disabled={uploading}
                 >
-                  Upload more
+                  <X className="size-4" aria-hidden />
+                  Cancel
                 </Button>
-              ) : null}
-              <Link
-                href={`/${slug}/gallery`}
-                className="inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-gold-600 px-6 text-base font-medium text-ivory-50 hover:bg-gold-700"
-              >
-                View my uploads
-              </Link>
+                <Button
+                  fullWidth
+                  className="min-h-12 border-0 !bg-gradient-to-br !from-[#c4a574] !via-[#a68b4b] !to-[#8a6a3f] !text-white shadow-[inset_1px_1px_0_rgb(255_255_255_/_28%),0_10px_22px_rgb(0_0_0_/_20%)] hover:!from-[#b08f5c] hover:!via-[#8a7340] hover:!to-[#7a5f38]"
+                  disabled={uploading}
+                  onClick={() => void confirmAndUpload()}
+                >
+                  Upload
+                </Button>
+              </div>
             </div>
-          </div>
-        ) : null}
+          ) : null}
 
-        {files.some((f) => f.status === "failed") && !uploading && !complete ? (
-          <Button variant="secondary" fullWidth onClick={() => void retryFailed()}>
-            <RefreshCw className="size-4" aria-hidden />
-            Retry failed
-          </Button>
-        ) : null}
-      </div>
+          {uploading ? (
+            <div className="rounded-2xl bg-[#efe8dc] p-4 shadow-[0_4px_16px_rgb(0_0_0_/_14%)]">
+              <div className="flex items-center gap-3">
+                <Loader2
+                  className="size-5 animate-spin text-[#8a6a3f]"
+                  aria-hidden
+                />
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-[#1a1714]">
+                    Uploading…
+                  </p>
+                  <div className="mt-2 h-2 overflow-hidden rounded-full bg-[#e4d9cb]">
+                    <div
+                      className="h-full bg-[#a68b4b] transition-all"
+                      style={{ width: `${overallProgress}%` }}
+                    />
+                  </div>
+                </div>
+                <span className="text-sm text-[#5c4a32]">{overallProgress}%</span>
+              </div>
+            </div>
+          ) : null}
+
+          {files.length > 0 ? (
+            <ul className="space-y-2">
+              {files.map((fileState) => (
+                <li
+                  key={fileState.clientFileId}
+                  className="flex items-center gap-3 rounded-xl bg-[#efe8dc] px-4 py-3 shadow-[0_4px_16px_rgb(0_0_0_/_10%)]"
+                >
+                  <Camera
+                    className="size-5 shrink-0 text-[#8a6a3f]"
+                    aria-hidden
+                  />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium text-[#1a1714]">
+                      {fileState.file.name}
+                    </p>
+                    <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-[#e4d9cb]">
+                      <div
+                        className={`h-full transition-all ${
+                          fileState.status === "failed"
+                            ? "bg-rose-500"
+                            : "bg-[#a68b4b]"
+                        }`}
+                        style={{ width: `${fileState.progress}%` }}
+                      />
+                    </div>
+                  </div>
+                  <span className="text-xs text-[#5c4a32]">
+                    {fileState.status === "uploading" ? (
+                      <Loader2 className="size-4 animate-spin" aria-hidden />
+                    ) : fileState.status === "done" ? (
+                      "Done"
+                    ) : fileState.status === "failed" ? (
+                      "Failed"
+                    ) : (
+                      `${fileState.progress}%`
+                    )}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          ) : null}
+
+          {error ? (
+            <p className="text-sm text-rose-600" role="alert">
+              {error}
+            </p>
+          ) : null}
+
+          {complete ? (
+            <div className="rounded-xl bg-[#efe8dc] p-4 text-center shadow-[0_4px_16px_rgb(0_0_0_/_14%)]">
+              <p className="font-medium text-[#1a1714]">
+                {doneCount} photo{doneCount === 1 ? "" : "s"} uploaded
+                successfully!
+              </p>
+              <div className="mt-4 space-y-3">
+                {!atPhotoLimit ? (
+                  <Button
+                    variant="secondary"
+                    fullWidth
+                    className="!border-0 bg-white text-charcoal-900 shadow-[0_4px_16px_rgb(0_0_0_/_14%)] hover:bg-ivory-100"
+                    onClick={() => {
+                      setComplete(false);
+                      setFiles([]);
+                      setError(null);
+                    }}
+                  >
+                    Upload more
+                  </Button>
+                ) : null}
+                <Link
+                  href={`/${slug}/gallery`}
+                  className="inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-gradient-to-br from-[#c4a574] via-[#a68b4b] to-[#8a6a3f] px-6 text-base font-medium text-white shadow-[inset_1px_1px_0_rgb(255_255_255_/_28%),0_10px_22px_rgb(0_0_0_/_20%)] hover:from-[#b08f5c] hover:via-[#8a7340] hover:to-[#7a5f38]"
+                >
+                  View my uploads
+                </Link>
+              </div>
+            </div>
+          ) : null}
+
+          {files.some((f) => f.status === "failed") &&
+          !uploading &&
+          !complete ? (
+            <Button
+              variant="secondary"
+              fullWidth
+              className="!border-0 bg-white text-charcoal-900 shadow-[0_4px_16px_rgb(0_0_0_/_14%)] hover:bg-ivory-100"
+              onClick={() => void retryFailed()}
+            >
+              <RefreshCw className="size-4" aria-hidden />
+              Retry failed
+            </Button>
+          ) : null}
+        </div>
+      </section>
     </div>
   );
 }

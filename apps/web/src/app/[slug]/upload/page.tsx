@@ -35,7 +35,7 @@ export default async function UploadPage({ params }: PageProps) {
   }
 
   return (
-    <main className="min-h-dvh bg-ivory-50">
+    <main className="min-h-dvh bg-[#343434]">
       <UploadPageClient slug={slug} event={event} />
     </main>
   );
