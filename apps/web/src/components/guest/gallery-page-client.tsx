@@ -159,7 +159,7 @@ export function GalleryPageClient({ slug, event }: GalleryPageClientProps) {
 
   if (checkingSession) {
     return (
-      <div className="flex min-h-[50vh] items-center justify-center text-stone-400">
+      <div className="flex min-h-[50vh] items-center justify-center text-[#c4a574]">
         Loading…
       </div>
     );
@@ -190,114 +190,119 @@ export function GalleryPageClient({ slug, event }: GalleryPageClientProps) {
 
   if (!sessionReady) {
     return (
-      <div className="flex min-h-[50vh] items-center justify-center text-stone-400">
+      <div className="flex min-h-[50vh] items-center justify-center text-[#c4a574]">
         Loading…
       </div>
     );
   }
 
   return (
-    <div className="mx-auto max-w-lg pb-24">
-      <header className="sticky top-0 z-10 border-b border-charcoal-800/10 bg-ivory-50/95 px-4 py-4 backdrop-blur">
+    <div className="mx-auto max-w-lg px-4 py-6 pb-28">
+      <header className="mb-4">
         <Link
           href={`/${slug}`}
-          className="text-sm text-stone-400 hover:text-charcoal-800"
+          className="text-sm font-medium text-[#c4a574] hover:text-[#d4bb8d]"
         >
           ← Back
         </Link>
-        <h1 className="mt-2 text-xl font-medium text-charcoal-900">Gallery</h1>
-        <p className="mt-1 text-sm text-stone-400">
-          {galleryHeader(privacyMode, totalCount)}
-        </p>
       </header>
 
-      <div className="px-4 py-4">
-        {loading ? (
-          <div className="flex min-h-[40vh] items-center justify-center text-stone-400">
-            Loading photos…
-          </div>
-        ) : error ? (
-          <p className="text-center text-sm text-rose-500" role="alert">
-            {error}
-          </p>
-        ) : items.length === 0 ? (
-          <div className="flex min-h-[40vh] flex-col items-center justify-center gap-4 text-center">
-            <p className="text-stone-400">No photos yet.</p>
-            <Link
-              href={`/${slug}/upload`}
-              className="inline-flex min-h-12 items-center justify-center rounded-xl bg-gold-600 px-6 text-base font-medium text-ivory-50 hover:bg-gold-700"
-            >
-              Upload Photos
-            </Link>
-          </div>
-        ) : (
-          <>
-            <div className="grid grid-cols-3 gap-1.5">
-              {items.map((item, index) => {
-                const thumbUrl = galleryThumbUrl(item);
-                return (
-                  <SquareThumbFrame
-                    key={item.id}
-                    className="rounded-lg bg-ivory-100"
-                  >
-                    {thumbUrl ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={thumbUrl}
-                        alt=""
-                        className="size-full object-cover"
-                        loading="lazy"
-                        decoding="async"
-                      />
-                    ) : (
-                      <div className="flex size-full items-center justify-center text-xs text-stone-400">
-                        …
-                      </div>
-                    )}
-                    <button
-                      type="button"
-                      onClick={() => setLightboxIndex(index)}
-                      className="absolute inset-0"
-                      aria-label="View photo"
-                    />
-                    {item.canDelete ? (
+      <section className="money-lime-zone overflow-hidden px-4 py-4 lg:px-5 lg:py-5">
+        <h1 className="text-2xl font-medium text-[#1a1714]">Gallery</h1>
+        <p className="mt-1 text-sm font-medium text-[#5c4a32]">
+          {galleryHeader(privacyMode, totalCount)}
+        </p>
+
+        <div className="mt-4">
+          {loading ? (
+            <div className="flex min-h-[36vh] items-center justify-center text-[#5c4a32]">
+              Loading photos…
+            </div>
+          ) : error ? (
+            <p className="text-center text-sm text-rose-600" role="alert">
+              {error}
+            </p>
+          ) : items.length === 0 ? (
+            <div className="flex min-h-[36vh] flex-col items-center justify-center gap-4 rounded-2xl bg-[#efe8dc] px-4 py-10 text-center shadow-[0_4px_16px_rgb(0_0_0_/_12%)]">
+              <p className="text-[#5c4a32]">No photos yet.</p>
+              <Link
+                href={`/${slug}/upload`}
+                className="inline-flex min-h-12 items-center justify-center rounded-xl bg-gradient-to-br from-[#c4a574] via-[#a68b4b] to-[#8a6a3f] px-6 text-base font-medium text-white shadow-[inset_1px_1px_0_rgb(255_255_255_/_28%),0_10px_22px_rgb(0_0_0_/_20%)] hover:from-[#b08f5c] hover:via-[#8a7340] hover:to-[#7a5f38]"
+              >
+                Upload Photos
+              </Link>
+            </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-3 gap-2 rounded-2xl bg-[#efe8dc] p-2.5 shadow-[0_4px_16px_rgb(0_0_0_/_12%)]">
+                {items.map((item, index) => {
+                  const thumbUrl = galleryThumbUrl(item);
+                  return (
+                    <SquareThumbFrame
+                      key={item.id}
+                      className="rounded-lg bg-[#e4d9cb]"
+                    >
+                      {thumbUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={thumbUrl}
+                          alt=""
+                          className="size-full object-cover"
+                          loading="lazy"
+                          decoding="async"
+                        />
+                      ) : (
+                        <div className="flex size-full items-center justify-center text-xs text-[#5c4a32]">
+                          …
+                        </div>
+                      )}
                       <button
                         type="button"
-                        onClick={(event) => void handleGridDelete(event, item)}
-                        disabled={deletingId === item.id}
-                        className="absolute right-1 top-1 flex size-7 items-center justify-center rounded-full bg-charcoal-900/75 text-white disabled:opacity-50"
-                        aria-label="Delete photo"
-                      >
-                        <X className="size-3.5" aria-hidden />
-                      </button>
-                    ) : null}
-                    {item.guestLabel ? (
-                      <span className="pointer-events-none absolute inset-x-0 bottom-0 truncate bg-charcoal-900/60 px-1 py-0.5 text-[10px] text-ivory-50">
-                        {item.guestLabel}
-                      </span>
-                    ) : null}
-                  </SquareThumbFrame>
-                );
-              })}
-            </div>
+                        onClick={() => setLightboxIndex(index)}
+                        className="absolute inset-0"
+                        aria-label="View photo"
+                      />
+                      {item.canDelete ? (
+                        <button
+                          type="button"
+                          onClick={(event) => void handleGridDelete(event, item)}
+                          disabled={deletingId === item.id}
+                          className="absolute right-1 top-1 flex size-7 items-center justify-center rounded-full bg-[#1a1714]/75 text-white disabled:opacity-50"
+                          aria-label="Delete photo"
+                        >
+                          <X className="size-3.5" aria-hidden />
+                        </button>
+                      ) : null}
+                      {item.guestLabel ? (
+                        <span className="pointer-events-none absolute inset-x-0 bottom-0 truncate bg-[#1a1714]/60 px-1 py-0.5 text-[10px] text-white">
+                          {item.guestLabel}
+                        </span>
+                      ) : null}
+                    </SquareThumbFrame>
+                  );
+                })}
+              </div>
 
-            <div ref={sentinelRef} className="h-8" />
-            {loadingMore ? (
-              <p className="py-4 text-center text-sm text-stone-400">
-                Loading more…
-              </p>
-            ) : null}
-          </>
-        )}
-      </div>
+              <div ref={sentinelRef} className="h-8" />
+              {loadingMore ? (
+                <p className="py-4 text-center text-sm text-[#5c4a32]">
+                  Loading more…
+                </p>
+              ) : null}
+            </>
+          )}
+        </div>
+      </section>
 
-      <div className="fixed inset-x-0 bottom-0 z-20 border-t border-charcoal-800/10 bg-ivory-50/95 p-4 backdrop-blur">
-        <Link
-          href={`/${slug}/upload`}
-          className="flex min-h-14 w-full items-center justify-center rounded-xl bg-gold-600 text-base font-medium text-ivory-50 hover:bg-gold-700"
-        >
-          Upload More
-        </Link>
+      <div className="fixed inset-x-0 bottom-0 z-20 bg-[#343434]/92 p-4 backdrop-blur">
+        <div className="mx-auto max-w-lg">
+          <Link
+            href={`/${slug}/upload`}
+            className="flex min-h-14 w-full items-center justify-center rounded-xl bg-gradient-to-br from-[#c4a574] via-[#a68b4b] to-[#8a6a3f] text-base font-medium text-white shadow-[inset_1px_1px_0_rgb(255_255_255_/_28%),0_10px_22px_rgb(0_0_0_/_20%)] hover:from-[#b08f5c] hover:via-[#8a7340] hover:to-[#7a5f38]"
+          >
+            Upload More
+          </Link>
+        </div>
       </div>
 
       {lightboxIndex !== null ? (

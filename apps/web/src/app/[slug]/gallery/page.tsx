@@ -35,7 +35,7 @@ export default async function GalleryPage({ params }: PageProps) {
   }
 
   return (
-    <main className="min-h-dvh bg-ivory-50">
+    <main className="min-h-dvh bg-[#343434]">
       <GalleryPageClient slug={slug} event={event} />
     </main>
   );
