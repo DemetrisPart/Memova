@@ -1,7 +1,7 @@
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
-import type { AuthUser, CoupleEvent } from "./types";
-import { ApiError } from "./types";
+import type { AuthUser, ApiErrorBody, CoupleEvent } from "./types";
+import { ApiError, messageFromApiErrorBody } from "./types";
 import { getApiOrigin } from "@/lib/server/api-origin";
 
 async function serverApiFetch<T>(
@@ -34,10 +34,8 @@ async function serverApiFetch<T>(
   if (!response.ok) {
     let message = response.statusText || "Request failed";
     try {
-      const body = (await response.json()) as { message?: string | string[] };
-      if (typeof body.message === "string") message = body.message;
-      else if (Array.isArray(body.message)) message = body.message.join(", ");
-    } catch {
+      const body = (await response.json()) as ApiErrorBody;
+      message = messageFromApiErrorBody(body) ?? message;    } catch {
       // ignore
     }
     throw new ApiError(message, response.status);

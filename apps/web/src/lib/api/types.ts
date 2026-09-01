@@ -82,9 +82,38 @@ export type PublicEventQr = {
 };
 
 export type ApiErrorBody = {
+  /** RFC 7807 */
+  detail?: string;
+  title?: string;
+  status?: number;
+  type?: string;
+  instance?: string;
+  requestId?: string;
+  errors?: string[];
+  /** Legacy Nest shape (pre–Phase 6) */
   message?: string | string[];
   statusCode?: number;
 };
+
+/** Prefer RFC 7807 `detail`, fall back to Nest `message`. */
+export function messageFromApiErrorBody(body: ApiErrorBody): string | null {
+  if (typeof body.detail === "string" && body.detail.trim()) {
+    return body.detail;
+  }
+  if (typeof body.message === "string" && body.message.trim()) {
+    return body.message;
+  }
+  if (Array.isArray(body.message) && body.message.length > 0) {
+    return body.message.join(", ");
+  }
+  if (Array.isArray(body.errors) && body.errors.length > 0) {
+    return body.errors.join(", ");
+  }
+  if (typeof body.title === "string" && body.title.trim()) {
+    return body.title;
+  }
+  return null;
+}
 
 export class ApiError extends Error {
   constructor(

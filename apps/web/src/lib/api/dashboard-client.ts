@@ -1,11 +1,12 @@
 import type {
   AuthUser,
+  ApiErrorBody,
   CoupleEvent,
   CoupleGalleryResponse,
   EventQrPayload,
   EventStats,
 } from "./types";
-import { ApiError } from "./types";
+import { ApiError, messageFromApiErrorBody } from "./types";
 import {
   clearCoupleSessionTokens,
   coupleAuthHeaders,
@@ -65,10 +66,8 @@ async function apiFetch<T>(
   if (!response.ok) {
     let message = response.statusText || "Request failed";
     try {
-      const body = (await response.json()) as { message?: string | string[] };
-      if (typeof body.message === "string") message = body.message;
-      else if (Array.isArray(body.message)) message = body.message.join(", ");
-    } catch {
+      const body = (await response.json()) as ApiErrorBody;
+      message = messageFromApiErrorBody(body) ?? message;    } catch {
       // ignore
     }
     throw new ApiError(message, response.status);
@@ -117,10 +116,8 @@ export async function approveMagicLink(
   if (!response.ok) {
     let message = response.statusText || "Request failed";
     try {
-      const body = (await response.json()) as { message?: string | string[] };
-      if (typeof body.message === "string") message = body.message;
-      else if (Array.isArray(body.message)) message = body.message.join(", ");
-    } catch {
+      const body = (await response.json()) as ApiErrorBody;
+      message = messageFromApiErrorBody(body) ?? message;    } catch {
       // ignore
     }
     throw new ApiError(message, response.status);
@@ -167,10 +164,8 @@ export async function pollMagicLinkComplete(
   if (!response.ok) {
     let message = response.statusText || "Request failed";
     try {
-      const body = (await response.json()) as { message?: string | string[] };
-      if (typeof body.message === "string") message = body.message;
-      else if (Array.isArray(body.message)) message = body.message.join(", ");
-    } catch {
+      const body = (await response.json()) as ApiErrorBody;
+      message = messageFromApiErrorBody(body) ?? message;    } catch {
       // ignore
     }
     throw new ApiError(message, response.status);

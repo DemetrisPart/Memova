@@ -14,7 +14,7 @@ import {
   getGuestSessionToken,
   setGuestSessionToken,
 } from "@/lib/guest-session-storage";
-import { ApiError } from "./types";
+import { ApiError, messageFromApiErrorBody } from "./types";
 
 /** Default request timeout — prevents eternal Loading… / Uploading… on hung TCP. */
 const DEFAULT_FETCH_TIMEOUT_MS = 20_000;
@@ -116,11 +116,7 @@ async function parseError(response: Response): Promise<ApiError> {
   let message = response.statusText || "Request failed";
   try {
     const body = (await response.json()) as ApiErrorBody;
-    if (typeof body.message === "string") {
-      message = body.message;
-    } else if (Array.isArray(body.message)) {
-      message = body.message.join(", ");
-    }
+    message = messageFromApiErrorBody(body) ?? message;
   } catch {
     // ignore parse errors
   }
