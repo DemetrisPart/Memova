@@ -1,0 +1,25 @@
+# Fly.io — media worker (BullMQ + Sharp)
+# From repo root:
+#   fly deploy -c apps/worker-media/fly.toml --dockerfile apps/worker-media/Dockerfile
+#
+# Same Redis + storage secrets as the API (no public HTTP).
+#   fly secrets set -a momeva-worker-media KEY=value ...
+
+app = "momeva-worker-media"
+primary_region = "fra"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  NODE_ENV = "production"
+  APP_ENV = "production"
+  SERVICE_NAME = "momeva-worker-media"
+
+# Worker has no public HTTP — keep a machine running for the queue.
+[processes]
+  app = "pnpm --filter @momeva/worker-media start"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "1024mb"

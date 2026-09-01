@@ -1,0 +1,37 @@
+# Fly.io — API (NestJS)
+# From repo root (after `flyctl auth login` + `fly apps create momeva-api`):
+#   fly deploy -c apps/api/fly.toml --dockerfile apps/api/Dockerfile
+#
+# Secrets (do not commit): DATABASE_URL, REDIS_URL, JWT_*, STORAGE_*, SMTP_*, etc.
+#   fly secrets set -a momeva-api KEY=value ...
+
+app = "momeva-api"
+primary_region = "fra"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  NODE_ENV = "production"
+  APP_ENV = "production"
+  API_PORT = "3001"
+  SERVICE_NAME = "momeva-api"
+
+[http_service]
+  internal_port = 3001
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 1
+  processes = ["app"]
+
+  [[http_service.checks]]
+    interval = "15s"
+    timeout = "5s"
+    grace_period = "30s"
+    method = "GET"
+    path = "/v1/health"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "512mb"

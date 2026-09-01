@@ -14,8 +14,8 @@
 | Component | Platform | Status |
 |-----------|----------|--------|
 | Web | Vercel (EU) | ⬜ |
-| API | Fly.io | ⬜ (Dockerfile ready — step 7.1) |
-| Worker media | Fly.io | ⬜ (Dockerfile ready — step 7.1) |
+| API | Fly.io | 🔄 `fly.toml` ready — deploy when secrets + DB exist |
+| Worker media | Fly.io | 🔄 `fly.toml` ready — deploy when secrets + Redis exist |
 | Postgres | Neon (EU) | ⬜ |
 | Redis | Upstash | ⬜ |
 | Object storage | Cloudflare R2 | ⬜ |
@@ -30,8 +30,8 @@
 |------|------|--------|--------|
 | 7.1 | Docker images for API + worker | ✅ Done | `apps/api/Dockerfile`, `apps/worker-media/Dockerfile` |
 | 7.2 | GitHub Actions CI | ✅ Done | `.github/workflows/ci.yml` — install, Prisma, domain tests, typecheck |
-| 7.3 | Fly.io app configs | 🔄 Next | `fly.toml` for api + worker (secrets via `fly secrets`) |
-| 7.4 | Vercel web project notes | ⬜ Pending | Env mapping + build command for monorepo |
+| 7.3 | Fly.io app configs | ✅ Done | `apps/api/fly.toml`, `apps/worker-media/fly.toml` (FRA) |
+| 7.4 | Vercel web project notes | 🔄 Next | Env mapping + build command for monorepo |
 | 7.5 | Staging env checklist | ⬜ Pending | Neon + Upstash + R2 + Resend wired |
 | 7.6 | First staging deploy | ⬜ Pending | Manual smoke (guest upload + magic link) |
 | 7.7 | `STAGE_7` / go-live lock | ⬜ Pending | Only after staging OK |
@@ -51,3 +51,22 @@
 |------|--------|
 | 2026-09-01 | Stage 7 checklist created after Phase 6 lock |
 | 2026-09-01 | Steps 7.1–7.2: Dockerfiles + GitHub Actions CI |
+| 2026-09-01 | Step 7.3: Fly.toml for API + worker (region `fra`) |
+
+---
+
+## Fly deploy (when accounts + secrets exist)
+
+```bash
+# once
+fly auth login
+fly apps create momeva-api
+fly apps create momeva-worker-media
+
+# set secrets on each app (examples — use real values)
+# fly secrets set -a momeva-api DATABASE_URL=... REDIS_URL=... JWT_ACCESS_SECRET=...
+
+fly deploy -c apps/api/fly.toml --dockerfile apps/api/Dockerfile
+fly deploy -c apps/worker-media/fly.toml --dockerfile apps/worker-media/Dockerfile
+```
+
