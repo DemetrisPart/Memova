@@ -17,8 +17,11 @@ Default test event: **`wedding-3-oct-2026`**
 | Guest QR | http://192.168.0.103:3000/wedding-3-oct-2026/qr |
 | Admin (PLATFORM_ADMIN) | http://192.168.0.103:3000/admin |
 | Admin sign-in | http://192.168.0.103:3000/auth/login?next=/admin |
+| Mailpit (emails) | http://192.168.0.103:8025 |
 
 On a **phone**, use the LAN IP above — `localhost` on the phone is the phone itself, not your PC.
+
+**Emails on iPhone (same Wi‑Fi):** open http://192.168.0.103:8025 → tap a message → tap **View your gallery** (opens the couple gallery on LAN). If the button does nothing, use Desktop view in Mailpit or open the message HTML view — the PC “phone frame” preview can block taps.
 
 - **Couple** → sign in with `next=/dashboard` → opens **Demetris & Daniella** (`wedding-3-oct-2026`).
 - **Guest** → open `/wedding-3-oct-2026` (Upload Photos / View Gallery). Do **not** use this after couple login.
@@ -55,6 +58,7 @@ Couple **Settings → Notifications by email** saves optional prefs (expiry / fi
 | API | http://localhost:3001 |
 | API health | http://localhost:3001/v1/health |
 | Mailpit | http://localhost:8025 |
+| Mailpit (phone / LAN) | http://192.168.0.103:8025 |
 | MinIO console | http://localhost:9001 |
 
 ## Start everything

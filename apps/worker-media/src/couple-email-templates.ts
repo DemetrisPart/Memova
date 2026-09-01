@@ -169,6 +169,27 @@ const SHARED_CSS = `
   .footer-meta a{ color:#A79E95; text-decoration:underline; }
 `;
 
+function ctaButton(href: string, label: string): string {
+  const safeHref = escapeHtml(href);
+  const safeLabel = escapeHtml(label);
+  // Table + fully inlined styles so mobile clients / Mailpit phone preview
+  // still get a tappable link (CSS classes are often ignored or iframe-blocked).
+  return `
+        <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center" style="margin:0 auto;border-collapse:collapse;">
+          <tr>
+            <td align="center" bgcolor="#8C4A4B" style="background-color:#8C4A4B;border-radius:2px;mso-padding-alt:15px 38px;">
+              <a href="${safeHref}" target="_blank" rel="noopener noreferrer" style="display:inline-block;background-color:#8C4A4B;color:#FBF7F2;text-decoration:none;font-family:Helvetica Neue, Arial, sans-serif;font-size:14px;line-height:1.2;letter-spacing:0.02em;padding:15px 38px;border-radius:2px;mso-line-height-rule:exactly;">
+                ${safeLabel}
+              </a>
+            </td>
+          </tr>
+        </table>`;
+}
+
+function footerLink(href: string, label: string): string {
+  return `<a href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer" style="color:#A79E95;text-decoration:underline;">${escapeHtml(label)}</a>`;
+}
+
 function shell(opts: {
   title: string;
   preheader: string;
@@ -176,7 +197,6 @@ function shell(opts: {
   coupleItalic?: boolean;
   eventDateLabel: string;
   bodyHtml: string;
-  ctaClass?: string;
   tipHtml?: string;
   galleryUrl: string;
   settingsUrl: string;
@@ -185,18 +205,19 @@ function shell(opts: {
   const names = escapeHtml(opts.coupleNames);
   const date = escapeHtml(opts.eventDateLabel);
   return `<!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
 <title>${escapeHtml(opts.title)}</title>
 <style>${SHARED_CSS}</style>
 </head>
-<body>
+<body style="margin:0;padding:48px 16px;background:#FBF7F2;-webkit-text-size-adjust:100%;">
   <div class="preheader">${escapeHtml(opts.preheader)}</div>
-  <div class="outer">
-    <div class="card">
-      <div class="frame">
+  <div class="outer" style="max-width:600px;margin:0 auto;">
+    <div class="card" style="background:#FFFFFF;border:1px solid #E9E1D8;">
+      <div class="frame" style="margin:14px;border:1px solid #E9E1D8;padding:1px;">
         <div class="hero">
           <p class="wordmark">M O M E V A</p>
           <div class="divider"></div>
@@ -204,15 +225,15 @@ function shell(opts: {
           <p class="event-date">${date}</p>
         </div>
         ${opts.bodyHtml}
-        <div class="cta-row${opts.ctaClass ? ` ${opts.ctaClass}` : ""}">
-          <a href="${escapeHtml(opts.galleryUrl)}" class="cta">View your gallery</a>
+        <div class="cta-row" style="text-align:center;padding:4px 44px 44px;">
+          ${ctaButton(opts.galleryUrl, "View your gallery")}
         </div>
         ${opts.tipHtml ?? ""}
         <div class="footer">
           <p class="signoff">With love,<br>The Momeva Team</p>
           <p class="footer-meta">
             You're receiving this because you created a Momeva event.<br>
-            <a href="${escapeHtml(opts.settingsUrl)}">Manage notifications</a> &nbsp;·&nbsp; <a href="${escapeHtml(opts.homeUrl)}">Visit Momeva</a>
+            ${footerLink(opts.settingsUrl, "Manage notifications")} &nbsp;·&nbsp; ${footerLink(opts.homeUrl, "Visit Momeva")}
           </p>
         </div>
       </div>
@@ -297,7 +318,6 @@ export function buildPhotoMilestone50Email(
     galleryUrl: ctx.galleryUrl,
     settingsUrl: ctx.settingsUrl,
     homeUrl: ctx.homeUrl,
-    ctaClass: "cta-row-tight",
     tipHtml: `
         <div class="tip">
           <strong>Before you go —</strong> your gallery is available for a limited time.
