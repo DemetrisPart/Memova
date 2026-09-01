@@ -119,6 +119,8 @@ model Event {
   status                 EventStatus  @default(ACTIVE)
   privacyMode            PrivacyMode  @default(OWN_UPLOADS_ONLY) @map("privacy_mode")
   showGuestNamesPublicly Boolean      @default(true) @map("show_guest_names_publicly")
+  /// How many days after eventDate photos stay visible (display-only until expiry enforcement).
+  galleryVisibleDays     Int          @default(14) @map("gallery_visible_days")
   storageUsedBytes       BigInt       @default(0) @map("storage_used_bytes")
   storageLimitBytes      BigInt       @default(21474836480) @map("storage_limit_bytes") // 20 GB
   createdAt              DateTime     @default(now()) @map("created_at")
@@ -195,6 +197,7 @@ model MediaAsset {
   width             Int?
   height            Int?
   durationMs        Int?             @map("duration_ms")
+  failureReason     String?          @map("failure_reason") @db.VarChar(500)
   createdAt         DateTime         @default(now()) @map("created_at")
   updatedAt         DateTime         @updatedAt @map("updated_at")
   deletedAt         DateTime?        @map("deleted_at")

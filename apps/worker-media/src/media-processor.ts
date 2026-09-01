@@ -17,6 +17,10 @@ import {
   IMAGE_VARIANT_SPECS,
   type MediaProcessImageJobPayload,
 } from "@momeva/domain";
+import {
+  markMediaFailed,
+  notifyAdminsOfProcessingFailure,
+} from "./admin-failure-notify";
 
 let storage: S3StorageService | undefined;
 
@@ -156,18 +160,9 @@ async function processImageJob(
         status: MediaAssetStatus.ACTIVE,
         width,
         height,
+        failureReason: null,
       },
     });
-  });
-}
-
-async function markMediaFailed(mediaAssetId: string): Promise<void> {
-  await prisma.mediaAsset.updateMany({
-    where: {
-      id: mediaAssetId,
-      status: MediaAssetStatus.PROCESSING,
-    },
-    data: { status: MediaAssetStatus.FAILED },
   });
 }
 
@@ -201,6 +196,10 @@ export function startMediaWorker(): Worker<MediaProcessImageJobPayload> {
   worker.on("failed", (job, err) => {
     const maxAttempts = job?.opts?.attempts ?? 3;
     const isFinalFailure = !job || job.attemptsMade >= maxAttempts;
+    const reason =
+      err instanceof Error && err.message
+        ? err.message
+        : "Media processing failed";
 
     logWorkerError({
       jobId: job?.id ?? "unknown",
@@ -218,7 +217,14 @@ export function startMediaWorker(): Worker<MediaProcessImageJobPayload> {
         eventId: job.data.eventId,
         attemptsMade: job.attemptsMade,
       });
-      void markMediaFailed(job.data.mediaAssetId);
+      void (async () => {
+        await markMediaFailed(job.data.mediaAssetId, reason);
+        await notifyAdminsOfProcessingFailure({
+          eventId: job.data.eventId,
+          mediaId: job.data.mediaAssetId,
+          reason,
+        });
+      })();
     }
   });
 

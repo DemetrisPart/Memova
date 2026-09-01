@@ -12,6 +12,7 @@ import {
   MediaAssetStatus,
   MediaAssetType,
   UploadBatchStatus,
+  UserRole,
 } from "@momeva/database";
 import {
   MIME_SNIFF_BYTE_LENGTH,
@@ -32,9 +33,9 @@ import { MVP_DEFAULTS } from "@momeva/shared";
 import { MediaQueueService } from "../queue/media-queue.service";
 import { RateLimitService } from "../rate-limit/rate-limit.service";
 import { PrismaService } from "../prisma/prisma.service";
+import { EmailService } from "../auth/email.service";
 import type { GuestSessionContext } from "../public/guest-session.guard";
 import type { UploadCompleteDto, UploadInitDto } from "./dto/upload.dto";
-
 @Injectable()
 export class UploadsService {
   constructor(
@@ -42,6 +43,7 @@ export class UploadsService {
     private readonly config: ConfigService,
     private readonly mediaQueue: MediaQueueService,
     private readonly rateLimit: RateLimitService,
+    private readonly email: EmailService,
     @Inject(STORAGE_SERVICE) private readonly storage: StorageService,
   ) {}
 
@@ -265,7 +267,10 @@ export class UploadsService {
         ...failed.map((item) =>
           this.prisma.mediaAsset.update({
             where: { id: item.mediaId },
-            data: { status: MediaAssetStatus.QUARANTINED },
+            data: {
+              status: MediaAssetStatus.QUARANTINED,
+              failureReason: item.reason.slice(0, 500),
+            },
           }),
         ),
         this.prisma.uploadBatch.update({
@@ -279,6 +284,14 @@ export class UploadsService {
         batchId: batch.id,
         reason: "ALL_VERIFY_FAILED",
       });
+
+      void this.notifyAdminsOfFailures(
+        event.slug,
+        failed.map((item) => ({
+          mediaId: item.mediaId,
+          reason: item.reason,
+        })),
+      );
 
       throw new BadRequestException("No uploads could be verified");
     }
@@ -308,7 +321,10 @@ export class UploadsService {
       for (const item of failed) {
         await tx.mediaAsset.update({
           where: { id: item.mediaId },
-          data: { status: MediaAssetStatus.QUARANTINED },
+          data: {
+            status: MediaAssetStatus.QUARANTINED,
+            failureReason: item.reason.slice(0, 500),
+          },
         });
       }
 
@@ -366,6 +382,16 @@ export class UploadsService {
       failedCount: failed.length,
     });
 
+    if (failed.length > 0) {
+      void this.notifyAdminsOfFailures(
+        event.slug,
+        failed.map((item) => ({
+          mediaId: item.mediaId,
+          reason: item.reason,
+        })),
+      );
+    }
+
     return {
       batchId: batch.id,
       status: failed.length === 0 ? "COMPLETED" : "PARTIAL",
@@ -373,6 +399,30 @@ export class UploadsService {
       failedCount: failed.length,
       failed,
     };
+  }
+
+  private async notifyAdminsOfFailures(
+    eventSlug: string,
+    failures: Array<{ mediaId: string; reason: string }>,
+  ): Promise<void> {
+    if (failures.length === 0) return;
+    const admins = await this.prisma.user.findMany({
+      where: { role: UserRole.PLATFORM_ADMIN, deletedAt: null },
+      select: { email: true },
+    });
+    if (admins.length === 0) return;
+
+    const emails = admins.map((admin) => admin.email);
+    await Promise.all(
+      failures.map((failure) =>
+        this.email.sendAdminUploadFailureAlert({
+          to: emails,
+          eventSlug,
+          mediaId: failure.mediaId,
+          reason: failure.reason,
+        }),
+      ),
+    );
   }
 
   private async assertGuestHourlyLimit(

@@ -77,4 +77,40 @@ export class EmailService {
       );
     }
   }
+
+  /** Best-effort alert to platform admins (does not throw on SMTP failure). */
+  async sendAdminUploadFailureAlert(input: {
+    to: string[];
+    eventSlug: string;
+    mediaId: string;
+    reason: string;
+  }): Promise<void> {
+    if (input.to.length === 0) return;
+
+    const from = this.config.get<string>(
+      "SMTP_FROM",
+      "Momeva <noreply@momeva.com>",
+    );
+    const subject = `Momeva upload failed — /${input.eventSlug}`;
+    const text = [
+      "A media upload failed permanently.",
+      "",
+      `Event: /${input.eventSlug}`,
+      `Media ID: ${input.mediaId}`,
+      `Reason: ${input.reason}`,
+      "",
+      "Open /admin for system health and recent failures.",
+    ].join("\n");
+
+    try {
+      await this.getTransporter().sendMail({
+        from,
+        to: input.to.join(", "),
+        subject,
+        text,
+      });
+    } catch {
+      // Do not fail the upload/verify path if mail is down.
+    }
+  }
 }

@@ -176,6 +176,42 @@ export function formatBytes(bytes: string | bigint | number): string {
   return `${value} B`;
 }
 
+/** Human duration for gallery visibility (e.g. 14 → "2 weeks"). */
+export function formatGalleryVisibleDuration(days: number): string {
+  const n = Math.max(0, Math.floor(days));
+  if (n === 1) return "1 day";
+  if (n > 0 && n % 7 === 0) {
+    const weeks = n / 7;
+    return weeks === 1 ? "1 week" : `${weeks} weeks`;
+  }
+  return `${n} days`;
+}
+
+/** Couple-facing note lines about how long photos stay in Momeva. */
+export function galleryVisibilityNoteLines(days: number): string[] {
+  return [
+    `Photos are kept in Momeva for ${formatGalleryVisibleDuration(days)} only.`,
+    "After that they are deleted.",
+    "Please download them before they expire.",
+  ];
+}
+
+/** Single-line version (emails / compact admin notes). */
+export function galleryVisibilityNote(days: number): string {
+  return galleryVisibilityNoteLines(days).join(" ");
+}
+
+/** Calendar end date (ISO yyyy-mm-dd) after eventDate + visible days. */
+export function galleryVisibleUntilDate(
+  eventDateIso: string,
+  visibleDays: number,
+): string {
+  const dateOnly = eventDateIso.slice(0, 10);
+  const date = new Date(`${dateOnly}T12:00:00Z`);
+  date.setUTCDate(date.getUTCDate() + Math.max(0, Math.floor(visibleDays)));
+  return date.toISOString().slice(0, 10);
+}
+
 export function formatRelativeTime(isoDate: string): string {
   const date = new Date(isoDate);
   const diffMs = Date.now() - date.getTime();

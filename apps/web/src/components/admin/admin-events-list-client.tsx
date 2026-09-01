@@ -2,9 +2,15 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { Calendar } from "lucide-react";
 import { fetchAdminEvents } from "@/lib/api/dashboard-client";
 import { resolveNetworkUrl } from "@/lib/mobile-network";
-import { formatCoupleNames, formatEventDate } from "@/lib/utils";
+import {
+  formatCoupleNames,
+  formatEventDate,
+  formatEventDateDots,
+  formatGalleryVisibleDuration,
+} from "@/lib/utils";
 import type { AdminEventSummary } from "@/lib/api/types";
 
 export function AdminEventsListClient() {
@@ -34,23 +40,39 @@ export function AdminEventsListClient() {
     };
   }, [date]);
 
+  const dateDisplay = date ? formatEventDateDots(date) : "dd/mm/yyyy";
+
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-        <div>
+    <div className="min-w-0 max-w-full space-y-6 overflow-x-hidden">
+      <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div className="min-w-0">
           <h1 className="text-2xl font-semibold text-white">All events</h1>
           <p className="mt-1 text-sm text-stone-400">
             Ops view — filter by day when multiple weddings share a date.
           </p>
         </div>
-        <label className="block text-sm text-stone-300">
+        <label className="block min-w-0 w-full max-w-full text-sm text-stone-300 sm:max-w-[14rem]">
           Event date
-          <input
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            className="mt-1 block w-full rounded-lg border border-white/15 bg-[#222] px-3 py-2 text-white sm:w-auto"
-          />
+          {/* Facade: native date on iOS has huge min-width + no placeholder. */}
+          <span className="relative mt-1 block min-w-0 max-w-full overflow-hidden rounded-lg border border-white/15 bg-[#222]">
+            <span
+              className={`pointer-events-none flex items-center justify-between gap-2 px-3 py-2 text-sm ${
+                date ? "text-white" : "text-stone-500"
+              }`}
+            >
+              <span className="min-w-0 truncate">{dateDisplay}</span>
+              <Calendar
+                className="h-4 w-4 shrink-0 text-stone-500"
+                aria-hidden
+              />
+            </span>
+            <input
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              className="absolute inset-0 z-10 h-full w-full min-w-0 max-w-full cursor-pointer opacity-0"
+            />
+          </span>
         </label>
       </div>
 
@@ -75,7 +97,7 @@ export function AdminEventsListClient() {
           No events{date ? ` on ${formatEventDate(date)}` : ""}.
         </p>
       ) : (
-        <ul className="space-y-3">
+        <ul className="min-w-0 space-y-3">
           {events.map((event) => {
             const cover = event.coverImageUrl
               ? resolveNetworkUrl({
@@ -85,10 +107,10 @@ export function AdminEventsListClient() {
                 })
               : null;
             return (
-              <li key={event.id}>
+              <li key={event.id} className="min-w-0">
                 <Link
                   href={`/admin/events/${event.id}`}
-                  className="flex items-center gap-4 rounded-xl border border-white/10 bg-[#222] p-3 transition hover:border-sky-500/40"
+                  className="flex min-w-0 items-center gap-3 rounded-xl border border-white/10 bg-[#222] p-3 transition hover:border-sky-500/40 sm:gap-4"
                 >
                   <div className="h-14 w-14 shrink-0 overflow-hidden rounded-lg bg-[#333]">
                     {cover ? (
@@ -100,7 +122,7 @@ export function AdminEventsListClient() {
                       />
                     ) : null}
                   </div>
-                  <div className="min-w-0 flex-1">
+                  <div className="min-w-0 flex-1 overflow-hidden">
                     <p className="truncate font-medium text-white">
                       {formatCoupleNames(
                         event.groomName,
@@ -108,12 +130,16 @@ export function AdminEventsListClient() {
                         event.title,
                       )}
                     </p>
-                    <p className="text-sm text-stone-400">
+                    <p className="truncate text-sm text-stone-400">
                       {formatEventDate(event.eventDate)} · /{event.slug} ·{" "}
                       {event.photoCount} photos
                     </p>
                     <p className="truncate text-xs text-stone-500">
-                      Owner: {event.ownerEmail}
+                      Visible {formatGalleryVisibleDuration(event.galleryVisibleDays ?? 14)} ·{" "}
+                      {event.privacyMode === "ALL_GUESTS"
+                        ? "Shared gallery"
+                        : "Own uploads only"}{" "}
+                      · Owner: {event.ownerEmail}
                     </p>
                   </div>
                 </Link>

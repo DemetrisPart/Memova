@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { fetchMe } from "@/lib/api/dashboard-client";
+import { AdminAuthShell } from "@/components/admin/admin-auth-shell";
 
 /**
  * Gates /admin to PLATFORM_ADMIN. Works with cookies or Mobile Preview bearer tokens.
@@ -41,58 +42,64 @@ export function AdminGate({ children }: { children: React.ReactNode }) {
 
   if (!ready) {
     return (
-      <main className="flex min-h-dvh items-center justify-center bg-[#1a1a1a] px-4">
-        <p className="text-sm text-stone-400">Checking admin access…</p>
-      </main>
+      <AdminAuthShell>
+        <p className="text-center text-sm text-stone-400">
+          Checking admin access…
+        </p>
+      </AdminAuthShell>
     );
   }
 
   if (needsLogin) {
     return (
-      <main className="flex min-h-dvh flex-col items-center justify-center gap-4 bg-[#1a1a1a] px-4 text-center">
-        <h1 className="text-xl font-semibold text-white">Sign in for admin</h1>
-        <p className="max-w-md text-sm text-stone-400">
-          Platform admin requires a signed-in session. Use the same magic-link
-          flow, then you&apos;ll return here.
+      <AdminAuthShell>
+        <h2 className="text-xl font-semibold text-white">Admin sign in</h2>
+        <p className="mt-2 text-sm leading-relaxed text-stone-400">
+          Use the magic-link flow with a{" "}
+          <span className="text-sky-300">PLATFORM_ADMIN</span> account. You&apos;ll
+          return here after approval.
         </p>
         <Link
           href="/auth/login?next=/admin"
-          className="rounded-lg bg-sky-600 px-4 py-2 text-sm font-medium text-white hover:bg-sky-500"
+          className="mt-6 flex min-h-11 w-full items-center justify-center rounded-xl bg-sky-600 text-sm font-semibold text-white shadow-[0_10px_24px_rgb(2_132_199_/_35%)] transition-colors hover:bg-sky-500"
         >
-          Sign in
+          Continue to admin login
         </Link>
-      </main>
+      </AdminAuthShell>
     );
   }
 
   if (denied) {
     return (
-      <main className="flex min-h-dvh flex-col items-center justify-center gap-4 bg-[#1a1a1a] px-4 text-center">
-        <h1 className="text-xl font-semibold text-white">Admin access needed</h1>
-        <p className="max-w-md text-sm text-stone-400">
+      <AdminAuthShell eyebrow="Access denied">
+        <h2 className="text-xl font-semibold text-white">Admin role needed</h2>
+        <p className="mt-2 text-sm leading-relaxed text-stone-400">
           Signed in as <span className="text-stone-200">{email}</span>, but this
           account is not <code className="text-sky-300">PLATFORM_ADMIN</code>{" "}
           yet (or the session role is stale).
         </p>
-        <p className="max-w-md text-xs text-stone-500">
+        <p className="mt-3 text-xs leading-relaxed text-stone-500">
           Run{" "}
-          <code className="text-stone-300">
+          <code className="rounded bg-white/5 px-1.5 py-0.5 text-stone-300">
             node scripts/promote-admin.mjs {email}
           </code>
           , then sign out and sign in again.
         </p>
-        <div className="flex gap-3 text-sm">
+        <div className="mt-6 flex flex-col gap-2.5">
           <Link
             href="/auth/login?next=/admin"
-            className="text-sky-300 hover:underline"
+            className="flex min-h-11 w-full items-center justify-center rounded-xl bg-sky-600 text-sm font-semibold text-white hover:bg-sky-500"
           >
             Sign in again
           </Link>
-          <Link href="/dashboard" className="text-stone-400 hover:underline">
+          <Link
+            href="/dashboard"
+            className="flex min-h-11 w-full items-center justify-center rounded-xl border border-white/10 bg-white/5 text-sm font-medium text-stone-300 hover:bg-white/10"
+          >
             Couple dashboard
           </Link>
         </div>
-      </main>
+      </AdminAuthShell>
     );
   }
 
@@ -122,7 +129,9 @@ export function AdminGate({ children }: { children: React.ReactNode }) {
           </div>
         </div>
       </header>
-      <div className="mx-auto max-w-5xl px-4 py-6">{children}</div>
+      <div className="mx-auto max-w-5xl min-w-0 overflow-x-hidden px-4 py-6">
+        {children}
+      </div>
     </div>
   );
 }

@@ -84,6 +84,38 @@ export class MediaQueueService implements OnModuleDestroy {
     return snapshot;
   }
 
+  async getRecentFailedJobs(limit = 20): Promise<
+    Array<{
+      id: string;
+      mediaId: string | null;
+      eventId: string | null;
+      eventSlug: string | null;
+      reason: string;
+      failedAt: string;
+    }>
+  > {
+    const take = Math.min(Math.max(limit, 1), 50);
+    const jobs = await this.queue.getFailed(0, take - 1);
+
+    return jobs.map((job) => {
+      const eventId =
+        typeof job.data?.eventId === "string" ? job.data.eventId : null;
+      const mediaId =
+        typeof job.data?.mediaAssetId === "string"
+          ? job.data.mediaAssetId
+          : null;
+      const failedAtMs = job.finishedOn ?? job.processedOn ?? job.timestamp;
+      return {
+        id: String(job.id ?? mediaId ?? "unknown"),
+        mediaId,
+        eventId,
+        eventSlug: null as string | null,
+        reason: job.failedReason?.trim() || "Unknown queue failure",
+        failedAt: new Date(failedAtMs ?? Date.now()).toISOString(),
+      };
+    });
+  }
+
   async onModuleDestroy(): Promise<void> {
     await this.queue.close();
     await this.connection.quit();

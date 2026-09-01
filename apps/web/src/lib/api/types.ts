@@ -143,6 +143,7 @@ export type CoupleEvent = {
   status: string;
   privacyMode: PrivacyMode;
   showGuestNamesPublicly: boolean;
+  galleryVisibleDays: number;
   storageUsedBytes: string;
   storageLimitBytes: string;
   coverImageMediaId: string | null;
@@ -163,6 +164,22 @@ export type AdminEventSummary = CoupleEvent & {
 
 export type AdminEventDetail = AdminEventSummary & {
   videoCount: number;
+};
+
+export type AdminFailureItem = {
+  source: "media" | "queue";
+  id: string;
+  mediaId: string | null;
+  eventId: string | null;
+  eventSlug: string | null;
+  reason: string;
+  status: string;
+  failedAt: string;
+};
+
+export type AdminFailuresResponse = {
+  items: AdminFailureItem[];
+  queueFailedCount: number;
 };
 
 export type EventStats = {

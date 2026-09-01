@@ -60,9 +60,6 @@ export function OriginalQrPrintCard({ qr }: OriginalQrPrintCardProps) {
           className="size-48 lg:size-64 print:size-64"
         />
       </div>
-      <p className="mt-3 text-xs text-stone-500 lg:mt-4 lg:text-sm">
-        Guests scan this code with their phone camera — no app install needed.
-      </p>
       {/* Clipboard fallback only — never shown on screen or print. */}
       <span id="guest-event-url" className="sr-only print:hidden print-hide">
         {qr.eventUrl}

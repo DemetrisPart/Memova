@@ -7,7 +7,14 @@ import {
   fetchAdminGallery,
 } from "@/lib/api/dashboard-client";
 import { resolveNetworkUrl } from "@/lib/mobile-network";
-import { formatCoupleNames, formatEventDate } from "@/lib/utils";
+import {
+  formatBytes,
+  formatCoupleNames,
+  formatEventDate,
+  formatGalleryVisibleDuration,
+  galleryVisibilityNote,
+  galleryVisibleUntilDate,
+} from "@/lib/utils";
 import type { AdminEventDetail, CoupleGalleryItem } from "@/lib/api/types";
 
 type AdminEventDetailClientProps = {
@@ -101,9 +108,6 @@ export function AdminEventDetailClient({
             /{event.slug} · {event.photoCount} photos · {event.videoCount} videos
           </p>
           <p className="text-sm text-stone-400">Owner: {event.ownerEmail}</p>
-          <p className="text-sm text-stone-500">
-            Storage {event.storageUsedBytes} / {event.storageLimitBytes} bytes
-          </p>
           <a
             href={event.publicUrl}
             target="_blank"
@@ -114,6 +118,60 @@ export function AdminEventDetailClient({
           </a>
         </div>
       </div>
+
+      <section className="rounded-xl border border-white/10 bg-[#222] p-4">
+        <h2 className="text-sm font-medium uppercase tracking-wide text-white">
+          Couple rights
+        </h2>
+        <dl className="mt-3 grid gap-3 text-sm sm:grid-cols-2">
+          <div>
+            <dt className="text-white">Status</dt>
+            <dd className="font-medium text-white">{event.status}</dd>
+          </div>
+          <div>
+            <dt className="text-white">Privacy mode</dt>
+            <dd className="font-medium text-white">
+              {event.privacyMode === "ALL_GUESTS"
+                ? "Shared gallery"
+                : "Own uploads only"}
+            </dd>
+          </div>
+          <div>
+            <dt className="text-white">Guest names public</dt>
+            <dd className="font-medium text-white">
+              {event.showGuestNamesPublicly ? "Yes" : "No"}
+            </dd>
+          </div>
+          <div>
+            <dt className="text-white">Storage</dt>
+            <dd className="font-medium text-white">
+              {formatBytes(event.storageUsedBytes)} /{" "}
+              {formatBytes(event.storageLimitBytes)}
+            </dd>
+          </div>
+          <div className="sm:col-span-2">
+            <dt className="text-white">Gallery visible</dt>
+            <dd className="font-medium text-white">
+              {formatGalleryVisibleDuration(event.galleryVisibleDays ?? 14)} after
+              event date{" "}
+              <span className="text-rose-500">
+                (until{" "}
+                {formatEventDate(
+                  galleryVisibleUntilDate(
+                    event.eventDate,
+                    event.galleryVisibleDays ?? 14,
+                  ),
+                )}
+                )
+              </span>
+            </dd>
+            <p className="mt-1 text-xs text-white/80">
+              {galleryVisibilityNote(event.galleryVisibleDays ?? 14)} Display only —
+              not enforced yet.
+            </p>
+          </div>
+        </dl>
+      </section>
 
       <section>
         <h2 className="text-lg font-medium text-white">Photos</h2>

@@ -16,6 +16,7 @@ Default test event: **`wedding-3-oct-2026`**
 | Guest event | http://192.168.0.103:3000/wedding-3-oct-2026 |
 | Guest QR | http://192.168.0.103:3000/wedding-3-oct-2026/qr |
 | Admin (PLATFORM_ADMIN) | http://192.168.0.103:3000/admin |
+| Admin sign-in | http://192.168.0.103:3000/auth/login?next=/admin |
 
 On a **phone**, use the LAN IP above — `localhost` on the phone is the phone itself, not your PC.
 
@@ -42,6 +43,8 @@ Admin home shows **system health** (API / DB / queue). Tap **Enable browser aler
 | Couple dashboard | http://localhost:3000/dashboard |
 | Guest event | http://localhost:3000/wedding-3-oct-2026 |
 | Guest QR | http://localhost:3000/wedding-3-oct-2026/qr |
+| Admin | http://localhost:3000/admin |
+| Admin sign-in | http://localhost:3000/auth/login?next=/admin |
 
 ## API / infra
 

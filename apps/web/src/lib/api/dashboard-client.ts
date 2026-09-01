@@ -315,6 +315,15 @@ export async function fetchAdminGallery(
   );
 }
 
+export async function fetchAdminFailures(params?: {
+  limit?: number;
+}): Promise<import("./types").AdminFailuresResponse> {
+  const search = new URLSearchParams();
+  if (params?.limit) search.set("limit", String(params.limit));
+  const query = search.toString();
+  return apiFetch(`/admin/ops/failures${query ? `?${query}` : ""}`);
+}
+
 export async function initCoverUpload(
   eventId: string,
   data: { contentType: string; contentLength: number; fileName?: string },

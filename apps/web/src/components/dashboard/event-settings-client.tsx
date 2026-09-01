@@ -16,6 +16,7 @@ import { resolveNetworkUrl } from "@/lib/mobile-network";
 import {
   formatEventDate,
   formatCoupleNames,
+  galleryVisibilityNoteLines,
   inferPhotoContentType,
 } from "@/lib/utils";
 import type { CoupleEvent, PrivacyMode } from "@/lib/api/types";
@@ -348,6 +349,19 @@ export function EventSettingsClient({ event }: EventSettingsClientProps) {
           <span className="font-medium text-[#1a1714]">Note</span>
           {" : The URL and QR code is automatically generated based on the event date and cannot be modified (e.g. /demetris-daniella-3-oct-2026)."}
         </p>
+
+        <div className="rounded-xl bg-[#efe8dc] px-3 py-2.5">
+          <p className="text-sm font-medium text-[#1a1714]">
+            Photo visibility
+          </p>
+          <div className="mt-1 space-y-0.5 text-xs leading-relaxed text-rose-600">
+            {galleryVisibilityNoteLines(event.galleryVisibleDays ?? 14).map(
+              (line) => (
+                <p key={line}>{line}</p>
+              ),
+            )}
+          </div>
+        </div>
 
         {error ? <p className="text-sm text-rose-500">{error}</p> : null}
         {message ? (
