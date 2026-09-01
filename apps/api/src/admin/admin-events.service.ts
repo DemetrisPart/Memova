@@ -127,6 +127,7 @@ export class AdminEventsService {
       galleryVisibleDays?: number;
       storageLimitBytes?: bigint;
       storageFullNotifiedAt?: Date | null;
+      storageNearFullNotifiedAt?: Date | null;
     } = {};
 
     if (dto.galleryVisibleDays !== undefined) {
@@ -148,6 +149,7 @@ export class AdminEventsService {
       data.storageLimitBytes = nextBytes;
       // Allow a fresh alert the next time this event fills again.
       data.storageFullNotifiedAt = null;
+      data.storageNearFullNotifiedAt = null;
     }
 
     await this.prisma.event.update({

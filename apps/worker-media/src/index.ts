@@ -1,5 +1,6 @@
 import "./load-env";
 import { getLogger, logMetric, logWorkerError } from "@momeva/logging";
+import { startCoupleEmailScheduler } from "./couple-scheduled-notify";
 import { startMediaWorker } from "./media-processor";
 
 const logger = getLogger().child({ service: "worker-media" });
@@ -7,11 +8,15 @@ const logger = getLogger().child({ service: "worker-media" });
 async function main(): Promise<void> {
   const concurrency = process.env.WORKER_MEDIA_CONCURRENCY ?? "2";
   const worker = startMediaWorker();
+  const coupleScheduler = startCoupleEmailScheduler();
 
   worker.on("ready", () => {
     logger.info(
       { concurrency: parseInt(concurrency, 10) },
       "Momeva media worker ready — consuming media queue",
+    );
+    logger.info(
+      "Couple email scheduler started (wedding countdown + expiry reminders)",
     );
   });
 
@@ -29,6 +34,7 @@ async function main(): Promise<void> {
 
   const shutdown = async (signal: string) => {
     logger.info({ signal }, "Shutting down media worker");
+    clearInterval(coupleScheduler);
     await worker.close();
     process.exit(0);
   };

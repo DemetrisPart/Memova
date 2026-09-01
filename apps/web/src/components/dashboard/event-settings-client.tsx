@@ -546,7 +546,8 @@ export function EventSettingsClient({ event }: EventSettingsClientProps) {
                 Notifications by email
               </p>
               <p className="mt-0.5 text-xs text-stone-400">
-                Timed emails send once scheduling is enabled.
+                Optional alerts below. Wedding countdown and 50-photo emails
+                are always sent by Momeva.
               </p>
             </div>
             <ChevronRight

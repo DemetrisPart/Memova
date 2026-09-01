@@ -1,6 +1,12 @@
-import nodemailer from "nodemailer";
 import { MediaAssetStatus, MediaAssetType, prisma } from "@momeva/database";
 import { logWorkerError } from "@momeva/logging";
+import {
+  buildPhotoMilestone50Email,
+  formatCoupleDisplayName,
+  formatEventDateLabel,
+  resolveCoupleAppUrls,
+} from "./couple-email-templates";
+import { sendCoupleEmail } from "./couple-mail";
 
 const PHOTO_MILESTONE_50 = 50;
 
@@ -18,6 +24,9 @@ export async function maybeNotifyCouplePhotoMilestone50(
         id: true,
         slug: true,
         title: true,
+        brideName: true,
+        groomName: true,
+        eventDate: true,
         photoMilestone50NotifiedAt: true,
         owner: { select: { email: true } },
       },
@@ -43,31 +52,20 @@ export async function maybeNotifyCouplePhotoMilestone50(
     });
     if (claimed.count === 0) return;
 
-    const host = process.env.SMTP_HOST ?? "localhost";
-    const port = Number.parseInt(process.env.SMTP_PORT ?? "1025", 10);
-    const from =
-      process.env.SMTP_FROM ?? "Momeva <noreply@momeva.com>";
-    const transporter = nodemailer.createTransport({
-      host,
-      port,
-      secure: false,
+    const coupleNames = formatCoupleDisplayName(event);
+    const urls = resolveCoupleAppUrls(event.id);
+    const mail = buildPhotoMilestone50Email({
+      eventId: event.id,
+      coupleNames,
+      eventDateLabel: formatEventDateLabel(event.eventDate),
+      ...urls,
     });
 
-    const text = [
-      `Hi — looks like your guests are enjoying Momeva.`,
-      "",
-      `They've just shared 50 photos full of memories on ${event.title}.`,
-      "",
-      "Open your gallery anytime to enjoy them — and remember to download your favourites before your gallery expires.",
-      "",
-      `Your event: /${event.slug}`,
-    ].join("\n");
-
-    await transporter.sendMail({
-      from,
+    await sendCoupleEmail({
       to: event.owner.email,
-      subject: `50 photos of memories — /${event.slug}`,
-      text,
+      subject: mail.subject,
+      text: mail.text,
+      html: mail.html,
     });
   } catch (err) {
     logWorkerError({

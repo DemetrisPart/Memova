@@ -125,7 +125,7 @@ model Event {
   storageLimitBytes      BigInt       @default(21474836480) @map("storage_limit_bytes") // 20 GB
   /// Set when admins were emailed that this event hit storage full; cleared on extend.
   storageFullNotifiedAt  DateTime?    @map("storage_full_notified_at")
-  /// Couple email prefs (delivery via scheduler later).
+  /// Couple email prefs (timed delivery via worker scheduler / event hooks).
   notifyExpiry3d           Boolean    @default(true) @map("notify_expiry_3d")
   /// Always on — Momeva sends wedding-day countdown; not a couple setting.
   notifyWeddingCountdown   Boolean    @default(true) @map("notify_wedding_countdown")
@@ -133,6 +133,10 @@ model Event {
   notifyStorageNearFull    Boolean    @default(false) @map("notify_storage_near_full")
   /// Set once when ACTIVE photo count first reaches 50 (mandatory couple email).
   photoMilestone50NotifiedAt DateTime? @map("photo_milestone_50_notified_at")
+  weddingCountdownNotifiedAt DateTime? @map("wedding_countdown_notified_at")
+  expiry3dNotifiedAt         DateTime? @map("expiry_3d_notified_at")
+  firstGuestPhotoNotifiedAt  DateTime? @map("first_guest_photo_notified_at")
+  storageNearFullNotifiedAt  DateTime? @map("storage_near_full_notified_at")
   createdAt              DateTime     @default(now()) @map("created_at")
   updatedAt              DateTime     @updatedAt @map("updated_at")
   deletedAt              DateTime?    @map("deleted_at")
