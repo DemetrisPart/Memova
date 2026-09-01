@@ -1,7 +1,7 @@
 # Stage 3 — MVP (Deploy & Ops)
 
 **Status:** Phase 0–6 complete (MVP hardening locked)  
-**Working list (next):** [STAGE_7_DEPLOY.md](./STAGE_7_DEPLOY.md)  
+**Working list (next):** [STAGE_7_DEPLOY.md](./STAGE_7_DEPLOY.md) · [VERCEL_WEB.md](./VERCEL_WEB.md)  
 **Working list (hardening):** [STAGE_3_PHASE_6_HARDENING.md](./STAGE_3_PHASE_6_HARDENING.md)  
 **Env catalogue:** [ENV.md](./ENV.md) · template: `.env.example`  
 **Local URLs:** [DEV_URLS.md](./DEV_URLS.md)

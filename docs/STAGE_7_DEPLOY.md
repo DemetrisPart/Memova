@@ -13,7 +13,7 @@
 
 | Component | Platform | Status |
 |-----------|----------|--------|
-| Web | Vercel (EU) | ⬜ |
+| Web | Vercel (EU) | 🔄 Docs ready — [VERCEL_WEB.md](./VERCEL_WEB.md) |
 | API | Fly.io | 🔄 `fly.toml` ready — deploy when secrets + DB exist |
 | Worker media | Fly.io | 🔄 `fly.toml` ready — deploy when secrets + Redis exist |
 | Postgres | Neon (EU) | ⬜ |
@@ -31,9 +31,9 @@
 | 7.1 | Docker images for API + worker | ✅ Done | `apps/api/Dockerfile`, `apps/worker-media/Dockerfile` |
 | 7.2 | GitHub Actions CI | ✅ Done | `.github/workflows/ci.yml` — install, Prisma, domain tests, typecheck |
 | 7.3 | Fly.io app configs | ✅ Done | `apps/api/fly.toml`, `apps/worker-media/fly.toml` (FRA) |
-| 7.4 | Vercel web project notes | 🔄 Next | Env mapping + build command for monorepo |
-| 7.5 | Staging env checklist | ⬜ Pending | Neon + Upstash + R2 + Resend wired |
-| 7.6 | First staging deploy | ⬜ Pending | Manual smoke (guest upload + magic link) |
+| 7.4 | Vercel web project notes | ✅ Done | [VERCEL_WEB.md](./VERCEL_WEB.md) |
+| 7.5 | Staging env checklist | ✅ Done | [STAGING_CHECKLIST.md](./STAGING_CHECKLIST.md) |
+| 7.6 | First staging deploy | ⬜ Pending | Needs cloud accounts + secrets (blocked on you) |
 | 7.7 | `STAGE_7` / go-live lock | ⬜ Pending | Only after staging OK |
 
 ### Explicitly later (not this stage’s MVP)
@@ -52,6 +52,8 @@
 | 2026-09-01 | Stage 7 checklist created after Phase 6 lock |
 | 2026-09-01 | Steps 7.1–7.2: Dockerfiles + GitHub Actions CI |
 | 2026-09-01 | Step 7.3: Fly.toml for API + worker (region `fra`) |
+| 2026-09-01 | Step 7.4: Vercel web deploy notes (`VERCEL_WEB.md`) |
+| 2026-09-01 | Step 7.5: Staging checklist (`STAGING_CHECKLIST.md`) — deploy blocked on accounts |
 
 ---
 
