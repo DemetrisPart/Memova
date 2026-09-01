@@ -109,6 +109,9 @@ Working list: [STAGE_3_PHASE_5_COUPLE_DASHBOARD.md](./STAGE_3_PHASE_5_COUPLE_DAS
 29. Event settings page (edit names, date, cover)
 
 ### Phase 6 — Hardening (Day 11–12)
+
+Working list: [STAGE_3_PHASE_6_HARDENING.md](./STAGE_3_PHASE_6_HARDENING.md)
+
 30. Rate limiting middleware
 31. File validation (MIME magic bytes, size)
 32. Error handling + API problem details

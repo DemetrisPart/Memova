@@ -20,7 +20,10 @@ import {
   STORAGE_SERVICE,
   buildEventTitle,
   buildMediaOriginalKey,
+  detectMimeFromBuffer,
   extensionFromMimeType,
+  MIME_SNIFF_BYTE_LENGTH,
+  mimeMatchesDeclared,
   normalizeEventSlug,
   validateEventSlug,
   type StorageService,
@@ -289,6 +292,21 @@ export class EventsService {
     if (!exists) {
       throw new BadRequestException(
         "Cover photo upload not found in storage. Upload the file first.",
+      );
+    }
+
+    const sniffBuffer = await this.storage.getObjectBuffer({
+      key: media.originalKey,
+      maxBytes: MIME_SNIFF_BYTE_LENGTH,
+    });
+    const detected = detectMimeFromBuffer(sniffBuffer);
+    if (!mimeMatchesDeclared(detected, media.mimeType)) {
+      await this.prisma.mediaAsset.update({
+        where: { id: media.id },
+        data: { status: MediaAssetStatus.QUARANTINED },
+      });
+      throw new BadRequestException(
+        "Cover photo type does not match the uploaded file.",
       );
     }
 

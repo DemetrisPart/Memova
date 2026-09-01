@@ -92,6 +92,18 @@ export class RateLimitService implements OnModuleDestroy {
     );
   }
 
+  async assertAuthMagicLinkLimit(clientIp: string): Promise<void> {
+    const limit = this.config.get<number>(
+      "RATE_LIMIT_AUTH_MAGIC_LINK_PER_IP_HOUR",
+      RATE_LIMITS.AUTH_MAGIC_LINK_PER_IP_HOUR,
+    );
+    await this.assertWithinLimit(
+      `auth:magic-link:${clientIp}`,
+      limit,
+      3600,
+    );
+  }
+
   async onModuleDestroy(): Promise<void> {
     await this.redis.quit();
   }

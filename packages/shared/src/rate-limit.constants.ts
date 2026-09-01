@@ -8,6 +8,8 @@ export const RATE_LIMITS = {
   UPLOAD_INIT_PER_GUEST_SESSION_HOUR: 30,
   /** Upload complete requests per guest session per hour */
   UPLOAD_COMPLETE_PER_GUEST_SESSION_HOUR: 60,
+  /** Magic-link / register requests per IP per hour (email abuse). */
+  AUTH_MAGIC_LINK_PER_IP_HOUR: 10,
 } as const;
 
 /** Log slow requests above this threshold (ms). */

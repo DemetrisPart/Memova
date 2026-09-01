@@ -1,6 +1,8 @@
 import { Controller, Post, Get, Query, Req, Res, UnauthorizedException, Body, HttpException, HttpStatus, HttpCode } from "@nestjs/common";
 import type { Request, Response } from "express";
 import { ConfigService } from "@nestjs/config";
+import { getClientIp } from "../common/client-ip.util";
+import { RateLimitService } from "../rate-limit/rate-limit.service";
 import { AuthService } from "./auth.service";
 import {
   ApproveMagicLinkDto,
@@ -20,15 +22,18 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly config: ConfigService,
+    private readonly rateLimit: RateLimitService,
   ) {}
 
   @Post("register")
-  async register(@Body() dto: RegisterDto) {
+  async register(@Body() dto: RegisterDto, @Req() req: Request) {
+    await this.rateLimit.assertAuthMagicLinkLimit(getClientIp(req));
     return this.authService.register(dto.email);
   }
 
   @Post("magic-link")
-  async magicLink(@Body() dto: MagicLinkDto) {
+  async magicLink(@Body() dto: MagicLinkDto, @Req() req: Request) {
+    await this.rateLimit.assertAuthMagicLinkLimit(getClientIp(req));
     return this.authService.requestMagicLink(dto.email);
   }
 
