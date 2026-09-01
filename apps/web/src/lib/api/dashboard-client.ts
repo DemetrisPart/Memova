@@ -233,6 +233,9 @@ export async function updateEvent(
     title?: string;
     privacyMode?: "OWN_UPLOADS_ONLY" | "ALL_GUESTS";
     showGuestNamesPublicly?: boolean;
+    notifyExpiry3d?: boolean;
+    notifyFirstGuestPhoto?: boolean;
+    notifyStorageNearFull?: boolean;
   },
 ): Promise<CoupleEvent> {
   return apiFetch(`/events/${encodeURIComponent(eventId)}`, {

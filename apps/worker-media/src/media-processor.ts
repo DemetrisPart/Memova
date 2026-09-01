@@ -21,6 +21,7 @@ import {
   markMediaFailed,
   notifyAdminsOfProcessingFailure,
 } from "./admin-failure-notify";
+import { maybeNotifyCouplePhotoMilestone50 } from "./couple-milestone-notify";
 
 let storage: S3StorageService | undefined;
 
@@ -164,6 +165,8 @@ async function processImageJob(
       },
     });
   });
+
+  void maybeNotifyCouplePhotoMilestone50(eventId);
 }
 
 export function startMediaWorker(): Worker<MediaProcessImageJobPayload> {

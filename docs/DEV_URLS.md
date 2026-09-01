@@ -33,6 +33,8 @@ After sign-in, open Admin from the ☰ menu (**Platform admin**) or go to `/admi
 
 Admin home shows **system health** (API / DB / queue). Tap **Enable browser alerts** to get a notification if something goes unhealthy while the admin tab is open.
 
+Couple **Settings → Notifications by email** saves optional prefs (expiry / first guest photo / storage). **Wedding day countdown** and **50 photos** emails are always sent by Momeva (not couple toggles). Timed emails send once scheduling is enabled.
+
 ## PC (localhost)
 
 | Page | URL |

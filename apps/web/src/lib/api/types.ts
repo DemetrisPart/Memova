@@ -144,6 +144,10 @@ export type CoupleEvent = {
   privacyMode: PrivacyMode;
   showGuestNamesPublicly: boolean;
   galleryVisibleDays: number;
+  notifyExpiry3d: boolean;
+  notifyWeddingCountdown: boolean;
+  notifyFirstGuestPhoto: boolean;
+  notifyStorageNearFull: boolean;
   storageUsedBytes: string;
   storageLimitBytes: string;
   coverImageMediaId: string | null;

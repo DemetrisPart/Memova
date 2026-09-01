@@ -65,6 +65,18 @@ export class UpdateEventDto {
   @IsOptional()
   @IsBoolean()
   showGuestNamesPublicly?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  notifyExpiry3d?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  notifyFirstGuestPhoto?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  notifyStorageNearFull?: boolean;
 }
 
 export class CoverUploadInitDto {
