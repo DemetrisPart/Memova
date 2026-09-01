@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma client
+        run: pnpm --filter @momeva/database generate
+
+      - name: Build packages (shared → api deps)
+        run: |
+          pnpm --filter @momeva/shared build
+          pnpm --filter @momeva/logging build
+          pnpm --filter @momeva/domain build
+          pnpm --filter @momeva/storage build
+          pnpm --filter @momeva/database build
+
+      - name: Domain unit tests
+        run: pnpm --filter @momeva/domain test
+
+      - name: Typecheck API
+        run: pnpm --filter @momeva/api typecheck
+
+      - name: Typecheck worker
+        run: pnpm --filter @momeva/worker-media typecheck

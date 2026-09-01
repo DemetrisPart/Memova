@@ -1,7 +1,8 @@
 # Stage 3 — MVP (Deploy & Ops)
 
 **Status:** Phase 0–6 complete (MVP hardening locked)  
-**Working list:** [STAGE_3_PHASE_6_HARDENING.md](./STAGE_3_PHASE_6_HARDENING.md)  
+**Working list (next):** [STAGE_7_DEPLOY.md](./STAGE_7_DEPLOY.md)  
+**Working list (hardening):** [STAGE_3_PHASE_6_HARDENING.md](./STAGE_3_PHASE_6_HARDENING.md)  
 **Env catalogue:** [ENV.md](./ENV.md) · template: `.env.example`  
 **Local URLs:** [DEV_URLS.md](./DEV_URLS.md)
 
@@ -85,3 +86,4 @@ API errors use **RFC 7807** `application/problem+json` (`type`, `title`, `status
 | 4 Guest | [PHASE_4_GUEST_FLOW.md](./PHASE_4_GUEST_FLOW.md) |
 | 5 Couple | [PHASE_5_COMPLETE.md](./PHASE_5_COMPLETE.md) |
 | 6 Hardening | [STAGE_3_PHASE_6_HARDENING.md](./STAGE_3_PHASE_6_HARDENING.md) |
+| 7 Deploy | [STAGE_7_DEPLOY.md](./STAGE_7_DEPLOY.md) |

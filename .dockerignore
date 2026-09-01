@@ -1,0 +1,14 @@
+# Keep build context smaller — build from repo root.
+.git
+.next
+**/.next
+**/dist
+**/node_modules
+apps/web/.next
+**/*.md
+!docs/**
+.env
+.env.*
+!.env.example
+agent-transcripts
+.cursor
