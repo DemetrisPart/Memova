@@ -23,4 +23,9 @@ export class AdminOpsController {
   listFailures(@Query() query: AdminFailuresQueryDto) {
     return this.adminOps.listRecentFailures(query.limit ?? 20);
   }
+
+  @Get("storage-full")
+  listStorageFull(@Query() query: AdminFailuresQueryDto) {
+    return this.adminOps.listStorageFull(query.limit ?? 20);
+  }
 }

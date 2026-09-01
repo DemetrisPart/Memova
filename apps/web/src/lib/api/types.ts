@@ -182,6 +182,19 @@ export type AdminFailuresResponse = {
   queueFailedCount: number;
 };
 
+export type AdminStorageFullItem = {
+  eventId: string;
+  eventSlug: string;
+  eventTitle: string;
+  storageUsedBytes: string;
+  storageLimitBytes: string;
+  notifiedAt: string | null;
+};
+
+export type AdminStorageFullResponse = {
+  items: AdminStorageFullItem[];
+};
+
 export type EventStats = {
   photoCount: number;
   videoCount: number;

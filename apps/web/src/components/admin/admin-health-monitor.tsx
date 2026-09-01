@@ -2,9 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { fetchAdminFailures } from "@/lib/api/dashboard-client";
-import type { AdminFailureItem } from "@/lib/api/types";
-import { formatRelativeTime } from "@/lib/utils";
+import { fetchAdminFailures, fetchAdminStorageFull } from "@/lib/api/dashboard-client";
+import type { AdminFailureItem, AdminStorageFullItem } from "@/lib/api/types";
+import { formatBytes, formatRelativeTime } from "@/lib/utils";
 
 export type HealthSnapshot = {
   status: string;
@@ -24,9 +24,10 @@ type HealthUiState =
   | { kind: "warn"; data: HealthSnapshot; reason: string }
   | { kind: "down"; reason: string };
 
-const POLL_MS = 15_000;
+const POLL_MS = 5_000;
 const NOTIFY_COOLDOWN_MS = 60_000;
 const READ_FAILURES_STORAGE_KEY = "momeva-admin-failures-read";
+const SEEN_STORAGE_FULL_KEY = "momeva-admin-storage-full-seen";
 
 function formatStatusValue(value: string) {
   const normalized = value.trim().toLowerCase();
@@ -110,12 +111,14 @@ function saveReadFailureKeys(keys: Set<string>) {
 export function AdminHealthMonitor() {
   const [state, setState] = useState<HealthUiState>({ kind: "loading" });
   const [failures, setFailures] = useState<AdminFailureItem[]>([]);
+  const [storageFull, setStorageFull] = useState<AdminStorageFullItem[]>([]);
   const [readKeys, setReadKeys] = useState<Set<string>>(() => new Set());
   const [notifyEnabled, setNotifyEnabled] = useState(false);
   const [notifyHint, setNotifyHint] = useState<string | null>(null);
   const prevKind = useRef<HealthUiState["kind"] | null>(null);
   const lastNotifyAt = useRef(0);
   const notifiedFailureKeys = useRef<Set<string> | null>(null);
+  const seenStorageFullIds = useRef<Set<string> | null>(null);
 
   useEffect(() => {
     setReadKeys(loadReadFailureKeys());
@@ -143,9 +146,10 @@ export function AdminHealthMonitor() {
 
     const tick = async () => {
       try {
-        const [data, failurePayload] = await Promise.all([
+        const [data, failurePayload, storagePayload] = await Promise.all([
           fetchHealth(),
           fetchAdminFailures({ limit: 8 }).catch(() => null),
+          fetchAdminStorageFull({ limit: 20 }).catch(() => null),
         ]);
         if (cancelled) return;
 
@@ -170,6 +174,54 @@ export function AdminHealthMonitor() {
                 `momeva-fail-${item.id}`,
               );
             }
+          }
+        }
+
+        if (storagePayload) {
+          setStorageFull(storagePayload.items);
+          const currentIds = new Set(
+            storagePayload.items.map((item) => item.eventId),
+          );
+          if (seenStorageFullIds.current === null) {
+            try {
+              const raw = window.localStorage.getItem(SEEN_STORAGE_FULL_KEY);
+              const parsed = raw ? (JSON.parse(raw) as unknown) : [];
+              seenStorageFullIds.current = new Set(
+                Array.isArray(parsed)
+                  ? parsed.filter((v): v is string => typeof v === "string")
+                  : [],
+              );
+            } catch {
+              seenStorageFullIds.current = new Set();
+            }
+            // First load: seed as seen so refresh doesn't spam; banner still shows.
+            for (const item of storagePayload.items) {
+              seenStorageFullIds.current.add(item.eventId);
+            }
+            window.localStorage.setItem(
+              SEEN_STORAGE_FULL_KEY,
+              JSON.stringify([...seenStorageFullIds.current]),
+            );
+          } else {
+            // Drop ids that are no longer full so a later refill can alert again.
+            for (const id of [...seenStorageFullIds.current]) {
+              if (!currentIds.has(id)) seenStorageFullIds.current.delete(id);
+            }
+            const fresh = storagePayload.items.filter(
+              (item) => !seenStorageFullIds.current!.has(item.eventId),
+            );
+            for (const item of fresh) {
+              seenStorageFullIds.current.add(item.eventId);
+              notifyAdmin(
+                "Momeva storage full",
+                `GB full on /${item.eventSlug} (${item.eventTitle})`,
+                `momeva-storage-full-${item.eventId}`,
+              );
+            }
+            window.localStorage.setItem(
+              SEEN_STORAGE_FULL_KEY,
+              JSON.stringify([...seenStorageFullIds.current]),
+            );
           }
         }
 
@@ -235,7 +287,7 @@ export function AdminHealthMonitor() {
         setNotifyHint(null);
         notifyAdmin(
           "Momeva admin alerts on",
-          "You’ll get a browser notification if health drops or an upload fails.",
+          "You’ll get alerts if health drops, uploads fail, or storage fills.",
         );
         return;
       }
@@ -337,6 +389,41 @@ export function AdminHealthMonitor() {
           </div>
         </dl>
       )}
+
+      <div className="border-t border-white/10 pt-3">
+        <p className="text-xs font-medium uppercase tracking-wide text-white">
+          Storage full alerts
+        </p>
+        {storageFull.length === 0 ? (
+          <p className="mt-2 text-xs font-medium text-emerald-400">
+            No events at storage limit
+          </p>
+        ) : (
+          <ul className="mt-2 space-y-2">
+            {storageFull.map((item) => (
+              <li
+                key={item.eventId}
+                className="rounded-lg border border-rose-500/40 bg-rose-500/10 px-3 py-2 text-xs"
+              >
+                <p className="font-semibold text-rose-400">
+                  GB full on /{item.eventSlug}
+                </p>
+                <p className="mt-0.5 text-white">{item.eventTitle}</p>
+                <p className="mt-1 text-rose-200/90">
+                  {formatBytes(item.storageUsedBytes)} /{" "}
+                  {formatBytes(item.storageLimitBytes)}
+                </p>
+                <Link
+                  href={`/admin/events/${item.eventId}`}
+                  className="mt-1 inline-block text-sky-300 hover:underline"
+                >
+                  Open event → extend storage
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
 
       <div className="border-t border-white/10 pt-3">
         <p className="text-xs font-medium uppercase tracking-wide text-white">

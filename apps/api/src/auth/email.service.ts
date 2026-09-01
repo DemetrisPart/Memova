@@ -113,4 +113,41 @@ export class EmailService {
       // Do not fail the upload/verify path if mail is down.
     }
   }
+
+  /** Best-effort alert when an event hits its storage ceiling. */
+  async sendAdminStorageFullAlert(input: {
+    to: string[];
+    eventSlug: string;
+    eventTitle: string;
+    storageUsedLabel: string;
+    storageLimitLabel: string;
+  }): Promise<void> {
+    if (input.to.length === 0) return;
+
+    const from = this.config.get<string>(
+      "SMTP_FROM",
+      "Momeva <noreply@momeva.com>",
+    );
+    const subject = `Momeva storage full — /${input.eventSlug}`;
+    const text = [
+      "Event storage is full.",
+      "",
+      `Event: ${input.eventTitle}`,
+      `Slug: /${input.eventSlug}`,
+      `Used: ${input.storageUsedLabel} / ${input.storageLimitLabel}`,
+      "",
+      "Guest uploads are blocked until you extend storage in /admin.",
+    ].join("\n");
+
+    try {
+      await this.getTransporter().sendMail({
+        from,
+        to: input.to.join(", "),
+        subject,
+        text,
+      });
+    } catch {
+      // Best-effort only.
+    }
+  }
 }

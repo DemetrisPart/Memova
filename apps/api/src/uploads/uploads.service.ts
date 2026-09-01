@@ -36,6 +36,7 @@ import { PrismaService } from "../prisma/prisma.service";
 import { EmailService } from "../auth/email.service";
 import type { GuestSessionContext } from "../public/guest-session.guard";
 import type { UploadCompleteDto, UploadInitDto } from "./dto/upload.dto";
+
 @Injectable()
 export class UploadsService {
   constructor(
@@ -90,6 +91,7 @@ export class UploadsService {
     });
 
     if (!quota.allowed) {
+      void this.notifyStorageFull(event.id);
       throw new ConflictException("Event storage limit reached");
     }
 
@@ -315,6 +317,7 @@ export class UploadsService {
       });
 
       if (!quota.allowed) {
+        void this.notifyStorageFull(event.id);
         throw new ConflictException("Event storage limit reached");
       }
 
@@ -365,6 +368,9 @@ export class UploadsService {
       ),
     });
 
+    if (updatedEvent.storageUsedBytes >= updatedEvent.storageLimitBytes) {
+      void this.notifyStorageFull(event.id);
+    }
     await Promise.all(
       verified.map((media) =>
         this.mediaQueue.enqueueImageProcessing({
@@ -399,6 +405,45 @@ export class UploadsService {
       failedCount: failed.length,
       failed,
     };
+  }
+
+  private async notifyStorageFull(eventId: string): Promise<void> {
+    const event = await this.prisma.event.findFirst({
+      where: { id: eventId, deletedAt: null },
+      select: {
+        id: true,
+        slug: true,
+        title: true,
+        storageUsedBytes: true,
+        storageLimitBytes: true,
+        storageFullNotifiedAt: true,
+      },
+    });
+    if (!event) return;
+    if (event.storageUsedBytes < event.storageLimitBytes) return;
+    if (event.storageFullNotifiedAt) return;
+
+    const admins = await this.prisma.user.findMany({
+      where: { role: UserRole.PLATFORM_ADMIN, deletedAt: null },
+      select: { email: true },
+    });
+    if (admins.length === 0) return;
+
+    await this.prisma.event.update({
+      where: { id: event.id },
+      data: { storageFullNotifiedAt: new Date() },
+    });
+
+    const usedGb = Number(event.storageUsedBytes) / (1024 * 1024 * 1024);
+    const limitGb = Number(event.storageLimitBytes) / (1024 * 1024 * 1024);
+
+    await this.email.sendAdminStorageFullAlert({
+      to: admins.map((admin) => admin.email),
+      eventSlug: event.slug,
+      eventTitle: event.title,
+      storageUsedLabel: `${usedGb.toFixed(1)} GB`,
+      storageLimitLabel: `${limitGb.toFixed(1)} GB`,
+    });
   }
 
   private async notifyAdminsOfFailures(

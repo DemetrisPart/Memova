@@ -123,6 +123,8 @@ model Event {
   galleryVisibleDays     Int          @default(14) @map("gallery_visible_days")
   storageUsedBytes       BigInt       @default(0) @map("storage_used_bytes")
   storageLimitBytes      BigInt       @default(21474836480) @map("storage_limit_bytes") // 20 GB
+  /// Set when admins were emailed that this event hit storage full; cleared on extend.
+  storageFullNotifiedAt  DateTime?    @map("storage_full_notified_at")
   createdAt              DateTime     @default(now()) @map("created_at")
   updatedAt              DateTime     @updatedAt @map("updated_at")
   deletedAt              DateTime?    @map("deleted_at")

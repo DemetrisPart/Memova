@@ -18,6 +18,23 @@ export type AdminFailureItem = {
   failedAt: string;
 };
 
+export type AdminStorageFullItem = {
+  eventId: string;
+  eventSlug: string;
+  eventTitle: string;
+  storageUsedBytes: string;
+  storageLimitBytes: string;
+  notifiedAt: string | null;
+};
+
+function formatBytesLabel(bytes: bigint): string {
+  const gb = Number(bytes) / (1024 * 1024 * 1024);
+  if (gb >= 1) return `${gb.toFixed(1)} GB`;
+  const mb = Number(bytes) / (1024 * 1024);
+  if (mb >= 1) return `${mb.toFixed(1)} MB`;
+  return `${bytes.toString()} B`;
+}
+
 @Injectable()
 export class AdminOpsService {
   constructor(
@@ -95,6 +112,79 @@ export class AdminOpsService {
       items: merged.slice(0, take),
       queueFailedCount: queueCounts.failed,
     };
+  }
+
+  async listStorageFull(limit = 20): Promise<{ items: AdminStorageFullItem[] }> {
+    const take = Math.min(Math.max(limit, 1), 50);
+    const events = await this.prisma.event.findMany({
+      where: { deletedAt: null },
+      select: {
+        id: true,
+        slug: true,
+        title: true,
+        storageUsedBytes: true,
+        storageLimitBytes: true,
+        storageFullNotifiedAt: true,
+        updatedAt: true,
+      },
+      orderBy: { updatedAt: "desc" },
+      take: 200,
+    });
+
+    const full = events
+      .filter((event) => event.storageUsedBytes >= event.storageLimitBytes)
+      .slice(0, take)
+      .map((event) => ({
+        eventId: event.id,
+        eventSlug: event.slug,
+        eventTitle: event.title,
+        storageUsedBytes: event.storageUsedBytes.toString(),
+        storageLimitBytes: event.storageLimitBytes.toString(),
+        notifiedAt: event.storageFullNotifiedAt?.toISOString() ?? null,
+      }));
+
+    return { items: full };
+  }
+
+  /**
+   * Email + mark notified once per "full" episode.
+   * Cleared when admin extends storageLimitBytes.
+   */
+  async notifyStorageFull(eventId: string): Promise<void> {
+    const event = await this.prisma.event.findFirst({
+      where: { id: eventId, deletedAt: null },
+      select: {
+        id: true,
+        slug: true,
+        title: true,
+        storageUsedBytes: true,
+        storageLimitBytes: true,
+        storageFullNotifiedAt: true,
+      },
+    });
+    if (!event) return;
+    if (event.storageUsedBytes < event.storageLimitBytes) return;
+    if (event.storageFullNotifiedAt) return;
+
+    const admins = await this.prisma.user.findMany({
+      where: { role: UserRole.PLATFORM_ADMIN, deletedAt: null },
+      select: { email: true },
+    });
+    if (admins.length === 0) return;
+
+    const now = new Date();
+    await this.prisma.event.update({
+      where: { id: event.id },
+      data: { storageFullNotifiedAt: now },
+    });
+
+    await this.email.sendAdminStorageFullAlert({
+      to: admins.map((admin) => admin.email),
+      eventSlug: event.slug,
+      eventTitle: event.title,
+      storageUsedLabel: formatBytesLabel(event.storageUsedBytes),
+      storageLimitLabel: formatBytesLabel(event.storageLimitBytes),
+    });
   }
 
   async notifyAdminsOfUploadFailure(input: {

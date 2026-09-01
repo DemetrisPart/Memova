@@ -1,7 +1,9 @@
 import {
+  Body,
   Controller,
   Get,
   Param,
+  Patch,
   Query,
   UseGuards,
 } from "@nestjs/common";
@@ -12,6 +14,7 @@ import {
   GalleryQueryDto,
 } from "../gallery/dto/gallery-query.dto";
 import { AdminEventsService } from "./admin-events.service";
+import { AdminUpdateEventEntitlementsDto } from "./dto/admin-update-event-entitlements.dto";
 import { PlatformAdminGuard } from "./platform-admin.guard";
 
 class AdminEventsListQueryDto {
@@ -33,6 +36,14 @@ export class AdminEventsController {
   @Get(":id")
   getOne(@Param("id") id: string) {
     return this.adminEvents.getEvent(id);
+  }
+
+  @Patch(":id/entitlements")
+  updateEntitlements(
+    @Param("id") id: string,
+    @Body() dto: AdminUpdateEventEntitlementsDto,
+  ) {
+    return this.adminEvents.updateEntitlements(id, dto);
   }
 
   @Get(":id/media")

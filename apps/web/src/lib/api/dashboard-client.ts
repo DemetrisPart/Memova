@@ -324,6 +324,25 @@ export async function fetchAdminFailures(params?: {
   return apiFetch(`/admin/ops/failures${query ? `?${query}` : ""}`);
 }
 
+export async function fetchAdminStorageFull(params?: {
+  limit?: number;
+}): Promise<import("./types").AdminStorageFullResponse> {
+  const search = new URLSearchParams();
+  if (params?.limit) search.set("limit", String(params.limit));
+  const query = search.toString();
+  return apiFetch(`/admin/ops/storage-full${query ? `?${query}` : ""}`);
+}
+
+export async function updateAdminEventEntitlements(
+  eventId: string,
+  data: { galleryVisibleDays?: number; storageLimitGb?: number },
+): Promise<import("./types").AdminEventDetail> {
+  return apiFetch(`/admin/events/${encodeURIComponent(eventId)}/entitlements`, {
+    method: "PATCH",
+    body: JSON.stringify(data),
+  });
+}
+
 export async function initCoverUpload(
   eventId: string,
   data: { contentType: string; contentLength: number; fileName?: string },

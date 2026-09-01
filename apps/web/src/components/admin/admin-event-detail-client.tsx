@@ -2,9 +2,11 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { ADMIN_ENTITLEMENTS } from "@momeva/shared";
 import {
   fetchAdminEvent,
   fetchAdminGallery,
+  updateAdminEventEntitlements,
 } from "@/lib/api/dashboard-client";
 import { resolveNetworkUrl } from "@/lib/mobile-network";
 import {
@@ -21,6 +23,14 @@ type AdminEventDetailClientProps = {
   eventId: string;
 };
 
+function storageLimitGb(limitBytes: string): number {
+  const bytes = Number(limitBytes);
+  if (!Number.isFinite(bytes) || bytes <= 0) {
+    return ADMIN_ENTITLEMENTS.STORAGE_GB_DEFAULT;
+  }
+  return Math.round(bytes / (1024 * 1024 * 1024));
+}
+
 export function AdminEventDetailClient({
   eventId,
 }: AdminEventDetailClientProps) {
@@ -28,6 +38,8 @@ export function AdminEventDetailClient({
   const [items, setItems] = useState<CoupleGalleryItem[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [saveMessage, setSaveMessage] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -55,15 +67,47 @@ export function AdminEventDetailClient({
     };
   }, [eventId]);
 
+  const applyEntitlements = async (patch: {
+    galleryVisibleDays?: number;
+    storageLimitGb?: number;
+  }) => {
+    if (!event) return;
+    setSaving(true);
+    setSaveMessage(null);
+    setError(null);
+    try {
+      const updated = await updateAdminEventEntitlements(eventId, patch);
+      setEvent(updated);
+      setSaveMessage("Entitlements updated.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not update entitlements");
+    } finally {
+      setSaving(false);
+    }
+  };
+
   if (loading) {
     return <p className="text-sm text-stone-400">Loading event…</p>;
   }
 
-  if (error || !event) {
+  if (error && !event) {
     return (
       <div className="space-y-3">
         <p className="text-sm text-rose-400" role="alert">
-          {error ?? "Event not found"}
+          {error}
+        </p>
+        <Link href="/admin" className="text-sm text-sky-300 hover:underline">
+          ← All events
+        </Link>
+      </div>
+    );
+  }
+
+  if (!event) {
+    return (
+      <div className="space-y-3">
+        <p className="text-sm text-rose-400" role="alert">
+          Event not found
         </p>
         <Link href="/admin" className="text-sm text-sky-300 hover:underline">
           ← All events
@@ -79,6 +123,14 @@ export function AdminEventDetailClient({
         publicUrl: event.coverImageUrlPublic,
       })
     : null;
+
+  const currentDays = event.galleryVisibleDays ?? 14;
+  const currentGb = storageLimitGb(event.storageLimitBytes);
+  const usedGb = Math.ceil(
+    Number(event.storageUsedBytes) / (1024 * 1024 * 1024),
+  );
+  const dayPresets = ADMIN_ENTITLEMENTS.GALLERY_VISIBLE_DAYS_PRESETS;
+  const storagePresets = ADMIN_ENTITLEMENTS.STORAGE_GB_PRESETS;
 
   return (
     <div className="space-y-6">
@@ -152,25 +204,107 @@ export function AdminEventDetailClient({
           <div className="sm:col-span-2">
             <dt className="text-white">Gallery visible</dt>
             <dd className="font-medium text-white">
-              {formatGalleryVisibleDuration(event.galleryVisibleDays ?? 14)} after
-              event date{" "}
+              {formatGalleryVisibleDuration(currentDays)} after event date{" "}
               <span className="text-rose-500">
                 (until{" "}
                 {formatEventDate(
-                  galleryVisibleUntilDate(
-                    event.eventDate,
-                    event.galleryVisibleDays ?? 14,
-                  ),
+                  galleryVisibleUntilDate(event.eventDate, currentDays),
                 )}
                 )
               </span>
             </dd>
             <p className="mt-1 text-xs text-white/80">
-              {galleryVisibilityNote(event.galleryVisibleDays ?? 14)} Display only —
-              not enforced yet.
+              {galleryVisibilityNote(currentDays)} Display only — not enforced
+              yet.
             </p>
           </div>
         </dl>
+
+        <div className="mt-5 space-y-4 border-t border-white/10 pt-4">
+          <div>
+            <p className="text-sm font-medium text-white">
+              Gallery visibility
+            </p>
+            <p className="mt-1 text-xs text-stone-400">
+              Admin only — all options stay available so you can correct a
+              wrong pick (max {ADMIN_ENTITLEMENTS.GALLERY_VISIBLE_DAYS_MAX}{" "}
+              days).
+            </p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {dayPresets.map((days) => {
+                const active = days === currentDays;
+                return (
+                  <button
+                    key={days}
+                    type="button"
+                    disabled={saving || active}
+                    onClick={() =>
+                      void applyEntitlements({ galleryVisibleDays: days })
+                    }
+                    className={`rounded-lg border px-3 py-1.5 text-xs font-medium transition ${
+                      active
+                        ? "border-sky-500/50 bg-sky-500/20 text-sky-200"
+                        : "border-white/15 text-white hover:border-sky-500/40 hover:bg-sky-500/10"
+                    } disabled:opacity-50`}
+                  >
+                    {formatGalleryVisibleDuration(days)}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div>
+            <p className="text-sm font-medium text-white">Storage limit</p>
+            <p className="mt-1 text-xs text-stone-400">
+              Admin only — all options stay available. Soft max{" "}
+              {ADMIN_ENTITLEMENTS.STORAGE_GB_MAX} GB. Cannot go below storage
+              already used.
+            </p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {storagePresets.map((gb) => {
+                const active = gb === currentGb;
+                const belowUsed = gb < usedGb;
+                return (
+                  <button
+                    key={gb}
+                    type="button"
+                    disabled={saving || active || belowUsed}
+                    title={
+                      belowUsed
+                        ? `Cannot set below ~${usedGb} GB already used`
+                        : undefined
+                    }
+                    onClick={() =>
+                      void applyEntitlements({ storageLimitGb: gb })
+                    }
+                    className={`rounded-lg border px-3 py-1.5 text-xs font-medium transition ${
+                      active
+                        ? "border-sky-500/50 bg-sky-500/20 text-sky-200"
+                        : belowUsed
+                          ? "border-white/10 text-stone-500"
+                          : "border-white/15 text-white hover:border-sky-500/40 hover:bg-sky-500/10"
+                    } disabled:opacity-50`}
+                  >
+                    {gb} GB
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {error ? (
+            <p className="text-sm text-rose-400" role="alert">
+              {error}
+            </p>
+          ) : null}
+          {saveMessage ? (
+            <p className="text-sm text-emerald-400">{saveMessage}</p>
+          ) : null}
+          {saving ? (
+            <p className="text-xs text-stone-400">Saving…</p>
+          ) : null}
+        </div>
       </section>
 
       <section>

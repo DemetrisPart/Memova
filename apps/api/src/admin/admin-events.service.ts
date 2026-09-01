@@ -1,8 +1,10 @@
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { MediaAssetStatus, MediaAssetType } from "@momeva/database";
+import { ADMIN_ENTITLEMENTS, gbToBytes } from "@momeva/shared";
 import { PrismaService } from "../prisma/prisma.service";
 import { EventsService } from "../events/events.service";
 import { GalleryService } from "../gallery/gallery.service";
+import type { AdminUpdateEventEntitlementsDto } from "./dto/admin-update-event-entitlements.dto";
 
 @Injectable()
 export class AdminEventsService {
@@ -101,6 +103,59 @@ export class AdminEventsService {
       photoCount,
       videoCount,
     };
+  }
+
+  async updateEntitlements(
+    eventId: string,
+    dto: AdminUpdateEventEntitlementsDto,
+  ) {
+    if (
+      dto.galleryVisibleDays === undefined &&
+      dto.storageLimitGb === undefined
+    ) {
+      throw new BadRequestException("No entitlement changes provided");
+    }
+
+    const event = await this.prisma.event.findFirst({
+      where: { id: eventId, deletedAt: null },
+    });
+    if (!event) {
+      throw new NotFoundException("Event not found");
+    }
+
+    const data: {
+      galleryVisibleDays?: number;
+      storageLimitBytes?: bigint;
+      storageFullNotifiedAt?: Date | null;
+    } = {};
+
+    if (dto.galleryVisibleDays !== undefined) {
+      data.galleryVisibleDays = dto.galleryVisibleDays;
+    }
+
+    if (dto.storageLimitGb !== undefined) {
+      const nextBytes = gbToBytes(dto.storageLimitGb);
+      if (nextBytes < event.storageUsedBytes) {
+        throw new BadRequestException(
+          "Storage limit cannot be below storage already used",
+        );
+      }
+      if (dto.storageLimitGb > ADMIN_ENTITLEMENTS.STORAGE_GB_MAX) {
+        throw new BadRequestException(
+          `Storage limit cannot exceed ${ADMIN_ENTITLEMENTS.STORAGE_GB_MAX} GB`,
+        );
+      }
+      data.storageLimitBytes = nextBytes;
+      // Allow a fresh alert the next time this event fills again.
+      data.storageFullNotifiedAt = null;
+    }
+
+    await this.prisma.event.update({
+      where: { id: eventId },
+      data,
+    });
+
+    return this.getEvent(eventId);
   }
 
   listGallery(eventId: string, query: { cursor?: string; limit?: number }) {
